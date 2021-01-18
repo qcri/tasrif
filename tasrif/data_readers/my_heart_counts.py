@@ -199,3 +199,39 @@ class PARQSurveyDataset:
 
         if self.drop_duplicates:
             self.parq_df = self.parq_df.drop_duplicates(subset='healthCode', keep='last')
+
+class RiskFactorSurvey:
+
+    rf_df = None
+    raw_df = None
+
+    def __init__(
+        self,
+        mhc_folder='~/Documents/Data/MyHeartCounts',
+        rfs_filename='Risk Factor Survey.csv',
+        drop_features=['family_history', 'medications_to_treat', 'heart_disease', 'vascular', 'ethnicity', 'race', 'education']):
+
+        full_path = pathlib.Path(mhc_folder, rfs_filename)
+        self.rf_df = pd.read_csv(full_path)
+        self.raw_df = self.rf_df.copy()
+        self.drop_features = drop_features
+        self._process()
+
+
+    def participant_count(self):
+        n = self.raw_df['healthCode'].nunique()
+        return n
+
+    def raw_dataframe(self):
+        return self.raw_df
+
+    def processed_dataframe(self):
+        return self.rf_df
+
+
+    def _process(self):
+        for c in self.drop_features:
+            if c not in self.rf_df.columns:
+                raise ValueError(str(c) + ' not in columns')
+
+        self.rf_df = self.rf_df.drop(self.drop_features, axis=1)
