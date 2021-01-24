@@ -1,0 +1,48 @@
+trigger:
+  batch: true
+  branches:
+    include:
+    - master
+resources:
+  - repo: self
+
+pool: tasrif-pool
+
+steps:
+- checkout: self
+  submodules: recursive
+- task: Docker@0
+  displayName: 'Build an image'
+  inputs:
+    imageName: '$(Build.Repository.Name):$(Build.SourceVersion)'
+
+- task: Docker@1
+  displayName: 'Run prospector (code quality check)'
+  inputs:
+    command: 'Run an image'
+    imageName: '$(Build.Repository.Name):$(Build.SourceVersion)'
+    volumes: $(System.DefaultWorkingDirectory)/prospector:/home/prospector/
+    containerCommand: '/home/run-prospector.sh'
+    runInBackground: false
+    enforceDockerNamingConvention: false
+  continueOnError: true
+- task: Docker@1
+  displayName: 'Run pylint (code quality check)'
+  inputs:
+    command: 'Run an image'
+    imageName: '$(Build.Repository.Name):$(Build.SourceVersion)'
+    volumes: $(System.DefaultWorkingDirectory)/pylint:/home/pylint/
+    containerCommand: '/home/run-pylint.sh'
+    runInBackground: false
+    enforceDockerNamingConvention: false
+  continueOnError: true
+
+- task: PublishTestResults@2
+  displayName: 'Publish Test Results'
+  inputs:
+    testResultsFormat: 'Junit'
+    testResultsFiles: '**/*.xml'
+    searchFolder: '$(System.DefaultWorkingDirectory)/pylint'
+    publishRunAttachments: true
+    testRunTitle: 'Pylint'
+  condition: succeededOrFailed()
