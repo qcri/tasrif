@@ -1,27 +1,33 @@
+"""Module that provides classes to access sleep health datasets.
+For details please read https://www.nature.com/articles/s41597-020-00753-2
+"""
 import pathlib
 import pandas as pd
 
-
-class SleepHealthDataset:
+class SleepHealthDataset:#pylint: disable=too-few-public-methods
     """
     Class to work with Sleep Health Dataset
     """
 
-    def __init__(self,
-                 shc_folder='../data/sleephealth/'):
+    def __init__(self, shc_folder='../data/sleephealth/'):
+
         self.shc_folder = shc_folder
         # TODO: placeholder only, missing implementation
-        pass
-
 
 class AboutMeDataset:
+    """Provides access to the AboutMe dataset
+
+    Returns
+    -------
+    Instance of AboutMeDataset
+    """
     aboutme_df = None
     raw_df = None
 
     def __init__(
             self,
-            shc_folder: str ='../data/sleephealth/',
-            amd_filename: str ='About Me.csv',
+            shc_folder: str = '../data/sleephealth/',
+            amd_filename: str = 'About Me.csv',
             drop_unanswered: bool = True,
             drop_duplicates: bool = True):
         """
@@ -66,13 +72,36 @@ class AboutMeDataset:
         self._process()
 
     def participant_count(self):
-        n = self.raw_df['participantId'].nunique()
-        return n
+        """Get the number of participants
+
+        Returns
+        -------
+        int
+            Number of participants in the dataset
+        """
+        number_participants = self.raw_df['participantId'].nunique()
+        return number_participants
 
     def raw_dataframe(self):
+        """Gets the data frame (without any processing) for the dataset
+
+        Returns
+        -------
+        pd.Dataframe
+            Pandas dataframe object representing the data
+        """
+
         return self.raw_df
 
     def processed_dataframe(self):
+        """Gets the processed data frame (after applying the data pipeline) for the dataset
+
+        Returns
+        -------
+        pd.Dataframe
+            Pandas dataframe object representing the data
+        """
+
         return self.aboutme_df
 
     def _process(self):

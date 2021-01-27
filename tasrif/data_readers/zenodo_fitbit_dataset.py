@@ -1,16 +1,28 @@
+"""Module that provides classes to work with the fitbit dataset on the Zenodo platform
+collected by crowd sourcing.
+"""
+
 import pathlib
 from datetime import datetime
-
 import pandas as pd
 
 
 class ZenodoCompositeFitbitDataset:
-
+    """Class to work with multiple zenodo datasets by merging/concatenating the features.
+    """
     def __init__(self, zenodo_datasets):
         self.zenodo_datasets = zenodo_datasets
         self._process()
 
     def grouped_dataframe(self):
+        """Gets the dataframe grouped by participants. The result is a data frames where each row
+        represents exactly one partipant
+
+        Returns
+        -------
+        pd.Dataframe
+            Pandas dataframe object representing the data
+        """
         return self.group_df
 
     def _process(self):
@@ -22,16 +34,19 @@ class ZenodoCompositeFitbitDataset:
 
 
 class ZenodoFitbitActivityDataset:
+    """Class that represents the activity related CSV files of the fitbit dataset published on Zenodo
+    """
 
-    raw_df = None
-    df = None
-    group_df = None
+    class Default:#pylint: disable=too-few-public-methods
+        """Default parameters used by the class.
+        """
+        DROP_COLUMNS = ["TrackerDistance", 'LoggedActivitiesDistance', 'VeryActiveDistance', 'ModeratelyActiveDistance', 'SedentaryActiveDistance', "LightActiveDistance"]
 
-    def __init__(self, zenodo_folder, drop_columns = ["TrackerDistance", 'LoggedActivitiesDistance', 'VeryActiveDistance', 'ModeratelyActiveDistance', 'SedentaryActiveDistance', "LightActiveDistance"], accumulate_active_minutes = True):
+    def __init__(self, zenodo_folder, drop_columns=Default.DROP_COLUMNS, accumulate_active_minutes=True):
 
         subfolder_1 = 'Fitabase Data 3.12.16-4.11.16'
         subfolder_2 = 'Fitabase Data 4.12.16-5.12.16'
-        full_path_1 = pathlib.Path(zenodo_folder,  subfolder_1)
+        full_path_1 = pathlib.Path(zenodo_folder, subfolder_1)
         full_path_2 = pathlib.Path(zenodo_folder, subfolder_2)
 
         day_act1 = pathlib.Path(full_path_1, 'dailyActivity_merged.csv')
@@ -44,34 +59,73 @@ class ZenodoFitbitActivityDataset:
 
         self.raw_df = pd.concat([raw_df1, raw_df2], axis=0, ignore_index=False, keys=None, levels=None, names=None, verify_integrity=False, copy=True)
         self.raw_df = self.raw_df.dropna()
-        self.df = self.raw_df.copy()
+        self.zadf = self.raw_df.copy()
         self._process()
         self._group()
 
     def raw_dataframe(self):
+        """Gets the data frame (without any processing) for the dataset
+
+        Returns
+        -------
+        pd.Dataframe
+            Pandas dataframe object representing the data
+        """
         return self.raw_df
 
     def processed_dataframe(self):
-        return self.df
+        """Gets the processed data frame (after applying the data pipeline) for the dataset
+
+        Returns
+        -------
+        pd.Dataframe
+            Pandas dataframe object representing the data
+        """
+        return self.zadf
 
     def participant_count(self):
-        return self.df['Id'].nunique()
+        """Get the number of participants
+
+        Returns
+        -------
+        int
+            Number of participants in the dataset
+        """
+
+        return self.zadf['Id'].nunique()
 
     def grouped_dataframe(self):
+        """Gets the dataframe grouped by participants. The result is a data frames where each row
+        represents exactly one partipant
+
+        Returns
+        -------
+        pd.Dataframe
+            Pandas dataframe object representing the data
+        """
+
         return self.group_df
 
     def participant_dataframes(self):
-        return [pd.DataFrame(y) for x, y in self.df.groupby('Id', as_index=False)]
+        """Gets and array of individual participant data frames
+
+        Returns
+        -------
+        pd.Dataframe[]
+            Array of dataframe objects representing the data from each partipant
+        """
+
+        return [pd.DataFrame(y) for x, y in self.zadf.groupby('Id', as_index=False)]
 
     def _process(self):
         if self.drop_columns:
-            self.df = self.df.drop(self.drop_columns, axis=1)
+            self.zadf = self.zadf.drop(self.drop_columns, axis=1)
         if self.accumulate_active_minutes:
-            self.df['ActiveMinutes'] = self.df.VeryActiveMinutes + self.df.FairlyActiveMinutes + self.df.LightlyActiveMinutes
-            self.df = self.df.drop(['VeryActiveMinutes', "FairlyActiveMinutes", "LightlyActiveMinutes"], axis=1)
+            self.zadf['ActiveMinutes'] = self.zadf.VeryActiveMinutes + self.zadf.FairlyActiveMinutes + self.zadf.LightlyActiveMinutes
+            self.zadf = self.zadf.drop(['VeryActiveMinutes', "FairlyActiveMinutes", "LightlyActiveMinutes"], axis=1)
 
-        self.df.rename(columns={'ActivityDate': 'Date'}, inplace=True)
-        self.df['Date']= pd.to_datetime(self.df['Date'])
+        self.zadf.rename(columns={'ActivityDate': 'Date'}, inplace=True)
+        self.zadf['Date'] = pd.to_datetime(self.zadf['Date'])
 
     def _group(self):
         stats = ['mean', 'std']
@@ -88,13 +142,21 @@ class ZenodoFitbitActivityDataset:
             for i in value:
                 columns.append(f'{key}_{i}')
 
-        self.group_df = self.df.copy()
+        self.group_df = self.zadf.copy()
         self.group_df = self.group_df.groupby('Id', as_index=False).agg(group_agg)
         self.group_df.columns = columns
 
 class ZenodoFitbitWeightDataset:
+    """Class that represents the body weight related CSV files of the fitbit dataset published on Zenodo
+    """
 
-    def __init__(self, zenodo_folder,  drop_columns = ['Fat', 'WeightPounds', 'IsManualReport']):
+    class Default:#pylint: disable=too-few-public-methods
+        """Default parameters used by the class.
+        """
+        DROP_COLUMNS = ['Fat', 'WeightPounds', 'IsManualReport']
+
+
+    def __init__(self, zenodo_folder, drop_columns=Default.DROP_COLUMNS):
 
         subfolder_1 = 'Fitabase Data 3.12.16-4.11.16'
         subfolder_2 = 'Fitabase Data 4.12.16-5.12.16'
@@ -109,25 +171,55 @@ class ZenodoFitbitWeightDataset:
         self.drop_columns = drop_columns
 
         self.raw_df = pd.concat([raw_df1, raw_df2], axis=0, ignore_index=False, keys=None, levels=None, names=None, verify_integrity=False, copy=True)
-        self.df = self.raw_df.copy()
+        self.zwdf = self.raw_df.copy()
         self._process()
         self._group()
 
     def raw_dataframe(self):
+        """Gets the data frame (without any processing) for the dataset
+
+        Returns
+        -------
+        pd.Dataframe
+            Pandas dataframe object representing the data
+        """
         return self.raw_df
 
     def processed_dataframe(self):
-        return self.df
+        """Gets the processed data frame (after applying the data pipeline) for the dataset
+
+        Returns
+        -------
+        pd.Dataframe
+            Pandas dataframe object representing the data
+        """
+        return self.zwdf
 
     def participant_dataframes(self):
-          return [pd.DataFrame(y) for x, y in self.df.groupby('Id', as_index=False)]
+        """Gets and array of individual participant data frames
+
+        Returns
+        -------
+        pd.Dataframe[]
+            Array of dataframe objects representing the data from each partipant
+        """
+        return [pd.DataFrame(y) for x, y in self.zwdf.groupby('Id', as_index=False)]
 
     def grouped_dataframe(self):
+        """Gets the dataframe grouped by participants. The result is a data frames where each row
+        represents exactly one partipant
+
+        Returns
+        -------
+        pd.Dataframe
+            Pandas dataframe object representing the data
+        """
+
         return self.group_df
 
     def _process(self):
         if self.drop_columns:
-            self.df = self.df.drop(self.drop_columns, axis=1)
+            self.zwdf = self.zwdf.drop(self.drop_columns, axis=1)
 
     def _group(self):
         stats = ['mean', 'std']
@@ -141,11 +233,13 @@ class ZenodoFitbitWeightDataset:
             for i in value:
                 columns.append(f'{key}_{i}')
 
-        self.group_df = self.df.copy()
+        self.group_df = self.zwdf.copy()
         self.group_df = self.group_df.groupby('Id', as_index=False).agg(group_agg)
         self.group_df.columns = columns
 
 class ZenodoFitbitSleepDataset:
+    """Class that represents the sleep related CSV files of the fitbit dataset published on Zenodo
+    """
 
     def __init__(self, zenodo_folder):
 
@@ -160,42 +254,70 @@ class ZenodoFitbitSleepDataset:
         raw_df2 = pd.read_csv(day_s2)
 
         self.raw_df = pd.concat([raw_df1, raw_df2], axis=0, ignore_index=False, keys=None, levels=None, names=None, verify_integrity=False, copy=True)
-        self.df = self.raw_df.copy()
+        self.zsdf = self.raw_df.copy()
         self._process()
         self._group()
 
     def raw_dataframe(self):
+        """Gets the data frame (without any processing) for the dataset
+
+        Returns
+        -------
+        pd.Dataframe
+            Pandas dataframe object representing the data
+        """
         return self.raw_df
 
     def processed_dataframe(self):
-        return self.df
+        """Gets the processed data frame (after applying the data pipeline) for the dataset
+
+        Returns
+        -------
+        pd.Dataframe
+            Pandas dataframe object representing the data
+        """
+        return self.zsdf
 
     def participant_dataframes(self):
-          return [pd.DataFrame(y) for x, y in self.df.groupby('Id', as_index=False)]
+        """Gets and array of individual participant data frames
+
+        Returns
+        -------
+        pd.Dataframe[]
+            Array of dataframe objects representing the data from each partipant
+        """
+        return [pd.DataFrame(y) for x, y in self.zsdf.groupby('Id', as_index=False)]
 
     def grouped_dataframe(self):
+        """Gets and array of individual participant data frames
+
+        Returns
+        -------
+        pd.Dataframe[]
+            Array of dataframe objects representing the data from each partipant
+        """
         return self.group_df
 
     def _process(self):
-        self.df.drop_duplicates(subset=['Id', 'logId', 'date'], keep='first', inplace=True)
-        self.df['date']= pd.to_datetime(self.df['date'])
-        self.df['duration'] = self.df['date'].sub(self.df['date'].shift())
+        self.zsdf.drop_duplicates(subset=['Id', 'logId', 'date'], keep='first', inplace=True)
+        self.zsdf[' edate'] = pd.to_datetime(self.zsdf['date'])
+        self.zsdf['duration'] = self.zsdf['date'].sub(self.zsdf['date'].shift())
         now = datetime.now()
         zero_duration = now - now
         # Change the duration of the first entry of every sleep log  group to zero
-        self.df.loc[self.df.groupby('logId')['duration'].head(1).index, 'duration'] = zero_duration
-        self.df = self.df.groupby(['logId', 'Id'], as_index=False).agg({'duration': ['sum'], 'date': ['first'], 'value': ['mean']})
-        self.df.columns = ['logId', 'Id', 'total_sleep', 'date', 'sleep_level']
-        self.df['date'] = self.df['date'].dt.date
+        self.zsdf.loc[self.zsdf.groupby('logId')['duration'].head(1).index, 'duration'] = zero_duration
+        self.zsdf = self.zsdf.groupby(['logId', 'Id'], as_index=False).agg({'duration': ['sum'], 'date': ['first'], 'value': ['mean']})
+        self.zsdf.columns = ['logId', 'Id', 'total_sleep', 'date', 'sleep_level']
+        self.zsdf['date'] = self.zsdf['date'].dt.date
 
 
     def _group(self):
-        self.group_df = self.df.copy()
+        self.group_df = self.zsdf.copy()
         self.group_df['total_sleep_secs'] = self.group_df.total_sleep.dt.total_seconds()
         self.group_df = self.group_df.groupby('Id', as_index=False).agg({
             'logId': ['count'],
             'total_sleep_secs': ['mean', 'std'],
-            'sleep_level': ['mean', 'std'] })
+            'sleep_level': ['mean', 'std']})
         self.group_df.columns = [
             'Id', 'sleep_episodes_count',
             'total_sleep_mean', 'total_sleep_std',
