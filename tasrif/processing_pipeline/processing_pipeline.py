@@ -3,7 +3,7 @@ The processing pipeline and the processing operator together define the basic fr
 to define a processing pipeline
 """
 
-from processing_pipeline.processing_operator import ProcessingOperator
+from . import ProcessingOperator
 
 class ProcessingPipeline:
     """Class representing a pipeline of processing operators. The definition of the pipeline
