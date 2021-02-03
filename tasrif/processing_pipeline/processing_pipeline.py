@@ -3,7 +3,7 @@ The processing pipeline and the processing operator together define the basic fr
 to define a processing pipeline
 """
 
-from . import ProcessingOperator
+from tasrif.processing_pipeline import ProcessingOperator
 
 class ProcessingPipeline:
     """Class representing a pipeline of processing operators. The definition of the pipeline
