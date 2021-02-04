@@ -11,6 +11,8 @@ class ProcessingOperator:
         """Process the passed data using the processing configuration specified
         in the constructor
 
+        Parameters
+        ----------
         data_frames:
           Variable number of pandas dataframes to be processed
 
