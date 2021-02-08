@@ -4,15 +4,20 @@ For details please read https://www.nature.com/articles/s41597-020-00753-2
 import pathlib
 import pandas as pd
 
-class SleepHealthDataset:#pylint: disable=too-few-public-methods
+from tasrif.processing_pipeline import ProcessingPipeline
+from tasrif.processing_pipeline.pandas import DropNAOperator
+from tasrif.processing_pipeline.pandas import DropDuplicatesOperator
+
+
+class SleepHealthDataset:  # pylint: disable=too-few-public-methods
     """
     Class to work with Sleep Health Dataset
     """
 
     def __init__(self, shc_folder='../data/sleephealth/'):
-
         self.shc_folder = shc_folder
         # TODO: placeholder only, missing implementation
+
 
 class AboutMeDataset:
     """Provides access to the AboutMe dataset
@@ -21,15 +26,22 @@ class AboutMeDataset:
     -------
     Instance of AboutMeDataset
     """
-    aboutme_df = None
+    processed_df = None
     raw_df = None
 
-    def __init__(
-            self,
-            shc_folder: str = '../data/sleephealth/',
-            amd_filename: str = 'About Me.csv',
-            drop_unanswered: bool = True,
-            drop_duplicates: bool = True):
+    def __init__(self,
+                 shc_folder: str = '../data/sleephealth/',
+                 amd_filename: str = 'About Me.csv',
+                 processing_pipeline: ProcessingPipeline = ProcessingPipeline(
+                     [DropNAOperator(subset=["alcohol", "basic_expenses", "caffeine", "daily_activities",
+                                             "daily_smoking", "education", "flexible_work_hours", "gender",
+                                             "good_life", "hispanic", "income", "race", "work_schedule", "weight",
+                                             "smoking_status", "marital"]),
+                      DropDuplicatesOperator(subset='participantId',
+                                             keep='last')
+                      ]
+                     )
+                 ):
         """
         AboutMe Dataset details can be found online at ``https://www.synapse.org/#!Synapse:syn18492837/wiki/592581``.
 
@@ -55,20 +67,17 @@ class AboutMeDataset:
             - ``current_pregnant`` has 3438 NAs (3438/3448 = 99.71%)
             - ``work_schedule`` has 110 NAs (110/3448 = 3.19%)
 
-            By using drop_unanswered == True, we remove NAs for participants in all columns,
-            but ``menopause``, ``recent_births`` and ``current_pregnant``, resulting in a dataset with 3181 participants.
-
-            There are duplicates in the dataset. If drop_duplicates == True, the dataset size decreases from 3448 to 3262.
-
-            Finally, if drop_duplicates == True and drop_unanswered == True (default), the final dataset size is 3019.
+        The default behavior of this module is to
+         (1) remove NAs for participants in all columns, but ``menopause``, ``recent_births`` and ``current_pregnant``.
+         (2) Drop duplicates based on participant id, retaining the last occurrence of a participant id.
+         The default final dataset size is 3019.
 
         """
 
         full_path = pathlib.Path(shc_folder, amd_filename)
-        self.aboutme_df = pd.read_csv(full_path)
-        self.raw_df = self.aboutme_df.copy()
-        self.drop_unanswered = drop_unanswered
-        self.drop_duplicates = drop_duplicates
+        self.raw_df = pd.read_csv(full_path)
+        self.processed_df = self.raw_df.copy()
+        self.processing_pipeline = processing_pipeline
         self._process()
 
     def participant_count(self):
@@ -102,31 +111,8 @@ class AboutMeDataset:
             Pandas dataframe object representing the data
         """
 
-        return self.aboutme_df
+        return self.processed_df
 
     def _process(self):
-        if self.drop_unanswered:
-            self.aboutme_df = self.aboutme_df[self.aboutme_df.alcohol.notnull() &
-                                              self.aboutme_df.basic_expenses.notnull() &
-                                              self.aboutme_df.caffeine.notnull() &
-                                              self.aboutme_df.daily_activities.notnull() &
-                                              self.aboutme_df.daily_smoking.notnull() &
-                                              self.aboutme_df.education.notnull() &
-                                              self.aboutme_df.flexible_work_hours.notnull() &
-                                              self.aboutme_df.gender.notnull() &
-                                              self.aboutme_df.good_life.notnull() &
-                                              self.aboutme_df.hispanic.notnull() &
-                                              self.aboutme_df.income.notnull() &
-                                              self.aboutme_df.marital.notnull() &
-                                              self.aboutme_df.race.notnull() &
-                                              self.aboutme_df.smoking_status.notnull() &
-                                              self.aboutme_df.weight.notnull() &
-                                              # Decided not to remove the following 3 cols by default:
-                                              # self.aboutme_df.menopause.notnull() &
-                                              # self.aboutme_df.recent_births.notnull() &
-                                              # self.aboutme_df.current_pregnant.notnull() &
-                                              self.aboutme_df.work_schedule.notnull()
-                                              ]
-
-        if self.drop_duplicates:
-            self.aboutme_df = self.aboutme_df.drop_duplicates(subset='participantId', keep='last')
+        if self.processing_pipeline:
+            self.processed_df = self.processing_pipeline.process(self.processed_df)[0]
