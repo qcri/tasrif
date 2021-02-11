@@ -1,5 +1,11 @@
 """Module that provides classes to work with the MyHeartCounts dataset
-
+   Available datasets:
+        MyHeartCountsDataset
+        DailyCheckSurveyDataset
+        DayOneSurveyDataset
+        PARQSurveyDataset
+        RiskFactorSurvey
+        CardioDietSurveyDataset
 """
 import pathlib
 import pandas as pd
@@ -94,6 +100,27 @@ class DailyCheckSurveyDataset:
         return self.group_dcs_df
 
     def _process(self):
+        """Modifies self.dcs_df by dropping unnecessary columns (features), 
+        filling null activity intensity,
+        filling null activity time values,
+        and averages activity1 and activity2 if given the option.
+
+
+        Pseudocode:
+            - start with raw dataframe dcs_df
+            - drop self.drop_features features from dcs_df 
+            - set activity1_option null values to false if activity2_option is filled
+            - set activity1_intensity to 4 if activity1_option and activity1_time are filled
+            - set activity1_intensity and activity1_time to 0 if activity1_option is false
+            - repeat the three steps above for activity2_option
+            - drop activity1_option and activity2_option from dcs_df
+            - average the intensities if self.merge_activity_features is true, set it to column ACT_I
+            - average the time if self.merge_activity_features is true, set it to column ACT_T
+            - return dcs_df
+        Returns
+        -------
+        sets the result in self.dcs_df
+        """
 
         self.dcs_df = self.dcs_df.drop(self.drop_features, axis=1)
 
@@ -120,7 +147,7 @@ class DailyCheckSurveyDataset:
           self.dcs_df[DailyCheckSurveyDataset.ACT2] & \
             pd.notnull(self.dcs_df[DailyCheckSurveyDataset.ACT2_T]) & pd.isnull(self.dcs_df[DailyCheckSurveyDataset.ACT2_I]), \
             DailyCheckSurveyDataset.ACT2_I] = 4
-        # Set activity1 values to zero when activity1 was not performed
+        # Set activity2 values to zero when activity2 was not performed
         self.dcs_df.loc[pd.notnull(self.dcs_df[DailyCheckSurveyDataset.ACT2]) & self.dcs_df[DailyCheckSurveyDataset.ACT2] == False, #pylint: disable = singleton-comparison
                         [DailyCheckSurveyDataset.ACT2_I, DailyCheckSurveyDataset.ACT2_T]] = 0
 
@@ -133,6 +160,24 @@ class DailyCheckSurveyDataset:
 
 
     def _group(self):
+        """Modifies self.dcs_df by dropping unnecessary columns (features), 
+        filling null activity intensity,
+        filling null activity time values,
+        and averages activity1 and activity2 if given the option.
+
+
+        Pseudocode:
+            - start with self.dcs_df
+            - for each paricipant (represented by healthCode column) in self.dcs_df
+                - get the mean of activity1_intensity, activity1_time
+                - get the standard deviation of activity1_intensity, activity1_time
+                - repeat for activity2_option
+            - if self.merge_activity_features, then do the above with activity_intensity, and activity_time instead
+            - set the result in self.group_dcs_df
+        Returns
+        -------
+        sets the result in self.group_dcs_df
+        """
         stats = ['mean', 'std']
         group_agg = {DailyCheckSurveyDataset.ACT1_I : stats,\
                      DailyCheckSurveyDataset.ACT1_T : stats,\
@@ -234,6 +279,13 @@ class DayOneSurveyDataset:
 
 
     def _process(self):
+        """Modifies self.dos_df by dropping na columns given bools,
+        self.drop_device_na and self.drop_labwork_na 
+        
+        Returns
+        -------
+        sets the result in self.dos_df
+        """
 
         if self.drop_device_na and self.drop_labwork_na:
             self.dos_df = self.dos_df[(self.dos_df.device.notnull()) & (self.dos_df.labwork.notnull())].copy()
@@ -301,6 +353,14 @@ class PARQSurveyDataset:
 
 
     def _process(self):
+        """Modifies self.parq_df by dropping any row that contains 
+        a null value. drops duplicate rows if self.drop_duplicates
+        is true
+        
+        Returns
+        -------
+        sets the result in self.parq_df
+        """        
 
         if self.drop_unanswered:
             self.parq_df = self.parq_df[
@@ -372,6 +432,19 @@ class RiskFactorSurvey:
 
 
     def _process(self):
+        """Modifies self.rf_df by dropping columns (features) that
+        are given in self.drop_features 
+
+        Raises
+        -------
+        ValueError if self.drop_features contain a non existent column
+        within self.rf_df
+        
+        Returns
+        -------
+        sets the result in self.rf_df
+        """        
+
         for feature in self.drop_features:
             if feature not in self.rf_df.columns:
                 raise ValueError(str(feature) + ' not in columns')
@@ -433,6 +506,19 @@ class CardioDietSurveyDataset:
         return self.cd_df
 
     def _process(self):
+        """Modifies self.cd_df by dropping columns (features) that
+        are given in self.drop_features 
+
+        Raises
+        -------
+        ValueError if self.drop_features contain a non existent column
+        within self.cd_df
+        
+        Returns
+        -------
+        sets the result in self.cd_df
+        """  
+
         for feature in self.drop_features:
             if feature not in self.cd_df.columns:
                 raise ValueError(str(feature) + ' not in columns')
