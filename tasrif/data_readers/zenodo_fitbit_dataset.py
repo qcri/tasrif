@@ -3,9 +3,21 @@ collected by crowd sourcing.
 """
 
 import pathlib
-from datetime import datetime
 import pandas as pd
 
+from tasrif.processing_pipeline import  (
+    ProcessingPipeline,
+    SequenceOperator,
+    ComposeOperator,
+    NoopOperator)
+from tasrif.processing_pipeline.custom import (
+    CreateFeatureOperator,
+    AggregateOperator,
+    AddDurationOperator)
+from tasrif.processing_pipeline.pandas import (
+    DropNAOperator,
+    DropFeaturesOperator,
+    DropDuplicatesOperator)
 
 class ZenodoCompositeFitbitDataset:
     """Class to work with multiple zenodo datasets by merging/concatenating the features.
@@ -40,9 +52,38 @@ class ZenodoFitbitActivityDataset:
     class Default:#pylint: disable=too-few-public-methods
         """Default parameters used by the class.
         """
-        DROP_COLUMNS = ["TrackerDistance", 'LoggedActivitiesDistance', 'VeryActiveDistance', 'ModeratelyActiveDistance', 'SedentaryActiveDistance', "LightActiveDistance"]
+        DROP_FEATURES = [
+            "TrackerDistance",
+            'LoggedActivitiesDistance',
+            'VeryActiveDistance',
+            'ModeratelyActiveDistance',
+            'SedentaryActiveDistance',
+            "LightActiveDistance",
+            "ActivityDate"]
 
-    def __init__(self, zenodo_folder, drop_columns=Default.DROP_COLUMNS, accumulate_active_minutes=True):
+        AGGREGATION_FUNCS = ['mean', 'std']
+        AGGREGATION_DEFINITION = {
+            "TotalSteps" : AGGREGATION_FUNCS,
+            "TotalDistance" : AGGREGATION_FUNCS,
+            "SedentaryMinutes" : AGGREGATION_FUNCS,
+            "Calories" : AGGREGATION_FUNCS,
+            'ActiveMinutes' : AGGREGATION_FUNCS
+            }
+
+        PIPELINE = SequenceOperator([
+            DropNAOperator(),
+            CreateFeatureOperator(
+                feature_name="ActiveMinutes",
+                feature_creator=lambda df: df['VeryActiveMinutes'] + df["FairlyActiveMinutes"] + df["LightlyActiveMinutes"]),
+            CreateFeatureOperator(
+                feature_name="Date", feature_creator=lambda df: pd.to_datetime(df['ActivityDate'])),
+            DropFeaturesOperator(drop_features=DROP_FEATURES),
+            ComposeOperator([
+                NoopOperator(),
+                AggregateOperator(groupby_feature_names="Id", aggregation_definition=AGGREGATION_DEFINITION)
+            ])])
+
+    def __init__(self, zenodo_folder, pipeline=Default.PIPELINE):
 
         subfolder_1 = 'Fitabase Data 3.12.16-4.11.16'
         subfolder_2 = 'Fitabase Data 4.12.16-5.12.16'
@@ -54,14 +95,11 @@ class ZenodoFitbitActivityDataset:
         raw_df1 = pd.read_csv(day_act1)
         raw_df2 = pd.read_csv(day_act2)
 
-        self.drop_columns = drop_columns
-        self.accumulate_active_minutes = accumulate_active_minutes
-
         self.raw_df = pd.concat([raw_df1, raw_df2], axis=0, ignore_index=False, keys=None, levels=None, names=None, verify_integrity=False, copy=True)
-        self.raw_df = self.raw_df.dropna()
-        self.zadf = self.raw_df.copy()
+
+        self.pipeline = pipeline
+
         self._process()
-        self._group()
 
     def raw_dataframe(self):
         """Gets the data frame (without any processing) for the dataset
@@ -118,33 +156,8 @@ class ZenodoFitbitActivityDataset:
         return [pd.DataFrame(y) for x, y in self.zadf.groupby('Id', as_index=False)]
 
     def _process(self):
-        if self.drop_columns:
-            self.zadf = self.zadf.drop(self.drop_columns, axis=1)
-        if self.accumulate_active_minutes:
-            self.zadf['ActiveMinutes'] = self.zadf.VeryActiveMinutes + self.zadf.FairlyActiveMinutes + self.zadf.LightlyActiveMinutes
-            self.zadf = self.zadf.drop(['VeryActiveMinutes', "FairlyActiveMinutes", "LightlyActiveMinutes"], axis=1)
-
-        self.zadf.rename(columns={'ActivityDate': 'Date'}, inplace=True)
-        self.zadf['Date'] = pd.to_datetime(self.zadf['Date'])
-
-    def _group(self):
-        stats = ['mean', 'std']
-        group_agg = {
-            "TotalSteps" : stats,
-            "TotalDistance" : stats,
-            "SedentaryMinutes" : stats,
-            "Calories" : stats,
-            'ActiveMinutes' : stats
-            }
-
-        columns = ['Id']
-        for key, value in group_agg.items():
-            for i in value:
-                columns.append(f'{key}_{i}')
-
-        self.group_df = self.zadf.copy()
-        self.group_df = self.group_df.groupby('Id', as_index=False).agg(group_agg)
-        self.group_df.columns = columns
+        zadf, group_df = (self.pipeline.process(self.raw_df))
+        self.zadf, self.group_df = zadf[0], group_df[0]
 
 class ZenodoFitbitWeightDataset:
     """Class that represents the body weight related CSV files of the fitbit dataset published on Zenodo
@@ -155,9 +168,24 @@ class ZenodoFitbitWeightDataset:
         """
         DROP_COLUMNS = ['Fat', 'WeightPounds', 'IsManualReport']
 
+        AGGREGATION_FUNCS = ['mean', 'std']
+        AGGREGATION_DEFINITION = {
+            "WeightKg" : AGGREGATION_FUNCS,
+            "BMI" : AGGREGATION_FUNCS,
+            }
 
-    def __init__(self, zenodo_folder, drop_columns=Default.DROP_COLUMNS):
+        PIPELINE = SequenceOperator([
+            DropFeaturesOperator(drop_features=DROP_COLUMNS),
+            ComposeOperator([
+                NoopOperator(),
+                AggregateOperator(groupby_feature_names="Id", aggregation_definition=AGGREGATION_DEFINITION)
+            ])
+        ])
 
+
+    def __init__(self, zenodo_folder, pipeline=Default.PIPELINE):
+
+        self.pipeline = pipeline
         subfolder_1 = 'Fitabase Data 3.12.16-4.11.16'
         subfolder_2 = 'Fitabase Data 4.12.16-5.12.16'
         full_path_1 = pathlib.Path(zenodo_folder, subfolder_1)
@@ -168,12 +196,9 @@ class ZenodoFitbitWeightDataset:
         raw_df1 = pd.read_csv(day_wt1)
         raw_df2 = pd.read_csv(day_wt2)
 
-        self.drop_columns = drop_columns
-
         self.raw_df = pd.concat([raw_df1, raw_df2], axis=0, ignore_index=False, keys=None, levels=None, names=None, verify_integrity=False, copy=True)
         self.zwdf = self.raw_df.copy()
         self._process()
-        self._group()
 
     def raw_dataframe(self):
         """Gets the data frame (without any processing) for the dataset
@@ -218,30 +243,49 @@ class ZenodoFitbitWeightDataset:
         return self.group_df
 
     def _process(self):
-        if self.drop_columns:
-            self.zwdf = self.zwdf.drop(self.drop_columns, axis=1)
+        zwdf, group_df = (self.pipeline.process(self.raw_df))
+        self.zwdf, self.group_df = zwdf[0], group_df[0]
 
-    def _group(self):
-        stats = ['mean', 'std']
-        group_agg = {
-            "WeightKg" : stats,
-            "BMI" : stats,
-            }
-
-        columns = ['Id']
-        for key, value in group_agg.items():
-            for i in value:
-                columns.append(f'{key}_{i}')
-
-        self.group_df = self.zwdf.copy()
-        self.group_df = self.group_df.groupby('Id', as_index=False).agg(group_agg)
-        self.group_df.columns = columns
 
 class ZenodoFitbitSleepDataset:
     """Class that represents the sleep related CSV files of the fitbit dataset published on Zenodo
     """
 
-    def __init__(self, zenodo_folder):
+    class Default:
+
+        DAILY_AGGREGATION_DEFINITION = {'duration': ['sum'], 'date': ['first'], 'value': ['mean']}
+
+        TOTAL_AGGREGATION_DEFINITION = {
+            'logId': ['count'],
+            'total_sleep_seconds': ['mean', 'std'],
+            'value_mean': ['mean', 'std']}
+
+        PIPELINE = SequenceOperator([
+            #DropDuplicatesOperator(subset=['Id', 'logId', 'date'], keep='first', inplace=True),
+            CreateFeatureOperator(
+                feature_name="date",
+                feature_creator=lambda df: pd.to_datetime(df['date'])),
+            AddDurationOperator(groupby_feature_names="logId", timestamp_feature_name="date"),
+            AggregateOperator(
+                groupby_feature_names=['logId', 'Id'],
+                aggregation_definition=DAILY_AGGREGATION_DEFINITION
+            ),
+            ComposeOperator([
+                NoopOperator(),
+                ComposeOperator([
+                    CreateFeatureOperator(
+                        feature_name="total_sleep_seconds",
+                        feature_creator=lambda df: df.duration_sum.total_seconds()
+                    ),
+                    AggregateOperator(
+                        groupby_feature_names="Id",
+                        aggregation_definition=TOTAL_AGGREGATION_DEFINITION
+                    )]
+                )
+            ])
+        ])
+
+    def __init__(self, zenodo_folder, pipeline=Default.PIPELINE):
 
         subfolder_1 = 'Fitabase Data 3.12.16-4.11.16'
         subfolder_2 = 'Fitabase Data 4.12.16-5.12.16'
@@ -255,8 +299,8 @@ class ZenodoFitbitSleepDataset:
 
         self.raw_df = pd.concat([raw_df1, raw_df2], axis=0, ignore_index=False, keys=None, levels=None, names=None, verify_integrity=False, copy=True)
         self.zsdf = self.raw_df.copy()
+        self.pipeline = pipeline
         self._process()
-        self._group()
 
     def raw_dataframe(self):
         """Gets the data frame (without any processing) for the dataset
@@ -299,26 +343,5 @@ class ZenodoFitbitSleepDataset:
         return self.group_df
 
     def _process(self):
-        self.zsdf.drop_duplicates(subset=['Id', 'logId', 'date'], keep='first', inplace=True)
-        self.zsdf[' edate'] = pd.to_datetime(self.zsdf['date'])
-        self.zsdf['duration'] = self.zsdf['date'].sub(self.zsdf['date'].shift())
-        now = datetime.now()
-        zero_duration = now - now
-        # Change the duration of the first entry of every sleep log  group to zero
-        self.zsdf.loc[self.zsdf.groupby('logId')['duration'].head(1).index, 'duration'] = zero_duration
-        self.zsdf = self.zsdf.groupby(['logId', 'Id'], as_index=False).agg({'duration': ['sum'], 'date': ['first'], 'value': ['mean']})
-        self.zsdf.columns = ['logId', 'Id', 'total_sleep', 'date', 'sleep_level']
-        self.zsdf['date'] = self.zsdf['date'].dt.date
-
-
-    def _group(self):
-        self.group_df = self.zsdf.copy()
-        self.group_df['total_sleep_secs'] = self.group_df.total_sleep.dt.total_seconds()
-        self.group_df = self.group_df.groupby('Id', as_index=False).agg({
-            'logId': ['count'],
-            'total_sleep_secs': ['mean', 'std'],
-            'sleep_level': ['mean', 'std']})
-        self.group_df.columns = [
-            'Id', 'sleep_episodes_count',
-            'total_sleep_mean', 'total_sleep_std',
-            'sleep_level_mean', 'sleep_level_std']
+        zsdf, group_df = self.pipeline.process(self.raw_df)
+        self.zsdf, self.group_df = zsdf[0], group_df[1][0]
