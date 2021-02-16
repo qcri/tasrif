@@ -2,11 +2,13 @@
 For details please read https://www.nature.com/articles/s41597-020-00753-2
 """
 import pathlib
+import numpy as np
 import pandas as pd
 
 from tasrif.processing_pipeline import ProcessingPipeline
-from tasrif.processing_pipeline.pandas import DropNAOperator
-from tasrif.processing_pipeline.pandas import DropDuplicatesOperator
+from tasrif.processing_pipeline.pandas import DropNAOperator, DropDuplicatesOperator, ReplaceOperator
+from tasrif.processing_pipeline.pandas import ConvertToDatetimeOperator, SortOperator
+from tasrif.processing_pipeline.custom import CreateFeatureOperator, AggregateOperator
 
 
 class SleepHealthDataset:  # pylint: disable=too-few-public-methods
@@ -31,8 +33,8 @@ class AboutMeDataset:
 
     def __init__(self,
                  shc_folder: str = '../data/sleephealth/',
-                 amd_filename: str = 'About Me.csv',
-                 processing_pipeline: ProcessingPipeline = ProcessingPipeline(
+                 dataset_filename: str = 'About Me.csv',
+                 pipeline: ProcessingPipeline = ProcessingPipeline(
                      [DropNAOperator(subset=["alcohol", "basic_expenses", "caffeine", "daily_activities",
                                              "daily_smoking", "education", "flexible_work_hours", "gender",
                                              "good_life", "hispanic", "income", "race", "work_schedule", "weight",
@@ -40,7 +42,7 @@ class AboutMeDataset:
                       DropDuplicatesOperator(subset='participantId',
                                              keep='last')
                       ]
-                     )
+                 )
                  ):
         """
         AboutMe Dataset details can be found online at ``https://www.synapse.org/#!Synapse:syn18492837/wiki/592581``.
@@ -74,10 +76,10 @@ class AboutMeDataset:
 
         """
 
-        full_path = pathlib.Path(shc_folder, amd_filename)
+        full_path = pathlib.Path(shc_folder, dataset_filename)
         self.raw_df = pd.read_csv(full_path)
         self.processed_df = self.raw_df.copy()
-        self.processing_pipeline = processing_pipeline
+        self.pipeline = pipeline
         self._process()
 
     def participant_count(self):
@@ -88,8 +90,7 @@ class AboutMeDataset:
         int
             Number of participants in the dataset
         """
-        number_participants = self.raw_df['participantId'].nunique()
-        return number_participants
+        return self.raw_df['participantId'].nunique()
 
     def raw_dataframe(self):
         """Gets the data frame (without any processing) for the dataset
@@ -99,7 +100,6 @@ class AboutMeDataset:
         pd.Dataframe
             Pandas dataframe object representing the data
         """
-
         return self.raw_df
 
     def processed_dataframe(self):
@@ -110,9 +110,151 @@ class AboutMeDataset:
         pd.Dataframe
             Pandas dataframe object representing the data
         """
-
         return self.processed_df
 
     def _process(self):
-        if self.processing_pipeline:
-            self.processed_df = self.processing_pipeline.process(self.processed_df)[0]
+        if self.pipeline:
+            self.processed_df = self.pipeline.process(self.processed_df)[0]
+
+
+class SleepQualityCheckerDataset:
+    """Provides access to the SleepQualityChecker dataset
+
+    Returns
+    -------
+    Instance of SleepQualityCheckerDataset
+    """
+    def __init__(
+        self,
+        shc_folder: str = '../data/sleephealth/',
+        dataset_filename: str = 'Sleep Quality Checker.csv',
+        pipeline: ProcessingPipeline = ProcessingPipeline([
+            SortOperator(by=["participantId", "timestamp"]),
+            AggregateOperator(groupby_feature_names="participantId",
+                              aggregation_definition={
+                                  "sq_score": ["count", "mean", "std", "min", "max", "first", "last"],
+                                  "timestamp": ["first", "last"]
+                              }),
+            ConvertToDatetimeOperator(feature_names=["timestamp_last", "timestamp_first"], format="%Y-%m-%dT%H:%M:%S%z",
+                                      utc=True),
+            CreateFeatureOperator(feature_name="delta_first_last_timestamp",
+                                  feature_creator=lambda row: row['timestamp_last'] - row['timestamp_first'])
+        ])
+    ):
+        """
+        Sleep Quality Checker Dataset details can be found online at ``https://www.synapse.org/#!Synapse:syn18492837/wiki/593719``.
+
+        Some important stats:
+            - This dataset contains unique data for 4,566 participants.
+            - The default pipeline groups multiple entries for different `participantId` into one row per participant
+              and multiple column with statistics for the sleep quality score (`sq_score`) of each participant.
+
+        """
+
+        full_path = pathlib.Path(shc_folder, dataset_filename)
+        self.raw_df = pd.read_csv(full_path)
+
+        self.processed_df = self.raw_df.copy()
+        self.pipeline = pipeline
+        self._process()
+
+    def participant_count(self):
+        """Get the number of participants
+
+        Returns
+        -------
+        int
+            Number of participants in the dataset
+        """
+        return self.raw_df['participantId'].nunique()
+
+    def raw_dataframe(self):
+        """Gets the data frame (without any processing) for the dataset
+
+        Returns
+        -------
+        pd.Dataframe
+            Pandas dataframe object representing the data
+        """
+        return self.raw_df
+
+    def processed_dataframe(self):
+        """Gets the processed data frame (after applying the data pipeline) for the dataset
+
+        Returns
+        -------
+        pd.Dataframe
+            Pandas dataframe object representing the data
+        """
+        return self.processed_df
+
+    def _process(self):
+        if self.pipeline:
+            self.processed_df = self.pipeline.process(self.processed_df)[0]
+
+
+class OnboardingDemographicsDataset:
+    """Provides access to the OnboardingDemographics dataset
+
+    Returns
+    -------
+    Instance of OnboardingDemographicsDataset
+    """
+    def __init__(
+        self,
+        shc_folder: str = '../data/sleephealth/',
+        dataset_filename: str = 'Onboarding Demographics.csv',
+        pipeline: ProcessingPipeline = ProcessingPipeline([ReplaceOperator(to_replace="CENSORED", value=np.nan),
+                                                           DropNAOperator()])
+    ):
+        """
+        Sleep Quality Checker Dataset details can be found online at ``https://www.synapse.org/#!Synapse:syn18492837/wiki/590798``.
+        According to the documentation, Height values <60in or >78in and weight values <80 or >350 have been censored to protect participants with potentially identifying features.
+        The default pipeline works like that:
+            1. replaces the "CENSORED" values presented in this dataset by NAs.
+            2. Drops NAs:
+                2.(a) gender: 89 (1.09%)
+                2.(b) age_years: 54 (0.66%)
+                2.(c) weight_pounds: 431 (5.3%)
+                2.(d) height_inches: 337 (4.1%)
+        The final dataset size after removing all NAs is 7558 (retaining 93% of the original dataset).
+        """
+        full_path = pathlib.Path(shc_folder, dataset_filename)
+        self.raw_df = pd.read_csv(full_path)
+        self.processed_df = self.raw_df.copy()
+        self.pipeline = pipeline
+        self._process()
+
+    def participant_count(self):
+        """Get the number of participants
+
+        Returns
+        -------
+        int
+            Number of participants in the dataset
+        """
+        return self.raw_df['participantId'].nunique()
+
+    def raw_dataframe(self):
+        """Gets the data frame (without any processing) for the dataset
+
+        Returns
+        -------
+        pd.Dataframe
+            Pandas dataframe object representing the data
+        """
+        return self.raw_df
+
+    def processed_dataframe(self):
+        """Gets the processed data frame (after applying the data pipeline) for the dataset
+
+        Returns
+        -------
+        pd.Dataframe
+            Pandas dataframe object representing the data
+        """
+        return self.processed_df
+
+    def _process(self):
+        if self.pipeline:
+            self.processed_df = self.pipeline.process(self.processed_df)[0]
