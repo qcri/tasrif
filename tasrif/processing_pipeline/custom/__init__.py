@@ -5,3 +5,4 @@ from tasrif.processing_pipeline.custom.create_feature_operator import CreateFeat
 from tasrif.processing_pipeline.custom.aggregate_operator import AggregateOperator
 from tasrif.processing_pipeline.custom.add_duration_operator import AddDurationOperator
 from tasrif.processing_pipeline.custom.one_hot_encoder import OneHotEncoderOperator
+from tasrif.processing_pipeline.custom.set_features_value_operator import SetFeaturesValueOperator
