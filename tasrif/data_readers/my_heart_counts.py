@@ -544,3 +544,97 @@ class ActivitySleepSurveyDataset:
         sets the result in self.cd_df
         """  
         self.processed_df = self.processing_pipeline.process(self.processed_df)[0]
+
+class HeartAgeSurveyDataset:
+    """Class to work with the Cardio diet survey Table in the MyHeartCounts dataset.
+    
+    Some important stats:
+        - This dataset contains unique data for  10772 participants.
+            - ` recordId ` has 0 NAs ( 10772 / 10772 ) = 0.00 %
+            - ` healthCode ` has 0 NAs ( 10772 / 10772 ) = 0.00 %
+            - ` createdOn ` has 0 NAs ( 10772 / 10772 ) = 0.00 %
+            - ` appVersion ` has 0 NAs ( 10772 / 10772 ) = 0.00 %
+            - ` phoneInfo ` has 0 NAs ( 10772 / 10772 ) = 0.00 %
+            - ` bloodPressureInstruction ` has 0 NAs ( 10772 / 10772 ) = 0.00 %
+            - ` bloodPressureInstruction_unit ` has 0 NAs ( 10772 / 10772 ) = 0.00 %
+            - ` heartAgeDataBloodGlucose ` has 1 NAs ( 10771 / 10772 ) = 0.01 %
+            - ` heartAgeDataBloodGlucose_unit ` has 0 NAs ( 10772 / 10772 ) = 0.00 %
+            - ` heartAgeDataDiabetes ` has 2 NAs ( 10770 / 10772 ) = 0.02 %
+            - ` heartAgeDataGender ` has 66 NAs ( 10706 / 10772 ) = 0.61 %
+            - ` heartAgeDataEthnicity ` has 1 NAs ( 10771 / 10772 ) = 0.01 %
+            - ` heartAgeDataHdl ` has 0 NAs ( 10772 / 10772 ) = 0.00 %
+            - ` heartAgeDataHdl_unit ` has 0 NAs ( 10772 / 10772 ) = 0.00 %
+            - ` heartAgeDataHypertension ` has 2 NAs ( 10770 / 10772 ) = 0.02 %
+            - ` heartAgeDataLdl ` has 1 NAs ( 10771 / 10772 ) = 0.01 %
+            - ` heartAgeDataLdl_unit ` has 0 NAs ( 10772 / 10772 ) = 0.00 %
+            - ` smokingHistory ` has 39 NAs ( 10733 / 10772 ) = 0.36 %
+            - ` heartAgeDataSystolicBloodPressure ` has 1 NAs ( 10771 / 10772 ) = 0.01 %
+            - ` heartAgeDataSystolicBloodPressure_unit ` has 0 NAs ( 10772 / 10772 ) = 0.00 %
+            - ` heartAgeDataTotalCholesterol ` has 0 NAs ( 10772 / 10772 ) = 0.00 %
+            - ` heartAgeDataTotalCholesterol_unit ` has 0 NAs ( 10772 / 10772 ) = 0.00 %
+            - ` heartAgeDataAge ` has 91 NAs ( 10681 / 10772 ) = 0.84 %
+
+            The default behavior of this module is to
+             (1) remove NAs for participants in all columns.
+             (2) Drop duplicates based on participant id, retaining the last occurrence of a participant id.
+             The default final dataset size is 3019.
+        """
+
+    def __init__(self,\
+        mhc_folder='~/Documents/Data/HeartAgeSurvey',\
+        has_filename='Heart Age Survey.csv',\
+        processing_pipeline: ProcessingPipeline = ProcessingPipeline([DropNAOperator(), DropDuplicatesOperator(subset=['healthCode'], keep='last')])):
+
+        full_path = pathlib.Path(mhc_folder, has_filename)
+        self.processed_df = pd.read_csv(full_path)
+        self.raw_df = self.processed_df.copy()
+        self.processing_pipeline = processing_pipeline
+        self._process()
+
+    def participant_count(self):
+        """Get the number of participants
+
+        Returns
+        -------
+        int
+            Number of participants in the dataset
+        """
+        number_participants = self.processed_df['healthCode'].nunique()
+        return number_participants
+
+    def raw_dataframe(self):
+        """Gets the data frame (without any processing) for the dataset
+
+        Returns
+        -------
+        pd.Dataframe
+            Pandas dataframe object representing the data
+        """
+
+        return self.raw_df
+
+    def processed_dataframe(self):
+        """Gets the processed data frame (after applying the data pipeline) for the dataset
+
+        Returns
+        -------
+        pd.Dataframe
+            Pandas dataframe object representing the data
+        """
+
+        return self.processed_df
+
+    def _process(self):
+        """Modifies self.cd_df by dropping columns (features) that
+        are given in self.drop_features 
+
+        Raises
+        -------
+        ValueError if self.drop_features contain a non existent column
+        within self.cd_df
+        
+        Returns
+        -------
+        sets the result in self.cd_df
+        """  
+        self.processed_df = self.processing_pipeline.process(self.processed_df)[0]
