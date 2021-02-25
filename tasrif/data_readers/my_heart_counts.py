@@ -447,4 +447,100 @@ class CardioDietSurveyDataset:
         return self.cd_df
 
     def _process(self):
+        """Modifies self.cd_df by dropping columns (features) that
+        are given in self.drop_features 
+
+        Raises
+        -------
+        ValueError if self.drop_features contain a non existent column
+        within self.cd_df
+        
+        Returns
+        -------
+        sets the result in self.cd_df
+        """  
+
         self.cd_df = self.processing_pipeline.process(self.cd_df)[0]
+
+class ActivitySleepSurveyDataset:
+    """Class to work with the Cardio diet survey Table in the MyHeartCounts dataset.
+    
+        Some important stats:
+            - This dataset contains unique data for  24966 participants.
+             - ` recordId ` has 0 NAs ( 24966 / 24966 ) = 0.00 %
+             - ` appVersion ` has 0 NAs ( 24966 / 24966 ) = 0.00 %
+             - ` phoneInfo ` has 0 NAs ( 24966 / 24966 ) = 0.00 %
+             - ` healthCode ` has 0 NAs ( 24966 / 24966 ) = 0.00 %
+             - ` createdOn ` has 0 NAs ( 24966 / 24966 ) = 0.00 %
+             - ` atwork ` has 4029 NAs ( 20937 / 24966 ) = 16.14 %
+             - ` moderate_act ` has 1077 NAs ( 23889 / 24966 ) = 4.31 %
+             - ` phys_activity ` has 105 NAs ( 24861 / 24966 ) = 0.42 %
+             - ` sleep_diagnosis1 ` has 73 NAs ( 24893 / 24966 ) = 0.29 %
+             - ` sleep_time ` has 118 NAs ( 24848 / 24966 ) = 0.47 %
+             - ` sleep_time1 ` has 118 NAs ( 24848 / 24966 ) = 0.47 %
+             - ` vigorous_act ` has 1065 NAs ( 23901 / 24966 ) = 4.27 %
+     - ` work ` has 121 NAs ( 24845 / 24966 ) = 0.48 %
+
+            The default behavior of this module is to
+             (1) remove NAs for participants in all columns.
+             (2) Drop duplicates based on participant id, retaining the last occurrence of a participant id.
+        """
+
+    def __init__(self,\
+        mhc_folder='~/Documents/Data/HeartAgeSurvey',\
+        has_filename='Activity Sleep Survey.csv',\
+        processing_pipeline: ProcessingPipeline = ProcessingPipeline([DropNAOperator(), DropDuplicatesOperator(subset=['healthCode'], keep='last')])):
+
+        full_path = pathlib.Path(mhc_folder, has_filename)
+        self.processed_df = pd.read_csv(full_path)
+        self.raw_df = self.processed_df.copy()
+        self.processing_pipeline = processing_pipeline
+        self._process()
+
+    def participant_count(self):
+        """Get the number of participants
+
+        Returns
+        -------
+        int
+            Number of participants in the dataset
+        """
+        number_participants = self.processed_df['healthCode'].nunique()
+        return number_participants
+
+    def raw_dataframe(self):
+        """Gets the data frame (without any processing) for the dataset
+
+        Returns
+        -------
+        pd.Dataframe
+            Pandas dataframe object representing the data
+        """
+
+        return self.raw_df
+
+    def processed_dataframe(self):
+        """Gets the processed data frame (after applying the data pipeline) for the dataset
+
+        Returns
+        -------
+        pd.Dataframe
+            Pandas dataframe object representing the data
+        """
+
+        return self.processed_df
+
+    def _process(self):
+        """Modifies self.cd_df by dropping columns (features) that
+        are given in self.drop_features 
+
+        Raises
+        -------
+        ValueError if self.drop_features contain a non existent column
+        within self.cd_df
+        
+        Returns
+        -------
+        sets the result in self.cd_df
+        """  
+        self.processed_df = self.processing_pipeline.process(self.processed_df)[0]
