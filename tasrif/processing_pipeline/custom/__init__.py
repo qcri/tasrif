@@ -6,3 +6,5 @@ from tasrif.processing_pipeline.custom.aggregate_operator import AggregateOperat
 from tasrif.processing_pipeline.custom.add_duration_operator import AddDurationOperator
 from tasrif.processing_pipeline.custom.one_hot_encoder import OneHotEncoderOperator
 from tasrif.processing_pipeline.custom.set_features_value_operator import SetFeaturesValueOperator
+from tasrif.processing_pipeline.custom.participation_overview_operator import ParticipationOverviewOperator
+from tasrif.processing_pipeline.custom.statistics_operator import StatisticsOperator

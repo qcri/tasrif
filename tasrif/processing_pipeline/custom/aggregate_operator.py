@@ -54,8 +54,11 @@ class AggregateOperator(ProcessingOperator):
 
         columns = self.groupby_feature_names.copy() if isinstance(self.groupby_feature_names, list) else [self.groupby_feature_names]
         for key, value in self.aggregation_definition.items():
-            for i in value:
-                columns.append(f'{key}_{i}')
+            if isinstance(value, list):
+                for i in value:
+                    columns.append(f'{key}_{i}')
+            else:
+                columns.append(f'{key}_{value}')
 
         processed = []
         for data_frame in data_frames:
