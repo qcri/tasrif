@@ -6,6 +6,9 @@
         PARQSurveyDataset
         RiskFactorSurvey
         CardioDietSurveyDataset
+        ActivitySleepSurveyDataset
+        HeartAgeSurveyDataset
+        QualityOfLifeSurveyDataset
 """
 import pathlib
 import pandas as pd
@@ -583,6 +586,94 @@ class HeartAgeSurveyDataset:
     def __init__(self,\
         mhc_folder='~/Documents/Data/HeartAgeSurvey',\
         has_filename='Heart Age Survey.csv',\
+        processing_pipeline: ProcessingPipeline = ProcessingPipeline([DropNAOperator(), DropDuplicatesOperator(subset=['healthCode'], keep='last')])):
+
+        full_path = pathlib.Path(mhc_folder, has_filename)
+        self.processed_df = pd.read_csv(full_path)
+        self.raw_df = self.processed_df.copy()
+        self.processing_pipeline = processing_pipeline
+        self._process()
+
+    def participant_count(self):
+        """Get the number of participants
+
+        Returns
+        -------
+        int
+            Number of participants in the dataset
+        """
+        number_participants = self.processed_df['healthCode'].nunique()
+        return number_participants
+
+    def raw_dataframe(self):
+        """Gets the data frame (without any processing) for the dataset
+
+        Returns
+        -------
+        pd.Dataframe
+            Pandas dataframe object representing the data
+        """
+
+        return self.raw_df
+
+    def processed_dataframe(self):
+        """Gets the processed data frame (after applying the data pipeline) for the dataset
+
+        Returns
+        -------
+        pd.Dataframe
+            Pandas dataframe object representing the data
+        """
+
+        return self.processed_df
+
+    def _process(self):
+        """Modifies self.cd_df by dropping columns (features) that
+        are given in self.drop_features 
+
+        Raises
+        -------
+        ValueError if self.drop_features contain a non existent column
+        within self.cd_df
+        
+        Returns
+        -------
+        sets the result in self.cd_df
+        """  
+        self.processed_df = self.processing_pipeline.process(self.processed_df)[0]
+
+
+class QualityOfLifeSurveyDataset:
+    """Class to work with the Quality of Life survey Table in the MyHeartCounts dataset.
+    
+        Some important stats:
+        Shape: (22614, 15)
+            - This dataset contains unique data for  22614 participants.
+             - ` recordId ` has 0 NAs ( 22614 / 22614 ) = 0.00 %
+             - ` healthCode ` has 0 NAs ( 22614 / 22614 ) = 0.00 %
+             - ` createdOn ` has 0 NAs ( 22614 / 22614 ) = 0.00 %
+             - ` appVersion ` has 0 NAs ( 22614 / 22614 ) = 0.00 %
+             - ` phoneInfo ` has 0 NAs ( 22614 / 22614 ) = 0.00 %
+             - ` feel_worthwhile1 ` has 63 NAs ( 22551 / 22614 ) = 0.28 %
+             - ` feel_worthwhile2 ` has 78 NAs ( 22536 / 22614 ) = 0.34 %
+             - ` feel_worthwhile3 ` has 89 NAs ( 22525 / 22614 ) = 0.39 %
+             - ` feel_worthwhile4 ` has 198 NAs ( 22416 / 22614 ) = 0.88 %
+             - ` riskfactors1 ` has 35 NAs ( 22579 / 22614 ) = 0.15 %
+             - ` riskfactors2 ` has 55 NAs ( 22559 / 22614 ) = 0.24 %
+             - ` riskfactors3 ` has 72 NAs ( 22542 / 22614 ) = 0.32 %
+             - ` riskfactors4 ` has 85 NAs ( 22529 / 22614 ) = 0.38 %
+             - ` satisfiedwith_life ` has 58 NAs ( 22556 / 22614 ) = 0.26 %
+             - ` zip3 ` has 538 NAs ( 22076 / 22614 ) = 2.38 %
+
+            The default behavior of this module is to
+             (1) remove NAs for participants in all columns.
+             (2) Drop duplicates based on participant id, retaining the last occurrence of a participant id.
+             The default final dataset size is 13673.
+        """
+
+    def __init__(self,\
+        mhc_folder='~/Documents/Data/',\
+        has_filename='Qaulity of Life Survey.csv',\
         processing_pipeline: ProcessingPipeline = ProcessingPipeline([DropNAOperator(), DropDuplicatesOperator(subset=['healthCode'], keep='last')])):
 
         full_path = pathlib.Path(mhc_folder, has_filename)
