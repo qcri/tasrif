@@ -8,3 +8,6 @@ from tasrif.processing_pipeline.pandas.merge_operator import MergeOperator
 from tasrif.processing_pipeline.pandas.sort_operator import SortOperator
 from tasrif.processing_pipeline.pandas.replace_operator import ReplaceOperator
 from tasrif.processing_pipeline.pandas.convert_to_datetime import ConvertToDatetimeOperator
+from tasrif.processing_pipeline.pandas.json_normalize_operator import JsonNormalizeOperator
+from tasrif.processing_pipeline.pandas.set_index_operator import SetIndexOperator
+from tasrif.processing_pipeline.pandas.astype_operator import AsTypeOperator
