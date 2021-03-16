@@ -352,6 +352,50 @@ class SihaDistanceDataset(SihaDataset):
 
         super().__init__(folder, processing_pipeline)
 
+class SihaCgmDataset(SihaDataset):
+    """Class to work with the Physical Activity/moderately active json files from a fitbit export dump.
+
+    """
+
+    class Default:#pylint: disable=too-few-public-methods
+        """Default parameters used by the class.
+        The default pipeline consists of the following high levelsteps:
+        - json_normalize
+        - set index to date time field
+        """
+
+        PIPELINE = ProcessingPipeline([
+            JqOperator('map({patientID} + .data.cgm[])'),
+            JsonNormalizeOperator(),
+            ConvertToDatetimeOperator(feature_names=['time'], infer_datetime_format=True),
+            SetIndexOperator('time'),
+            AsTypeOperator({'value': 'float32'})])
+
+    def __init__(self, folder, processing_pipeline=Default.PIPELINE):
+
+        super().__init__(folder, processing_pipeline)
+
+class SihaEmrDataset(SihaDataset):
+    """Class to work with the Physical Activity/moderately active json files from a fitbit export dump.
+
+    """
+
+    class Default:#pylint: disable=too-few-public-methods
+        """Default parameters used by the class.
+        The default pipeline consists of the following high levelsteps:
+        - json_normalize
+        - set index to date time field
+        """
+
+        PIPELINE = ProcessingPipeline([
+            JqOperator('map({patientID} + .data.emr[])'),
+            JsonNormalizeOperator(),
+            ConvertToDatetimeOperator(feature_names=['time'], infer_datetime_format=True),
+            SetIndexOperator('time')])
+
+    def __init__(self, folder, processing_pipeline=Default.PIPELINE):
+
+        super().__init__(folder, processing_pipeline)
 class SihaTimeInHeartRateZonesDataset(SihaDataset):
     """Class to work with the Physical Activity/time in HR zones json files from a fitbit export dump.
 
