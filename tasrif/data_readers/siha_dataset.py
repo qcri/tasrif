@@ -61,15 +61,15 @@ class SihaDataset:
 
 
 class SihaSleepDataset(SihaDataset):
-    """Class to work with the Sleep json files from a fitbit export dump.
+    """Class to work with the sleep data (aggregated on a day basis) from a SIHA dump.
 
     """
     class Default: #pylint: disable=too-few-public-methods
         """Default parameters used by the class.
-        The default pipeline consists of the following high levelsteps:
+        The default pipeline consists of the following high level steps:
+        - JQ query to select Sleep data from the dump
         - json_normalize
         - set index to date time field
-        - resample (upsample) to 5 min intervals
         """
 
         PIPELINE = ProcessingPipeline([
@@ -118,16 +118,16 @@ class SihaSleepDataset(SihaDataset):
 
 
 class SihaCaloriesIntradayDataset(SihaDataset):
-    """Class to work with the Physical Activity/calories json files from a fitbit export dump.
+    """Class to work with the Physical Activity/calories from a SIHA dump
 
     """
 
     class Default: #pylint: disable=too-few-public-methods
         """Default parameters used by the class.
-        The default pipeline consists of the following high levelsteps:
+        The default pipeline consists of the following high level steps:
+        - JQ query to select the intraday calories
         - json_normalize
         - set index to date time field
-        - resample (upsample) to 5 min intervals
         """
 
         PIPELINE = ProcessingPipeline([
@@ -142,16 +142,16 @@ class SihaCaloriesIntradayDataset(SihaDataset):
         super().__init__(folder, processing_pipeline)
 
 class SihaDistanceIntradayDataset(SihaDataset):
-    """Class to work with the Physical Activity/distance json files from a fitbit export dump.
+    """Class to work with the Physical Activity/distance from a SIHA dump
 
     """
 
     class Default: #pylint: disable=too-few-public-methods
         """Default parameters used by the class.
-        The default pipeline consists of the following high levelsteps:
+        The default pipeline consists of the following high level steps:
+        - JQ query to select the intraday distance
         - json_normalize
         - set index to date time field
-        - resample (upsample) to 5 min intervals
         """
 
         PIPELINE = ProcessingPipeline([
@@ -166,16 +166,16 @@ class SihaDistanceIntradayDataset(SihaDataset):
         super().__init__(folder, processing_pipeline)
 
 class SihaHeartRateIntradayDataset(SihaDataset):
-    """Class to work with the Physical Activity/heart rate json files from a fitbit export dump.
+    """Class to work with the Physical Activity/heart rate from a SIHA dump
 
     """
 
     class Default: #pylint: disable=too-few-public-methods
         """Default parameters used by the class.
-        The default pipeline consists of the following high levelsteps:
+        The default pipeline consists of the following high level steps:
+        - JQ query to select the intraday heartrate
         - json_normalize
         - set index to date time field
-        - resample (upsample) to 30s intervals
         """
         PIPELINE = ProcessingPipeline([
             JqOperator('map({patientID} + .data.activities_heart_intraday[].data."activities-heart-intraday"[0].dataset[])'),
@@ -190,13 +190,14 @@ class SihaHeartRateIntradayDataset(SihaDataset):
 
 
 class SihaVeryActiveMinutesDataset(SihaDataset):
-    """Class to work with the Physical Activity/very active minutes json files from a fitbit export dump.
+    """Class to work with the Physical Activity/very active minutes from a SIHA dump
 
     """
 
     class Default: #pylint: disable=too-few-public-methods
         """Default parameters used by the class.
-        The default pipeline consists of the following high levelsteps:
+        The default pipeline consists of the following high level steps:
+        - JQ query to select the very active minutes
         - json_normalize
         - set index to date time field
         """
@@ -213,16 +214,16 @@ class SihaVeryActiveMinutesDataset(SihaDataset):
         super().__init__(folder, processing_pipeline)
 
 class SihaLightlyActiveMinutesDataset(SihaDataset):
-    """Class to work with the Physical Activity/lightly active minutes json files from a fitbit export dump.
+    """Class to work with the Physical Activity/lightly active minutes from a SIHA dump
 
     """
 
     class Default: #pylint: disable=too-few-public-methods
         """Default parameters used by the class.
-        The default pipeline consists of the following high levelsteps:
+        The default pipeline consists of the following high level steps:
+        - JQ query to select the lightly active minutes
         - json_normalize
         - set index to date time field
-        - resample (upsample) to 5 min intervals
         """
 
         PIPELINE = ProcessingPipeline([
@@ -237,13 +238,14 @@ class SihaLightlyActiveMinutesDataset(SihaDataset):
         super().__init__(folder, processing_pipeline)
 
 class SihaSedentaryMinutesDataset(SihaDataset):
-    """Class to work with the Physical Activity/sedentary minutes json files from a fitbit export dump.
+    """Class to work with the Physical Activity/sedentary minutes from a SIHA dump
 
     """
 
     class Default: #pylint: disable=too-few-public-methods
         """Default parameters used by the class.
-        The default pipeline consists of the following high levelsteps:
+        The default pipeline consists of the following high level steps:
+        - JQ query to select the sedentary minutes
         - json_normalize
         - set index to date time field
         """
@@ -260,13 +262,14 @@ class SihaSedentaryMinutesDataset(SihaDataset):
         super().__init__(folder, processing_pipeline)
 
 class SihaModeratelyActiveMinutesDataset(SihaDataset):
-    """Class to work with the Physical Activity/moderately active json files from a fitbit export dump.
+    """Class to work with the Physical Activity/moderately active from a SIHA dump
 
     """
 
     class Default:#pylint: disable=too-few-public-methods
         """Default parameters used by the class.
-        The default pipeline consists of the following high levelsteps:
+        The default pipeline consists of the following high level steps:
+        - JQ query to select the moderately active (aka fairly active) minutes
         - json_normalize
         - set index to date time field
         """
@@ -283,13 +286,14 @@ class SihaModeratelyActiveMinutesDataset(SihaDataset):
         super().__init__(folder, processing_pipeline)
 
 class SihaStepsDataset(SihaDataset):
-    """Class to work with the Physical Activity/moderately active json files from a fitbit export dump.
+    """Class to work with the Physical Activity/steps (aggregated daily counts) from a SIHA dump
 
     """
 
     class Default:#pylint: disable=too-few-public-methods
         """Default parameters used by the class.
-        The default pipeline consists of the following high levelsteps:
+        The default pipeline consists of the following high level steps:
+        - JQ query to select the tracker steps
         - json_normalize
         - set index to date time field
         """
@@ -307,13 +311,14 @@ class SihaStepsDataset(SihaDataset):
 
 
 class SihaCaloriesDataset(SihaDataset):
-    """Class to work with the Physical Activity/moderately active json files from a fitbit export dump.
+    """Class to work with the Physical Activity/caloreis (aggregated daily count) from a SIHA dump
 
     """
 
     class Default:#pylint: disable=too-few-public-methods
         """Default parameters used by the class.
-        The default pipeline consists of the following high levelsteps:
+        The default pipeline consists of the following high level steps:
+        - JQ query to select the tracker calories
         - json_normalize
         - set index to date time field
         """
@@ -330,13 +335,14 @@ class SihaCaloriesDataset(SihaDataset):
         super().__init__(folder, processing_pipeline)
 
 class SihaDistanceDataset(SihaDataset):
-    """Class to work with the Physical Activity/moderately active json files from a fitbit export dump.
+    """Class to work with the Physical Activity/distance (aggregated daily count) from a SIHA dump
 
     """
 
     class Default:#pylint: disable=too-few-public-methods
         """Default parameters used by the class.
-        The default pipeline consists of the following high levelsteps:
+        The default pipeline consists of the following high level steps:
+        - JQ query to select the distance
         - json_normalize
         - set index to date time field
         """
@@ -353,13 +359,14 @@ class SihaDistanceDataset(SihaDataset):
         super().__init__(folder, processing_pipeline)
 
 class SihaCgmDataset(SihaDataset):
-    """Class to work with the Physical Activity/moderately active json files from a fitbit export dump.
+    """Class to work with the glucose levels measured by a CGM from a SIHA dump
 
     """
 
     class Default:#pylint: disable=too-few-public-methods
         """Default parameters used by the class.
-        The default pipeline consists of the following high levelsteps:
+        The default pipeline consists of the following high level steps:
+        - JQ query to select the CGM data
         - json_normalize
         - set index to date time field
         """
@@ -376,13 +383,14 @@ class SihaCgmDataset(SihaDataset):
         super().__init__(folder, processing_pipeline)
 
 class SihaEmrDataset(SihaDataset):
-    """Class to work with the Physical Activity/moderately active json files from a fitbit export dump.
+    """Class to work with the EMR (electronic medical records data) from a SIHA dump
 
     """
 
     class Default:#pylint: disable=too-few-public-methods
         """Default parameters used by the class.
-        The default pipeline consists of the following high levelsteps:
+        The default pipeline consists of the following high level steps:
+        - JQ query to select the EMR data
         - json_normalize
         - set index to date time field
         """
@@ -397,13 +405,14 @@ class SihaEmrDataset(SihaDataset):
 
         super().__init__(folder, processing_pipeline)
 class SihaTimeInHeartRateZonesDataset(SihaDataset):
-    """Class to work with the Physical Activity/time in HR zones json files from a fitbit export dump.
+    """Class to work with the time in different HR zones (aggregated daily counts) from a SIHA dump
 
     """
 
     class Default: #pylint: disable=too-few-public-methods
         """Default parameters used by the class.
-        The default pipeline consists of the following high levelsteps:
+        The default pipeline consists of the following high level steps:
+        - JQ query to select HRzones data
         - json_normalize
         - set index to date time field
         """
@@ -422,16 +431,16 @@ class SihaTimeInHeartRateZonesDataset(SihaDataset):
 
 
 class SihaStepsIntradayDataset(SihaDataset):
-    """Class to work with the Physical Activity/steps json files from a fitbit export dump.
+    """Class to work with the Physical Activity/steps (15 min samples) from a SIHA dump
 
     """
 
     class Default: #pylint: disable=too-few-public-methods
         """Default parameters used by the class.
-        The default pipeline consists of the following high levelsteps:
+        The default pipeline consists of the following high level steps:
+        - JQ query to select intraday steps
         - json_normalize
         - set index to date time field
-        - resample (upsample) to 5 min intervals
         """
 
         PIPELINE = ProcessingPipeline([
