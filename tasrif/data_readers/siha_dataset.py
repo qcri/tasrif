@@ -116,6 +116,67 @@ class SihaSleepDataset(SihaDataset):
         """
         return self.processed_df
 
+class SihaSleepIntradayDataset(SihaDataset):
+    """Class to work with intraday sleep data from a SIHA dump
+
+    """
+
+    class Default: #pylint: disable=too-few-public-methods
+        """Default parameters used by the class.
+        The default pipeline consists of the following high level steps:
+        - JQ query to select the intraday calories
+        - json_normalize
+        - set index to date time field
+        """
+
+        PIPELINE = ProcessingPipeline([
+            JqOperator('map({patientID} + (.data.sleep[].data as $data | ($data.sleep | map(.) | .[]) | . * {levels:  {overview : ($data.summary//{})}})) |  ' +
+                       'map (if .levels.data != null then . else .levels += {data: []} end) | ' +
+                       'map(. + {type, dateOfSleep, minutesAsleep, logId, startTime, endTime, duration, isMainSleep, minutesToFallAsleep, minutesAwake, minutesAfterWakeup, timeInBed, efficiency, infoCode})'),
+
+            JsonNormalizeOperator(
+                record_path=['levels', 'data'],
+                 meta=["patientID",
+                    "logId",
+                    "dateOfSleep",
+                    "startTime",
+                    "endTime",
+                    "duration",
+                    "isMainSleep",
+                    "minutesToFallAsleep",
+                    "minutesAsleep",
+                    "minutesAwake",
+                    "minutesAfterWakeup",
+                    "timeInBed",
+                    "efficiency",
+                    "type",
+                    "infoCode",
+                    ["levels", "summary", "deep", "count"],
+                    ["levels", "summary", "deep", "minutes"],
+                    ["levels", "summary", "deep", "thirtyDayAvgMinutes"],
+                    ["levels", "summary", "wake", "count"],
+                    ["levels", "summary", "wake", "minutes"],
+                    ["levels", "summary", "wake", "thirtyDayAvgMinutes"],
+                    ["levels", "summary", "light", "count"],
+                    ["levels", "summary", "light", "minutes"],
+                    ["levels", "summary", "light", "thirtyDayAvgMinutes"],
+                    ["levels", "summary", "rem", "count"],
+                    ["levels", "summary", "rem", "minutes"],
+                    ["levels", "summary", "rem", "thirtyDayAvgMinutes"],
+                    ["levels", "overview", "totalTimeInBed"],
+                    ["levels", "overview", "totalMinutesAsleep"],
+                    ["levels", "overview", "stages", "rem"],
+                    ["levels", "overview", "stages", "deep"],
+                    ["levels", "overview", "stages", "light"],
+                    ["levels", "overview", "stages", "wake"]
+                     ],
+                errors='ignore'),
+            ConvertToDatetimeOperator(feature_names=['dateTime'], infer_datetime_format=True),
+            SetIndexOperator('dateTime')])
+
+    def __init__(self, folder, processing_pipeline=Default.PIPELINE):
+
+        super().__init__(folder, processing_pipeline)
 
 class SihaCaloriesIntradayDataset(SihaDataset):
     """Class to work with the Physical Activity/calories from a SIHA dump
@@ -131,7 +192,7 @@ class SihaCaloriesIntradayDataset(SihaDataset):
         """
 
         PIPELINE = ProcessingPipeline([
-            JqOperator('map({patientID} + .data.activities_calories_intraday[].data."activities-calories-intraday"[0].dataset[])'),
+            JqOperator('map({patientID} + .data.activities_calories_intraday[].data."activities-calories-intraday".dataset[])'),
             JsonNormalizeOperator(),
             ConvertToDatetimeOperator(feature_names=['time'], infer_datetime_format=True),
             SetIndexOperator('time'),
@@ -155,7 +216,7 @@ class SihaDistanceIntradayDataset(SihaDataset):
         """
 
         PIPELINE = ProcessingPipeline([
-            JqOperator('map({patientID} + .data.activities_distance_intraday[].data."activities-distance-intraday"[0].dataset[])'),
+            JqOperator('map({patientID} + .data.activities_distance_intraday[].data."activities-distance-intraday".dataset[])'),
             JsonNormalizeOperator(),
             ConvertToDatetimeOperator(feature_names=['time'], infer_datetime_format=True),
             SetIndexOperator('time'),
@@ -178,7 +239,7 @@ class SihaHeartRateIntradayDataset(SihaDataset):
         - set index to date time field
         """
         PIPELINE = ProcessingPipeline([
-            JqOperator('map({patientID} + .data.activities_heart_intraday[].data."activities-heart-intraday"[0].dataset[])'),
+            JqOperator('map({patientID} + .data.activities_heart_intraday[].data."activities-heart-intraday".dataset[])'),
             JsonNormalizeOperator(),
             ConvertToDatetimeOperator(feature_names=['time'], infer_datetime_format=True),
             SetIndexOperator('time'),
@@ -444,7 +505,7 @@ class SihaStepsIntradayDataset(SihaDataset):
         """
 
         PIPELINE = ProcessingPipeline([
-            JqOperator('map({patientID} + .data.activities_steps_intraday[].data."activities-steps-intraday"[0].dataset[])'),
+            JqOperator('map({patientID} + .data.activities_steps_intraday[].data."activities-steps-intraday".dataset[])'),
             JsonNormalizeOperator(),
             ConvertToDatetimeOperator(feature_names=['time'], infer_datetime_format=True),
             SetIndexOperator('time'),
