@@ -514,5 +514,3 @@ class SihaStepsIntradayDataset(SihaDataset):
     def __init__(self, folder, processing_pipeline=Default.PIPELINE):
 
         super().__init__(folder, processing_pipeline)
-
-
