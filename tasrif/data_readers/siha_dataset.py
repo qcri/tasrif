@@ -8,8 +8,8 @@
 import pathlib
 import json
 from tasrif.processing_pipeline import ProcessingPipeline
-from tasrif.processing_pipeline.pandas import JsonNormalizeOperator, SetIndexOperator, ConvertToDatetimeOperator, AsTypeOperator, MergeOperator
-from tasrif.processing_pipeline.custom import JqOperator
+from tasrif.processing_pipeline.pandas import JsonNormalizeOperator, SetIndexOperator, ConvertToDatetimeOperator, AsTypeOperator, DropFeaturesOperator
+from tasrif.processing_pipeline.custom import JqOperator, CreateFeatureOperator
 
 class SihaDataset:
     """Base class to work with the all SIHA based datasets.
@@ -192,10 +192,12 @@ class SihaCaloriesIntradayDataset(SihaDataset):
         """
 
         PIPELINE = ProcessingPipeline([
-            JqOperator('map({patientID} + .data.activities_calories_intraday[].data."activities-calories-intraday".dataset[])'),
+            JqOperator('map({patientID} + .data.activities_calories_intraday[].data as $item  | $item."activities-calories-intraday".dataset | map({date: $item."activities-calories"[0].dateTime} + .) | .[])'),
             JsonNormalizeOperator(),
-            ConvertToDatetimeOperator(feature_names=['time'], infer_datetime_format=True),
-            SetIndexOperator('time'),
+            CreateFeatureOperator(feature_name="dateTime", feature_creator=lambda df:df['date'] + 'T' + df['time']),
+            DropFeaturesOperator(['date', 'time']),
+            ConvertToDatetimeOperator(feature_names=['dateTime'], infer_datetime_format=True),
+            SetIndexOperator('dateTime'),
             AsTypeOperator({'value': 'float32'})])
 
     def __init__(self, folder, processing_pipeline=Default.PIPELINE):
@@ -216,11 +218,14 @@ class SihaDistanceIntradayDataset(SihaDataset):
         """
 
         PIPELINE = ProcessingPipeline([
-            JqOperator('map({patientID} + .data.activities_distance_intraday[].data."activities-distance-intraday".dataset[])'),
+            JqOperator('map({patientID} + .data.activities_distance_intraday[].data as $item  | $item."activities-distance-intraday".dataset | map({date: $item."activities-distance"[0].dateTime} + .) | .[])'),
             JsonNormalizeOperator(),
-            ConvertToDatetimeOperator(feature_names=['time'], infer_datetime_format=True),
-            SetIndexOperator('time'),
+            CreateFeatureOperator(feature_name="dateTime", feature_creator=lambda df:df['date'] + 'T' + df['time']),
+            DropFeaturesOperator(['date', 'time']),
+            ConvertToDatetimeOperator(feature_names=['dateTime'], infer_datetime_format=True),
+            SetIndexOperator('dateTime'),
             AsTypeOperator({'value': 'float32'})])
+
 
     def __init__(self, folder, processing_pipeline=Default.PIPELINE):
 
@@ -238,11 +243,14 @@ class SihaHeartRateIntradayDataset(SihaDataset):
         - json_normalize
         - set index to date time field
         """
+
         PIPELINE = ProcessingPipeline([
-            JqOperator('map({patientID} + .data.activities_heart_intraday[].data."activities-heart-intraday".dataset[])'),
+            JqOperator('map({patientID} + .data.activities_heart_intraday[].data as $item  | $item."activities-heart-intraday".dataset | map({date: $item."activities-heart"[0].dateTime} + .) | .[])'),
             JsonNormalizeOperator(),
-            ConvertToDatetimeOperator(feature_names=['time'], infer_datetime_format=True),
-            SetIndexOperator('time'),
+            CreateFeatureOperator(feature_name="dateTime", feature_creator=lambda df:df['date'] + 'T' + df['time']),
+            DropFeaturesOperator(['date', 'time']),
+            ConvertToDatetimeOperator(feature_names=['dateTime'], infer_datetime_format=True),
+            SetIndexOperator('dateTime'),
             AsTypeOperator({'value': 'float32'})])
 
     def __init__(self, folder, processing_pipeline=Default.PIPELINE):
@@ -504,11 +512,14 @@ class SihaStepsIntradayDataset(SihaDataset):
         - set index to date time field
         """
 
+
         PIPELINE = ProcessingPipeline([
-            JqOperator('map({patientID} + .data.activities_steps_intraday[].data."activities-steps-intraday".dataset[])'),
+            JqOperator('map({patientID} + .data.activities_steps_intraday[].data as $item  | $item."activities-steps-intraday".dataset | map({date: $item."activities-steps"[0].dateTime} + .) | .[])'),
             JsonNormalizeOperator(),
-            ConvertToDatetimeOperator(feature_names=['time'], infer_datetime_format=True),
-            SetIndexOperator('time'),
+            CreateFeatureOperator(feature_name="dateTime", feature_creator=lambda df:df['date'] + 'T' + df['time']),
+            DropFeaturesOperator(['date', 'time']),
+            ConvertToDatetimeOperator(feature_names=['dateTime'], infer_datetime_format=True),
+            SetIndexOperator('dateTime'),
             AsTypeOperator({'value': 'float32'})])
 
     def __init__(self, folder, processing_pipeline=Default.PIPELINE):
