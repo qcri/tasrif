@@ -9,6 +9,7 @@
         ActivitySleepSurveyDataset
         HeartAgeSurveyDataset
         QualityOfLifeSurveyDataset
+        DemographicsSurveyDataset
 """
 import pathlib
 import pandas as pd
@@ -716,16 +717,85 @@ class QualityOfLifeSurveyDataset:
         return self.processed_df
 
     def _process(self):
-        """Modifies self.cd_df by dropping columns (features) that
+        """Modifies self.processed_df by dropping columns (features) that
         are given in self.drop_features 
 
-        Raises
+        Returns
         -------
-        ValueError if self.drop_features contain a non existent column
-        within self.cd_df
+        sets the result in self.processed_df
+        """  
+        self.processed_df = self.processing_pipeline.process(self.processed_df)[0]
+
+class DemographicsSurveyDataset:
+    """Class to work with the Demographics survey Table in the MyHeartCounts dataset.
+    
+        Some important stats:
+        Shape: (12439, 11)
+            - This dataset contains unique data for  12439 participants.
+             - ` recordId ` has 0 NAs ( 12439 / 12439 ) = 0.00 %
+             - ` appVersion ` has 0 NAs ( 12439 / 12439 ) = 0.00 %
+             - ` phoneInfo ` has 0 NAs ( 12439 / 12439 ) = 0.00 %
+             - ` healthCode ` has 0 NAs ( 12439 / 12439 ) = 0.00 %
+             - ` createdOn ` has 0 NAs ( 12439 / 12439 ) = 0.00 %
+             - ` patientWeightPounds ` has 8066 NAs ( 4373 / 12439 ) = 64.84 %
+             - ` patientBiologicalSex ` has 7655 NAs ( 4784 / 12439 ) = 61.54 %
+             - ` patientHeightInches ` has 7952 NAs ( 4487 / 12439 ) = 63.93 %
+             - ` patientWakeUpTime ` has 7666 NAs ( 4773 / 12439 ) = 61.63 %
+             - ` patientCurrentAge ` has 9568 NAs ( 2871 / 12439 ) = 76.92 %
+             - ` patientGoSleepTime ` has 7615 NAs ( 4824 / 12439 ) = 61.22 %
+
+        """
+
+    def __init__(self,\
+        mhc_folder='~/Documents/Data/',\
+        has_filename='Demographics Survey.csv',\
+        processing_pipeline: ProcessingPipeline = ProcessingPipeline([DropNAOperator(), DropDuplicatesOperator(subset=['healthCode'], keep='last')])):
+
+        full_path = pathlib.Path(mhc_folder, has_filename)
+        self.processed_df = pd.read_csv(full_path)
+        self.raw_df = self.processed_df.copy()
+        self.processing_pipeline = processing_pipeline
+        self._process()
+
+    def participant_count(self):
+        """Get the number of participants
+
+        Returns
+        -------
+        int
+            Number of participants in the dataset
+        """
+        number_participants = self.processed_df['healthCode'].nunique()
+        return number_participants
+
+    def raw_dataframe(self):
+        """Gets the data frame (without any processing) for the dataset
+
+        Returns
+        -------
+        pd.Dataframe
+            Pandas dataframe object representing the data
+        """
+
+        return self.raw_df
+
+    def processed_dataframe(self):
+        """Gets the processed data frame (after applying the data pipeline) for the dataset
+
+        Returns
+        -------
+        pd.Dataframe
+            Pandas dataframe object representing the data
+        """
+
+        return self.processed_df
+
+    def _process(self):
+        """Modifies self.cd_df by dropping columns (features) that
+        are given in self.drop_features 
         
         Returns
         -------
-        sets the result in self.cd_df
+        sets the result in self.processed_df
         """  
         self.processed_df = self.processing_pipeline.process(self.processed_df)[0]
