@@ -8,41 +8,48 @@ resources:
 
 pool: tasrif-pool
 
-steps:
-- checkout: self
-  submodules: recursive
-- task: Docker@0
-  displayName: 'Build an image'
-  inputs:
-    imageName: '$(Build.Repository.Name):$(Build.SourceVersion)'
-
-- task: Docker@1
-  displayName: 'Run prospector (code quality check)'
-  inputs:
-    command: 'Run an image'
-    imageName: '$(Build.Repository.Name):$(Build.SourceVersion)'
-    volumes: $(System.DefaultWorkingDirectory)/prospector:/home/prospector/
-    containerCommand: '/home/run-prospector.sh'
-    runInBackground: false
-    enforceDockerNamingConvention: false
-  continueOnError: true
-- task: Docker@1
-  displayName: 'Run pylint (code quality check)'
-  inputs:
-    command: 'Run an image'
-    imageName: '$(Build.Repository.Name):$(Build.SourceVersion)'
-    volumes: $(System.DefaultWorkingDirectory)/pylint:/home/pylint/
-    containerCommand: '/home/run-pylint.sh'
-    runInBackground: false
-    enforceDockerNamingConvention: false
-  continueOnError: true
-
-- task: PublishTestResults@2
-  displayName: 'Publish Test Results'
-  inputs:
-    testResultsFormat: 'Junit'
-    testResultsFiles: '**/*.xml'
-    searchFolder: '$(System.DefaultWorkingDirectory)/pylint'
-    publishRunAttachments: true
-    testRunTitle: 'Pylint'
-  condition: succeededOrFailed()
+stages:
+  - stage: Build
+    jobs:
+    - job: BuildTasrif
+      displayName: Build Tasrif
+      steps:
+      - checkout: self
+      - task: Docker@2
+        displayName: 'Build and push image'
+        inputs:
+          command: buildAndPush
+          repository: $(Build.Repository.Name)
+          containerRegistry: tasrif-acr
+          # Set tag to 'latest' only on builds from master branch
+          ${{ if eq(variables['Build.SourceBranchName'], 'master') }}:
+            tags: |
+              $(Build.BuildId)
+              latest
+          ${{ if ne(variables['Build.SourceBranchName'], 'master') }}:
+            tags: |
+              $(Build.BuildId)
+  - stage: Test
+    jobs:
+    - job: RunPylint
+      displayName: Run Pylint
+      steps:
+      - checkout: none # No need, docker run will pull the image
+      - task: Docker@2
+        displayName: 'Run pylint'
+        inputs:
+          command: run # Docker@2 can take direct docker commands as input
+          containerRegistry: tasrif-acr
+          arguments: >-
+            -v $(System.DefaultWorkingDirectory)/pylint:/home/pylint
+            qcriswtasrif.azurecr.io/$(Build.Repository.Name):$(Build.BuildId)
+            /home/run-pylint.sh
+      - task: PublishTestResults@2
+        displayName: 'Publish pylint Results'
+        inputs:
+          testResultsFormat: 'Junit'
+          testResultsFiles: '**/*.xml'
+          searchFolder: '$(System.DefaultWorkingDirectory)/pylint'
+          publishRunAttachments: true
+          testRunTitle: 'Pylint'
+        condition: succeededOrFailed()
