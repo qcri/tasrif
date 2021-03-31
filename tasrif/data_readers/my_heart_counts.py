@@ -18,12 +18,14 @@ from tasrif.processing_pipeline import ProcessingPipeline
 from tasrif.processing_pipeline.custom import SetFeaturesValueOperator
 from tasrif.processing_pipeline.custom import CreateFeatureOperator
 from tasrif.processing_pipeline.custom import AggregateOperator
+from tasrif.processing_pipeline.custom import IterateCsvOperator
 from tasrif.processing_pipeline.pandas import DropFeaturesOperator
 from tasrif.processing_pipeline.pandas import DropDuplicatesOperator
 from tasrif.processing_pipeline.pandas import DropNAOperator
+from tasrif.processing_pipeline.pandas import ConvertToDatetimeOperator
 
 
-class MyHeartCountsDataset:#pylint: disable=too-few-public-methods
+class MyHeartCountsDataset:  # pylint: disable=too-few-public-methods
     '''
     Class to work with Standford meds public dataset MyHeartCounts
     '''
@@ -33,18 +35,17 @@ class MyHeartCountsDataset:#pylint: disable=too-few-public-methods
         self.mhc_folder = mhc_folder
 
 
-
 class DailyCheckSurveyDataset:
     """Class to work with the Daily Survey Table in the MyHeartCounts dataset.
 
     """
 
-    class Defaults: #pylint: disable=too-few-public-methods
+    class Defaults:  # pylint: disable=too-few-public-methods
         """Default parameters used by the class.
 
 
         Default PIPELINE Pseudocode
-        Modifies self.dcs_df by dropping unnecessary columns (features), 
+        Modifies self.dcs_df by dropping unnecessary columns (features),
         filling null activity intensity,
         filling null activity time values,
         and averages activity1 and activity2 if given the option.
@@ -52,7 +53,7 @@ class DailyCheckSurveyDataset:
 
         Pseudocode:
             - start with raw dataframe dcs_df
-            - drop self.drop_features features from dcs_df 
+            - drop self.drop_features features from dcs_df
             - set activity1_option null values to false if activity2_option is filled
             - set activity1_intensity to 4 if activity1_option and activity1_time are filled
             - set activity1_intensity and activity1_time to 0 if activity1_option is false
@@ -66,29 +67,29 @@ class DailyCheckSurveyDataset:
         PIPELINE = ProcessingPipeline([DropFeaturesOperator(['appVersion', 'phoneInfo', 'activity1_type', 'activity2_type', 'phone_on_user']),
                                        CreateFeatureOperator(feature_name='activity1_option', feature_creator=lambda df: bool(df['activity1_option'])),
                                        CreateFeatureOperator(feature_name='activity2_option', feature_creator=lambda df: bool(df['activity2_option'])),
-                                       SetFeaturesValueOperator(selector=lambda df: df['activity1_option'].isnull() & df['activity2_option'].notnull(), 
+                                       SetFeaturesValueOperator(selector=lambda df: df['activity1_option'].isnull() & df['activity2_option'].notnull(),
                                                                 features=['activity1_option'], value=False),
-                                       SetFeaturesValueOperator(selector=lambda df: df['activity2_option'].isnull() & df['activity1_option'].notnull(), 
+                                       SetFeaturesValueOperator(selector=lambda df: df['activity2_option'].isnull() & df['activity1_option'].notnull(),
                                                                 features=['activity2_option'], value=False),
-                                       SetFeaturesValueOperator(selector=lambda df: pd.notnull(df['activity1_option']) & df['activity1_option'] & \
-                                                                                    pd.notnull(df['activity1_time']) & pd.isnull(df['activity1_intensity']), 
+                                       SetFeaturesValueOperator(selector=lambda df: pd.notnull(df['activity1_option']) & df['activity1_option'] &
+                                                                pd.notnull(df['activity1_time']) & pd.isnull(df['activity1_intensity']),
                                                                 features=['activity1_intensity'], value=4),
-                                       SetFeaturesValueOperator(selector=lambda df: pd.notnull(df['activity2_option']) & df['activity2_option'] & \
-                                                                                    pd.notnull(df['activity2_time']) & pd.isnull(df['activity2_intensity']), 
+                                       SetFeaturesValueOperator(selector=lambda df: pd.notnull(df['activity2_option']) & df['activity2_option'] &
+                                                                pd.notnull(df['activity2_time']) & pd.isnull(df['activity2_intensity']),
                                                                 features=['activity2_intensity'], value=4),
-                                       SetFeaturesValueOperator(selector=lambda df: pd.notnull(df['activity1_option']) & ~df['activity1_option'], 
+                                       SetFeaturesValueOperator(selector=lambda df: pd.notnull(df['activity1_option']) & ~df['activity1_option'],
                                                                 features=['activity1_intensity', 'activity1_time'], value=0),
-                                       SetFeaturesValueOperator(selector=lambda df: pd.notnull(df['activity2_option']) & ~df['activity2_option'], 
+                                       SetFeaturesValueOperator(selector=lambda df: pd.notnull(df['activity2_option']) & ~df['activity2_option'],
                                                                 features=['activity2_intensity', 'activity2_time'], value=0),
                                        DropFeaturesOperator(['activity1_option', 'activity2_option']),
-                                       CreateFeatureOperator(feature_name='activity_intensity', 
+                                       CreateFeatureOperator(feature_name='activity_intensity',
                                                              feature_creator=lambda df: (df['activity1_intensity'] + df['activity2_intensity'])/2),
                                        CreateFeatureOperator(feature_name='activity_time',
                                                              feature_creator=lambda df: (df['activity1_time'] + df['activity2_time'])/2)
-                                      ])
+                                       ])
 
         """ Default GROUP_PIPELINE Pseudocode
-        Modifies self.dcs_df by dropping unnecessary columns (features), 
+        Modifies self.dcs_df by dropping unnecessary columns (features),
         filling null activity intensity,
         filling null activity time values,
         and averages activity1 and activity2 if given the option.
@@ -104,21 +105,19 @@ class DailyCheckSurveyDataset:
             - set the result in self.group_dcs_df
         """
         GROUP_PIPELINE = ProcessingPipeline([DropFeaturesOperator(['recordId']),
-                                             AggregateOperator(groupby_feature_names ="healthCode",
-                                                               aggregation_definition={'activity1_intensity' : ['mean', 'std'],\
-                                                                                       'activity1_time' : ['mean', 'std'],\
-                                                                                       'activity2_intensity' : ['mean', 'std'],\
-                                                                                       'activity2_time' : ['mean', 'std'],\
-                                                                                       'sleep_time' : ['mean', 'std']})])
+                                             AggregateOperator(groupby_feature_names="healthCode",
+                                                               aggregation_definition={'activity1_intensity': ['mean', 'std'],
+                                                                                       'activity1_time': ['mean', 'std'],
+                                                                                       'activity2_intensity': ['mean', 'std'],
+                                                                                       'activity2_time': ['mean', 'std'],
+                                                                                       'sleep_time': ['mean', 'std']})])
 
-
-
-    def __init__(self,\
-        mhc_folder='~/Documents/Data/MyHeartCounts',\
-        dcs_filename='Daily Check Survey.csv',\
-        processing_pipeline: ProcessingPipeline = Defaults.PIPELINE,\
-        group_pipeline: ProcessingPipeline = Defaults.GROUP_PIPELINE
-        ): #pylint: disable=too-many-arguments
+    def __init__(self,
+                 mhc_folder='~/Documents/Data/MyHeartCounts',
+                 dcs_filename='Daily Check Survey.csv',
+                 processing_pipeline: ProcessingPipeline = Defaults.PIPELINE,
+                 group_pipeline: ProcessingPipeline = Defaults.GROUP_PIPELINE
+                 ):  # pylint: disable=too-many-arguments
 
         full_path = pathlib.Path(mhc_folder, dcs_filename)
         self.dcs_df = pd.read_csv(full_path)
@@ -128,7 +127,6 @@ class DailyCheckSurveyDataset:
 
         self._process()
         self._group()
-
 
     def participant_count(self):
         """Get the number of participants
@@ -191,7 +189,8 @@ class DailyCheckSurveyDataset:
         """
         self.group_dcs_df = self.group_pipeline.process(self.dcs_df)[0]
 
-class DayOneSurveyDataset: #pylint: disable=too-many-arguments
+
+class DayOneSurveyDataset:  # pylint: disable=too-many-arguments
     """Class to work with the Day One Survey Table in the MyHeartCounts dataset.
     """
     dos_df = None
@@ -206,10 +205,10 @@ class DayOneSurveyDataset: #pylint: disable=too-many-arguments
         "Other": "Other"
     }
 
-    def __init__(self,\
-        mhc_folder='~/Documents/Data/MyHeartCounts',\
-        dos_filename='Day One Survey.csv',\
-        processing_pipeline: ProcessingPipeline = ProcessingPipeline([DropNAOperator(subset=['device', 'labwork'])])):
+    def __init__(self,
+                 mhc_folder='~/Documents/Data/MyHeartCounts',
+                 dos_filename='Day One Survey.csv',
+                 processing_pipeline: ProcessingPipeline = ProcessingPipeline([DropNAOperator(subset=['device', 'labwork'])])):
 
         full_path = pathlib.Path(mhc_folder, dos_filename)
         self.dos_df = pd.read_csv(full_path)
@@ -217,7 +216,6 @@ class DayOneSurveyDataset: #pylint: disable=too-many-arguments
         self.processing_pipeline = processing_pipeline
 
         self._process()
-
 
     def participant_count(self):
         """Get the number of participants
@@ -252,11 +250,10 @@ class DayOneSurveyDataset: #pylint: disable=too-many-arguments
 
         return self.dos_df
 
-
     def _process(self):
         """Modifies self.dos_df by dropping na columns given bools,
-        self.drop_device_na and self.drop_labwork_na 
-        
+        self.drop_device_na and self.drop_labwork_na
+
         Returns
         -------
         sets the result in self.dos_df
@@ -265,7 +262,7 @@ class DayOneSurveyDataset: #pylint: disable=too-many-arguments
         self.dos_df = self.processing_pipeline.process(self.dos_df)[0]
 
 
-class PARQSurveyDataset: #pylint: disable=too-many-arguments
+class PARQSurveyDataset:  # pylint: disable=too-many-arguments
     """Class to work with the PARQ Survey Table in the MyHeartCounts dataset.
 
     """
@@ -273,14 +270,14 @@ class PARQSurveyDataset: #pylint: disable=too-many-arguments
     parq_df = None
     raw_df = None
 
-    def __init__(self,\
-        mhc_folder='~/Documents/Data/MyHeartCounts',\
-        dos_filename='PAR-Q Survey.csv',\
-        processing_pipeline: ProcessingPipeline = ProcessingPipeline([DropNAOperator(subset=['chestPain', 'chestPainInLastMonth', 'dizziness', 
-                                                                                            'heartCondition', 'jointProblem', 'physicallyCapable',
-                                                                                            'prescriptionDrugs']),
-                                                                     DropDuplicatesOperator(subset=['healthCode'], keep='last')])
-                                                                    ):
+    def __init__(self,
+                 mhc_folder='~/Documents/Data/MyHeartCounts',
+                 dos_filename='PAR-Q Survey.csv',
+                 processing_pipeline: ProcessingPipeline = ProcessingPipeline([DropNAOperator(subset=['chestPain', 'chestPainInLastMonth', 'dizziness',
+                                                                                                      'heartCondition', 'jointProblem', 'physicallyCapable',
+                                                                                                      'prescriptionDrugs']),
+                                                                               DropDuplicatesOperator(subset=['healthCode'], keep='last')])
+                 ):
 
         full_path = pathlib.Path(mhc_folder, dos_filename)
         self.parq_df = pd.read_csv(full_path)
@@ -288,7 +285,6 @@ class PARQSurveyDataset: #pylint: disable=too-many-arguments
         self.processing_pipeline = processing_pipeline
 
         self._process()
-
 
     def participant_count(self):
         """Get the number of participants
@@ -323,32 +319,32 @@ class PARQSurveyDataset: #pylint: disable=too-many-arguments
 
         return self.parq_df
 
-
     def _process(self):
-        """Modifies self.parq_df by dropping any row that contains 
+        """Modifies self.parq_df by dropping any row that contains
         a null value. drops duplicate rows if self.drop_duplicates
         is true
-        
+
         Returns
         -------
         sets the result in self.parq_df
-        """        
+        """
         self.parq_df = self.processing_pipeline.process(self.parq_df)[0]
+
 
 class RiskFactorSurvey:
     """Class to work with the Risk factor Survey Table in the MyHeartCounts dataset.
 
     """
 
-    class Default:#pylint: disable=too-few-public-methods
+    class Default:  # pylint: disable=too-few-public-methods
         """Default parameters used by the class.
         """
         DROP_FEATURES = []
 
-    def __init__(self,\
-        mhc_folder='~/Documents/Data/MyHeartCounts',\
-        rfs_filename='Risk Factor Survey.csv',\
-        processing_pipeline: ProcessingPipeline = ProcessingPipeline([DropFeaturesOperator(Default.DROP_FEATURES)])):
+    def __init__(self,
+                 mhc_folder='~/Documents/Data/MyHeartCounts',
+                 rfs_filename='Risk Factor Survey.csv',
+                 processing_pipeline: ProcessingPipeline = ProcessingPipeline([DropFeaturesOperator(Default.DROP_FEATURES)])):
 
         full_path = pathlib.Path(mhc_folder, rfs_filename)
         self.rf_df = pd.read_csv(full_path)
@@ -356,7 +352,6 @@ class RiskFactorSurvey:
         self.processing_pipeline = processing_pipeline
 
         self._process()
-
 
     def participant_count(self):
         """Get the number of participants
@@ -391,24 +386,24 @@ class RiskFactorSurvey:
 
         return self.rf_df
 
-
     def _process(self):
         self.rf_df = self.processing_pipeline.process(self.rf_df)[0]
+
 
 class CardioDietSurveyDataset:
     """Class to work with the Cardio diet survey Table in the MyHeartCounts dataset.
 
     """
 
-    class Default:#pylint: disable=too-few-public-methods
+    class Default:  # pylint: disable=too-few-public-methods
         """Default parameters used by the class.
         """
         DROP_FEATURES = []
 
-    def __init__(self,\
-        mhc_folder='~/Documents/Data/MyHeartCounts',\
-        cds_filename='Cardio Diet Survey.csv',\
-        processing_pipeline: ProcessingPipeline = ProcessingPipeline([DropFeaturesOperator(Default.DROP_FEATURES)])):
+    def __init__(self,
+                 mhc_folder='~/Documents/Data/MyHeartCounts',
+                 cds_filename='Cardio Diet Survey.csv',
+                 processing_pipeline: ProcessingPipeline = ProcessingPipeline([DropFeaturesOperator(Default.DROP_FEATURES)])):
 
         full_path = pathlib.Path(mhc_folder, cds_filename)
         self.cd_df = pd.read_csv(full_path)
@@ -452,23 +447,24 @@ class CardioDietSurveyDataset:
 
     def _process(self):
         """Modifies self.cd_df by dropping columns (features) that
-        are given in self.drop_features 
+        are given in self.drop_features
 
         Raises
         -------
         ValueError if self.drop_features contain a non existent column
         within self.cd_df
-        
+
         Returns
         -------
         sets the result in self.cd_df
-        """  
+        """
 
         self.cd_df = self.processing_pipeline.process(self.cd_df)[0]
 
+
 class ActivitySleepSurveyDataset:
     """Class to work with the Cardio diet survey Table in the MyHeartCounts dataset.
-    
+
         Some important stats:
             - This dataset contains unique data for  24966 participants.
              - ` recordId ` has 0 NAs ( 24966 / 24966 ) = 0.00 %
@@ -490,10 +486,10 @@ class ActivitySleepSurveyDataset:
              (2) Drop duplicates based on participant id, retaining the last occurrence of a participant id.
         """
 
-    def __init__(self,\
-        mhc_folder='~/Documents/Data/HeartAgeSurvey',\
-        has_filename='Activity Sleep Survey.csv',\
-        processing_pipeline: ProcessingPipeline = ProcessingPipeline([DropNAOperator(), DropDuplicatesOperator(subset=['healthCode'], keep='last')])):
+    def __init__(self,
+                 mhc_folder='~/Documents/Data/HeartAgeSurvey',
+                 has_filename='Activity Sleep Survey.csv',
+                 processing_pipeline: ProcessingPipeline = ProcessingPipeline([DropNAOperator(), DropDuplicatesOperator(subset=['healthCode'], keep='last')])):
 
         full_path = pathlib.Path(mhc_folder, has_filename)
         self.processed_df = pd.read_csv(full_path)
@@ -536,22 +532,23 @@ class ActivitySleepSurveyDataset:
 
     def _process(self):
         """Modifies self.cd_df by dropping columns (features) that
-        are given in self.drop_features 
+        are given in self.drop_features
 
         Raises
         -------
         ValueError if self.drop_features contain a non existent column
         within self.cd_df
-        
+
         Returns
         -------
         sets the result in self.cd_df
-        """  
+        """
         self.processed_df = self.processing_pipeline.process(self.processed_df)[0]
+
 
 class HeartAgeSurveyDataset:
     """Class to work with the Cardio diet survey Table in the MyHeartCounts dataset.
-    
+
     Some important stats:
         - This dataset contains unique data for  10772 participants.
             - ` recordId ` has 0 NAs ( 10772 / 10772 ) = 0.00 %
@@ -584,10 +581,10 @@ class HeartAgeSurveyDataset:
              The default final dataset size is 3019.
         """
 
-    def __init__(self,\
-        mhc_folder='~/Documents/Data/HeartAgeSurvey',\
-        has_filename='Heart Age Survey.csv',\
-        processing_pipeline: ProcessingPipeline = ProcessingPipeline([DropNAOperator(), DropDuplicatesOperator(subset=['healthCode'], keep='last')])):
+    def __init__(self,
+                 mhc_folder='~/Documents/Data/HeartAgeSurvey',
+                 has_filename='Heart Age Survey.csv',
+                 processing_pipeline: ProcessingPipeline = ProcessingPipeline([DropNAOperator(), DropDuplicatesOperator(subset=['healthCode'], keep='last')])):
 
         full_path = pathlib.Path(mhc_folder, has_filename)
         self.processed_df = pd.read_csv(full_path)
@@ -630,23 +627,23 @@ class HeartAgeSurveyDataset:
 
     def _process(self):
         """Modifies self.cd_df by dropping columns (features) that
-        are given in self.drop_features 
+        are given in self.drop_features
 
         Raises
         -------
         ValueError if self.drop_features contain a non existent column
         within self.cd_df
-        
+
         Returns
         -------
         sets the result in self.cd_df
-        """  
+        """
         self.processed_df = self.processing_pipeline.process(self.processed_df)[0]
 
 
 class QualityOfLifeSurveyDataset:
     """Class to work with the Quality of Life survey Table in the MyHeartCounts dataset.
-    
+
         Some important stats:
         Shape: (22614, 15)
             - This dataset contains unique data for  22614 participants.
@@ -672,12 +669,12 @@ class QualityOfLifeSurveyDataset:
              The default final dataset size is 13673.
         """
 
-    def __init__(self,\
-        mhc_folder='~/Documents/Data/',\
-        has_filename='Qaulity of Life Survey.csv',\
-        processing_pipeline: ProcessingPipeline = ProcessingPipeline([DropNAOperator(), DropDuplicatesOperator(subset=['healthCode'], keep='last')])):
+    def __init__(self,
+                 mhc_folder='~/Documents/Data/',
+                 qol_filename='Qaulity of Life Survey.csv',
+                 processing_pipeline: ProcessingPipeline = ProcessingPipeline([DropNAOperator(), DropDuplicatesOperator(subset=['healthCode'], keep='last')])):
 
-        full_path = pathlib.Path(mhc_folder, has_filename)
+        full_path = pathlib.Path(mhc_folder, qol_filename)
         self.processed_df = pd.read_csv(full_path)
         self.raw_df = self.processed_df.copy()
         self.processing_pipeline = processing_pipeline
@@ -792,10 +789,96 @@ class DemographicsSurveyDataset:
 
     def _process(self):
         """Modifies self.cd_df by dropping columns (features) that
-        are given in self.drop_features 
-        
+        are given in self.drop_features
+
         Returns
         -------
         sets the result in self.processed_df
-        """  
+        """
         self.processed_df = self.processing_pipeline.process(self.processed_df)[0]
+
+
+class HealthKitDataDataset:
+    """Class to work with the Health Kit Data survey Table in the MyHeartCounts dataset.
+
+        Some important stats:
+        Shape: (116951, 6)
+            - This dataset contains unique data for  116951 participants.
+             - ` recordId ` has 0 NAs ( 116951 / 116951 ) = 0.00 %
+             - ` appVersion ` has 0 NAs ( 116951 / 116951 ) = 0.00 %
+             - ` phoneInfo ` has 0 NAs ( 116951 / 116951 ) = 0.00 %
+             - ` healthCode ` has 0 NAs ( 116951 / 116951 ) = 0.00 %
+             - ` createdOn ` has 0 NAs ( 116951 / 116951 ) = 0.00 %
+             - ` data.csv ` has 0 NAs ( 116951 / 116951 ) = 0.00 %
+
+            The default behavior of this module is to
+             (1) self._process to returns a generator
+             (2) the generator iterates through the files found in 'recordId' field
+             (3) the generator returns a pandas dataframe per next() call
+        """
+
+    class Defaults:  # pylint: disable=too-few-public-methods
+        """Default parameters used by the class.
+        """
+        CSV_FOLDER = 'E:/Development/siha/HealthData_timeseries'
+        CSV_PIPELINE = ProcessingPipeline([DropNAOperator(),
+                                           ConvertToDatetimeOperator(feature_names=["startTime", "endTime"], utc=True)])
+
+        PIPELINE = ProcessingPipeline([CreateFeatureOperator(feature_name='file_name', feature_creator=lambda df: df['recordId'] + '.csv'),
+                                       IterateCsvOperator(folder_path=CSV_FOLDER, field='file_name', pipeline=CSV_PIPELINE)
+                                       ])
+
+    def __init__(self,
+                 mhc_folder='~/Documents/Data/',
+                 hkd_filename='HealthKit Data.csv',
+                 processing_pipeline: ProcessingPipeline = Defaults.PIPELINE):
+
+        full_path = pathlib.Path(mhc_folder, hkd_filename)
+        self.processed_df = pd.read_csv(full_path)
+        self.raw_df = self.processed_df.copy()
+        self.processing_pipeline = processing_pipeline
+        self._process()
+
+    def participant_count(self):
+        """Get the number of participants
+
+        Returns
+        -------
+        int
+            Number of participants in the dataset
+        """
+        number_participants = self.raw_df['healthCode'].nunique()
+        return number_participants
+
+    def raw_dataframe(self):
+        """Gets the data frame (without any processing) for the dataset
+
+        Returns
+        -------
+        pd.Dataframe
+            Pandas dataframe object representing the data
+        """
+
+        return self.raw_df
+
+    def processed_dataframe(self):
+        """Gets the processed data frame (after applying the data pipeline) for the dataset
+
+        Returns
+        -------
+        pd.Dataframe
+            Pandas dataframe object representing the data
+        """
+
+        return self.processed_df
+
+    def _process(self):
+        """Modifies self.processed_df by dropping columns (features) that
+        are given in self.drop_features
+
+        Returns
+        -------
+        sets the result in self.processed_df
+        """
+        if self.processing_pipeline:
+            self.processed_df = self.processing_pipeline.process(self.processed_df)

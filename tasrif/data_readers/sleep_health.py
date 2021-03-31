@@ -29,10 +29,18 @@ import numpy as np
 import pandas as pd
 
 from tasrif.processing_pipeline import ProcessingPipeline
-from tasrif.processing_pipeline.pandas import DropNAOperator, DropDuplicatesOperator, ReplaceOperator, \
-    DropFeaturesOperator
+from tasrif.processing_pipeline.pandas import (
+    DropNAOperator,
+    DropDuplicatesOperator,
+    DropFeaturesOperator,
+    ReplaceOperator,
+)
 from tasrif.processing_pipeline.pandas import ConvertToDatetimeOperator, SortOperator
-from tasrif.processing_pipeline.custom import CreateFeatureOperator, AggregateOperator, OneHotEncoderOperator
+from tasrif.processing_pipeline.custom import (
+    CreateFeatureOperator,
+    AggregateOperator,
+    OneHotEncoderOperator,
+)
 
 
 class SleepHealthDataset:  # pylint: disable=too-few-public-methods
@@ -40,9 +48,8 @@ class SleepHealthDataset:  # pylint: disable=too-few-public-methods
     Class to work with Sleep Health Dataset
     """
 
-    def __init__(self, shc_folder='../data/sleephealth/'):
+    def __init__(self, shc_folder="../data/sleephealth/"):
         self.shc_folder = shc_folder
-        # TODO: placeholder only, missing implementation
 
 
 class AboutMeDataset:
@@ -52,22 +59,40 @@ class AboutMeDataset:
     -------
     Instance of AboutMeDataset
     """
+
     processed_df = None
     raw_df = None
 
-    def __init__(self,
-                 shc_folder: str = '../data/sleephealth/',
-                 dataset_filename: str = 'About Me.csv',
-                 pipeline: ProcessingPipeline = ProcessingPipeline(
-                     [DropNAOperator(subset=["alcohol", "basic_expenses", "caffeine", "daily_activities",
-                                             "daily_smoking", "education", "flexible_work_hours", "gender",
-                                             "good_life", "hispanic", "income", "race", "work_schedule", "weight",
-                                             "smoking_status", "marital"]),
-                      DropDuplicatesOperator(subset='participantId',
-                                             keep='last')
-                      ]
-                 )
-                 ):
+    def __init__(
+        self,
+        shc_folder: str = "../data/sleephealth/",
+        dataset_filename: str = "About Me.csv",
+        pipeline: ProcessingPipeline = ProcessingPipeline(
+            [
+                DropNAOperator(
+                    subset=[
+                        "alcohol",
+                        "basic_expenses",
+                        "caffeine",
+                        "daily_activities",
+                        "daily_smoking",
+                        "education",
+                        "flexible_work_hours",
+                        "gender",
+                        "good_life",
+                        "hispanic",
+                        "income",
+                        "race",
+                        "work_schedule",
+                        "weight",
+                        "smoking_status",
+                        "marital",
+                    ]
+                ),
+                DropDuplicatesOperator(subset="participantId", keep="last"),
+            ]
+        ),
+    ):
         """
         AboutMe Dataset details can be found online at ``https://www.synapse.org/#!Synapse:syn18492837/wiki/592581``.
 
@@ -114,7 +139,7 @@ class AboutMeDataset:
         int
             Number of participants in the dataset
         """
-        return self.raw_df['participantId'].nunique()
+        return self.raw_df["participantId"].nunique()
 
     def raw_dataframe(self):
         """Gets the data frame (without any processing) for the dataset
@@ -151,20 +176,38 @@ class SleepQualityCheckerDataset:
 
     def __init__(
         self,
-        shc_folder: str = '../data/sleephealth/',
-        dataset_filename: str = 'Sleep Quality Checker.csv',
-        pipeline: ProcessingPipeline = ProcessingPipeline([
-            SortOperator(by=["participantId", "timestamp"]),
-            AggregateOperator(groupby_feature_names="participantId",
-                              aggregation_definition={
-                                  "sq_score": ["count", "mean", "std", "min", "max", "first", "last"],
-                                  "timestamp": ["first", "last"]
-                              }),
-            ConvertToDatetimeOperator(feature_names=["timestamp_last", "timestamp_first"], format="%Y-%m-%dT%H:%M:%S%z",
-                                      utc=True),
-            CreateFeatureOperator(feature_name="delta_first_last_timestamp",
-                                  feature_creator=lambda row: row['timestamp_last'] - row['timestamp_first'])
-        ])
+        shc_folder: str = "../data/sleephealth/",
+        dataset_filename: str = "Sleep Quality Checker.csv",
+        pipeline: ProcessingPipeline = ProcessingPipeline(
+            [
+                SortOperator(by=["participantId", "timestamp"]),
+                AggregateOperator(
+                    groupby_feature_names="participantId",
+                    aggregation_definition={
+                        "sq_score": [
+                            "count",
+                            "mean",
+                            "std",
+                            "min",
+                            "max",
+                            "first",
+                            "last",
+                        ],
+                        "timestamp": ["first", "last"],
+                    },
+                ),
+                ConvertToDatetimeOperator(
+                    feature_names=["timestamp_last", "timestamp_first"],
+                    format="%Y-%m-%dT%H:%M:%S%z",
+                    utc=True,
+                ),
+                CreateFeatureOperator(
+                    feature_name="delta_first_last_timestamp",
+                    feature_creator=lambda row: row["timestamp_last"]
+                    - row["timestamp_first"],
+                ),
+            ]
+        ),
     ):
         """
         Sleep Quality Checker Dataset details can be found online at ``https://www.synapse.org/#!Synapse:syn18492837/wiki/593719``.
@@ -191,7 +234,7 @@ class SleepQualityCheckerDataset:
         int
             Number of participants in the dataset
         """
-        return self.raw_df['participantId'].nunique()
+        return self.raw_df["participantId"].nunique()
 
     def raw_dataframe(self):
         """Gets the data frame (without any processing) for the dataset
@@ -228,10 +271,11 @@ class OnboardingDemographicsDataset:
 
     def __init__(
         self,
-        shc_folder: str = '../data/sleephealth/',
-        dataset_filename: str = 'Onboarding Demographics.csv',
-        pipeline: ProcessingPipeline = ProcessingPipeline([ReplaceOperator(to_replace="CENSORED", value=np.nan),
-                                                           DropNAOperator()])
+        shc_folder: str = "../data/sleephealth/",
+        dataset_filename: str = "Onboarding Demographics.csv",
+        pipeline: ProcessingPipeline = ProcessingPipeline(
+            [ReplaceOperator(to_replace="CENSORED", value=np.nan), DropNAOperator()]
+        ),
     ):
         """
         Sleep Quality Checker Dataset details can be found online at ``https://www.synapse.org/#!Synapse:syn18492837/wiki/590798``.
@@ -259,7 +303,7 @@ class OnboardingDemographicsDataset:
         int
             Number of participants in the dataset
         """
-        return self.raw_df['participantId'].nunique()
+        return self.raw_df["participantId"].nunique()
 
     def raw_dataframe(self):
         """Gets the data frame (without any processing) for the dataset
@@ -296,21 +340,49 @@ class SleepHabitDataset:
 
     def __init__(
         self,
-        shc_folder: str = '../data/sleephealth/',
-        dataset_filename: str = 'Sleep Habits.csv',
-        pipeline: ProcessingPipeline = ProcessingPipeline([
-            ConvertToDatetimeOperator(feature_names=["timestamp"], format="%Y-%m-%dT%H:%M:%S", utc=True),
-            ReplaceOperator(to_replace={"driving_sleepy": {6: np.nan},
-                                        "morning_person": {3: np.nan},
-                                        "nap_duration": {6: np.nan},
-                                        "what_wakes_you": {13: np.nan}}),
-            DropNAOperator(subset=["alarm_dependency", "driving_sleepy", "falling_asleep", "sleep_needed",
-                                   "sleep_partner", "sleep_time_workday", "wake_up_choices", "wake_ups",
-                                   "what_wakes_you"]),
-            OneHotEncoderOperator(feature_names=["alarm_dependency", "driving_sleepy", "falling_asleep",
-                                                 "morning_person", "nap_duration", "sleep_partner",
-                                                 "wake_up_choices", "weekly_naps", "what_wakes_you"])
-        ])
+        shc_folder: str = "../data/sleephealth/",
+        dataset_filename: str = "Sleep Habits.csv",
+        pipeline: ProcessingPipeline = ProcessingPipeline(
+            [
+                ConvertToDatetimeOperator(
+                    feature_names=["timestamp"], format="%Y-%m-%dT%H:%M:%S", utc=True
+                ),
+                ReplaceOperator(
+                    to_replace={
+                        "driving_sleepy": {6: np.nan},
+                        "morning_person": {3: np.nan},
+                        "nap_duration": {6: np.nan},
+                        "what_wakes_you": {13: np.nan},
+                    }
+                ),
+                DropNAOperator(
+                    subset=[
+                        "alarm_dependency",
+                        "driving_sleepy",
+                        "falling_asleep",
+                        "sleep_needed",
+                        "sleep_partner",
+                        "sleep_time_workday",
+                        "wake_up_choices",
+                        "wake_ups",
+                        "what_wakes_you",
+                    ]
+                ),
+                OneHotEncoderOperator(
+                    feature_names=[
+                        "alarm_dependency",
+                        "driving_sleepy",
+                        "falling_asleep",
+                        "morning_person",
+                        "nap_duration",
+                        "sleep_partner",
+                        "wake_up_choices",
+                        "weekly_naps",
+                        "what_wakes_you",
+                    ]
+                ),
+            ]
+        ),
     ):
         """
         Sleep Habit Dataset details can be found online at ``https://www.synapse.org/#!Synapse:syn18492837/wiki/593720``.
@@ -878,7 +950,7 @@ class SleepAssessmentDataset:
         int
             Number of participants in the dataset
         """
-        return self.raw_df['participantId'].nunique()
+        return self.raw_df["participantId"].nunique()
 
     def raw_dataframe(self):
         """Gets the data frame (without any processing) for the dataset

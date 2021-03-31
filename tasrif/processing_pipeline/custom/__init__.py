@@ -10,4 +10,4 @@ from tasrif.processing_pipeline.custom.participation_overview_operator import Pa
 from tasrif.processing_pipeline.custom.statistics_operator import StatisticsOperator
 from tasrif.processing_pipeline.custom.resample_operator import ResampleOperator
 from tasrif.processing_pipeline.custom.distributed_upsample_operator import DistributedUpsampleOperator
-
+from tasrif.processing_pipeline.custom.iterate_csv_operator import IterateCsvOperator
