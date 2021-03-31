@@ -2,6 +2,7 @@
 """
 
 from tasrif.processing_pipeline.pandas.drop_na_operator import DropNAOperator
+from tasrif.processing_pipeline.pandas.fill_na_operator import FillNAOperator
 from tasrif.processing_pipeline.pandas.drop_features_operator import DropFeaturesOperator
 from tasrif.processing_pipeline.pandas.drop_duplicates_operator import DropDuplicatesOperator
 from tasrif.processing_pipeline.pandas.merge_operator import MergeOperator
@@ -11,3 +12,4 @@ from tasrif.processing_pipeline.pandas.convert_to_datetime import ConvertToDatet
 from tasrif.processing_pipeline.pandas.json_normalize_operator import JsonNormalizeOperator
 from tasrif.processing_pipeline.pandas.set_index_operator import SetIndexOperator
 from tasrif.processing_pipeline.pandas.astype_operator import AsTypeOperator
+from tasrif.processing_pipeline.pandas.concat_operator import ConcatOperator
