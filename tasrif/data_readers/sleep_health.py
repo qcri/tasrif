@@ -430,7 +430,7 @@ class SleepHabitDataset:
         int
             Number of participants in the dataset
         """
-        return self.raw_df['participantId'].nunique()
+        return self.raw_df["participantId"].nunique()
 
     def raw_dataframe(self):
         """Gets the data frame (without any processing) for the dataset
@@ -467,21 +467,38 @@ class MyFamilyDataset:
 
     def __init__(
         self,
-        shc_folder: str = '../data/sleephealth/',
-        dataset_filename: str = 'My Family.csv',
-        pipeline: ProcessingPipeline = ProcessingPipeline([
-            ConvertToDatetimeOperator(feature_names="timestamp", format="%Y-%m-%dT%H:%M:%S%z", utc=True),
-            SortOperator(by=["participantId", "timestamp"]),
-            DropDuplicatesOperator(subset="participantId", keep="last"),
-            ReplaceOperator(to_replace={"fam_history": {"200": np.nan},
-                                        "family_size": {6: np.nan},
-                                        "language": {5: np.nan},
-                                        "underage_family": {6: np.nan}}),
-            DropNAOperator(subset=["fam_history", "family_size", "language", "underage_family"]),
-            OneHotEncoderOperator(feature_names=["fam_history", "family_size", "language", "underage_family"],
-                                  drop_first=False),
-            DropFeaturesOperator(["fam_history=200"])
-        ])
+        shc_folder: str = "../data/sleephealth/",
+        dataset_filename: str = "My Family.csv",
+        pipeline: ProcessingPipeline = ProcessingPipeline(
+            [
+                ConvertToDatetimeOperator(
+                    feature_names="timestamp", format="%Y-%m-%dT%H:%M:%S%z", utc=True
+                ),
+                SortOperator(by=["participantId", "timestamp"]),
+                DropDuplicatesOperator(subset="participantId", keep="last"),
+                ReplaceOperator(
+                    to_replace={
+                        "fam_history": {"200": np.nan},
+                        "family_size": {6: np.nan},
+                        "language": {5: np.nan},
+                        "underage_family": {6: np.nan},
+                    }
+                ),
+                DropNAOperator(
+                    subset=["fam_history", "family_size", "language", "underage_family"]
+                ),
+                OneHotEncoderOperator(
+                    feature_names=[
+                        "fam_history",
+                        "family_size",
+                        "language",
+                        "underage_family",
+                    ],
+                    drop_first=False,
+                ),
+                DropFeaturesOperator(["fam_history=200"]),
+            ]
+        ),
     ):
         """
         My Family Dataset details can be found online at ``https://www.synapse.org/#!Synapse:syn18492837/wiki/593712``.
@@ -521,7 +538,7 @@ class MyFamilyDataset:
         int
             Number of participants in the dataset
         """
-        return self.raw_df['participantId'].nunique()
+        return self.raw_df["participantId"].nunique()
 
     def raw_dataframe(self):
         """Gets the data frame (without any processing) for the dataset
@@ -558,30 +575,79 @@ class MyHealthDataset:
 
     def __init__(
         self,
-        shc_folder: str = '../data/sleephealth/',
-        dataset_filename: str = 'My Health.csv',
-        pipeline: ProcessingPipeline = ProcessingPipeline([
-            ConvertToDatetimeOperator(feature_names="timestamp", format="%Y-%m-%dT%H:%M:%S%z", utc=True),
-            SortOperator(by=["participantId", "timestamp"]),
-            DropDuplicatesOperator(subset="participantId", keep="last"),
-            ReplaceOperator(to_replace={"allergies": {3: np.nan}, "anxiety": {3: np.nan}, "apnea": {3: np.nan},
-                                        "asthma": {3: np.nan}, "atrial": {3: np.nan}, "hi_blood_pressure": {3: np.nan},
-                                        "cancer": {3: np.nan}, "depression": {3: np.nan}, "diabetes": {3: np.nan},
-                                        "erectile": {3: np.nan}, "gastroesophageal": {3: np.nan},
-                                        "heart_disease": {3: np.nan}, "insomnia": {3: np.nan}, "lung": {3: np.nan},
-                                        "narcolepsy": {3: np.nan}, "nocturia": {3: np.nan},
-                                        "restless_legs_syndrome": {3: np.nan}, "stroke": {3: np.nan},
-                                        "uars": {3: np.nan}
-                                        }),
-            DropNAOperator(subset=["anxious", "cardiovascular", "compare_one_year", "day_to_day", "depressed",
-                                   "emotional", "fatigued", "general_health", "mental_health", "physical_activities",
-                                   "physical_health", "risk", "sleep_trouble", "social_activities", "stressed"]),
-            OneHotEncoderOperator(feature_names=["anxious", "cardiovascular", "compare_one_year", "day_to_day",
-                                                 "depressed", "emotional", "fatigued", "general_health",
-                                                 "mental_health", "physical_activities", "physical_health", "risk",
-                                                 "sleep_trouble", "social_activities", "stressed"],
-                                  drop_first=True),
-        ])
+        shc_folder: str = "../data/sleephealth/",
+        dataset_filename: str = "My Health.csv",
+        pipeline: ProcessingPipeline = ProcessingPipeline(
+            [
+                ConvertToDatetimeOperator(
+                    feature_names="timestamp", format="%Y-%m-%dT%H:%M:%S%z", utc=True
+                ),
+                SortOperator(by=["participantId", "timestamp"]),
+                DropDuplicatesOperator(subset="participantId", keep="last"),
+                ReplaceOperator(
+                    to_replace={
+                        "allergies": {3: np.nan},
+                        "anxiety": {3: np.nan},
+                        "apnea": {3: np.nan},
+                        "asthma": {3: np.nan},
+                        "atrial": {3: np.nan},
+                        "hi_blood_pressure": {3: np.nan},
+                        "cancer": {3: np.nan},
+                        "depression": {3: np.nan},
+                        "diabetes": {3: np.nan},
+                        "erectile": {3: np.nan},
+                        "gastroesophageal": {3: np.nan},
+                        "heart_disease": {3: np.nan},
+                        "insomnia": {3: np.nan},
+                        "lung": {3: np.nan},
+                        "narcolepsy": {3: np.nan},
+                        "nocturia": {3: np.nan},
+                        "restless_legs_syndrome": {3: np.nan},
+                        "stroke": {3: np.nan},
+                        "uars": {3: np.nan},
+                    }
+                ),
+                DropNAOperator(
+                    subset=[
+                        "anxious",
+                        "cardiovascular",
+                        "compare_one_year",
+                        "day_to_day",
+                        "depressed",
+                        "emotional",
+                        "fatigued",
+                        "general_health",
+                        "mental_health",
+                        "physical_activities",
+                        "physical_health",
+                        "risk",
+                        "sleep_trouble",
+                        "social_activities",
+                        "stressed",
+                    ]
+                ),
+                OneHotEncoderOperator(
+                    feature_names=[
+                        "anxious",
+                        "cardiovascular",
+                        "compare_one_year",
+                        "day_to_day",
+                        "depressed",
+                        "emotional",
+                        "fatigued",
+                        "general_health",
+                        "mental_health",
+                        "physical_activities",
+                        "physical_health",
+                        "risk",
+                        "sleep_trouble",
+                        "social_activities",
+                        "stressed",
+                    ],
+                    drop_first=True,
+                ),
+            ]
+        ),
     ):
         """
         My Health Dataset details can be found online at ``https://www.synapse.org/#!Synapse:syn18492837/wiki/593707``.
@@ -739,7 +805,7 @@ class MyHealthDataset:
         int
             Number of participants in the dataset
         """
-        return self.raw_df['participantId'].nunique()
+        return self.raw_df["participantId"].nunique()
 
     def raw_dataframe(self):
         """Gets the data frame (without any processing) for the dataset
@@ -776,19 +842,41 @@ class ResearchInterestDataset:
 
     def __init__(
         self,
-        shc_folder: str = '../data/sleephealth/',
-        dataset_filename: str = 'Research Interest.csv',
-        pipeline: ProcessingPipeline = ProcessingPipeline([
-            ConvertToDatetimeOperator(feature_names="timestamp", format="%Y-%m-%dT%H:%M:%S%z", utc=True),
-            SortOperator(by=["participantId", "timestamp"]),
-            DropDuplicatesOperator(subset="participantId", keep="last"),
-            ReplaceOperator(to_replace={"research_experience": {3: np.nan}}),
-            DropNAOperator(subset=['contact_method', 'research_experience', 'two_surveys_perday',
-                                   'blood_sample', 'taking_medication', 'family_survey', 'hospital_stay']),
-            OneHotEncoderOperator(feature_names=['contact_method', 'research_experience', 'two_surveys_perday',
-                                                 'blood_sample', 'taking_medication', 'family_survey', 'hospital_stay'],
-                                  drop_first=True),
-        ])
+        shc_folder: str = "../data/sleephealth/",
+        dataset_filename: str = "Research Interest.csv",
+        pipeline: ProcessingPipeline = ProcessingPipeline(
+            [
+                ConvertToDatetimeOperator(
+                    feature_names="timestamp", format="%Y-%m-%dT%H:%M:%S%z", utc=True
+                ),
+                SortOperator(by=["participantId", "timestamp"]),
+                DropDuplicatesOperator(subset="participantId", keep="last"),
+                ReplaceOperator(to_replace={"research_experience": {3: np.nan}}),
+                DropNAOperator(
+                    subset=[
+                        "contact_method",
+                        "research_experience",
+                        "two_surveys_perday",
+                        "blood_sample",
+                        "taking_medication",
+                        "family_survey",
+                        "hospital_stay",
+                    ]
+                ),
+                OneHotEncoderOperator(
+                    feature_names=[
+                        "contact_method",
+                        "research_experience",
+                        "two_surveys_perday",
+                        "blood_sample",
+                        "taking_medication",
+                        "family_survey",
+                        "hospital_stay",
+                    ],
+                    drop_first=True,
+                ),
+            ]
+        ),
     ):
         """
         Research Interest details can be found online at ``https://www.synapse.org/#!Synapse:syn18492837/wiki/593711``.
@@ -830,7 +918,7 @@ class ResearchInterestDataset:
         int
             Number of participants in the dataset
         """
-        return self.raw_df['participantId'].nunique()
+        return self.raw_df["participantId"].nunique()
 
     def raw_dataframe(self):
         """Gets the data frame (without any processing) for the dataset
@@ -867,33 +955,76 @@ class SleepAssessmentDataset:
 
     def __init__(
         self,
-        shc_folder: str = '../data/sleephealth/',
-        dataset_filename: str = 'Sleep Assessment.csv',
-        pipeline: ProcessingPipeline = ProcessingPipeline([
-            ConvertToDatetimeOperator(feature_names="timestamp", format="%Y-%m-%dT%H:%M:%S%z", utc=True),
-            SortOperator(by=["participantId", "timestamp"]),
-            DropDuplicatesOperator(subset="participantId", keep="last"),
-            ReplaceOperator(to_replace={"alcohol": {7: np.nan},
-                                        "medication_by_doctor": {7: np.nan},
-                                        "sleep_aids": {7: np.nan},
-                                        "told_by_doctor": {3: np.nan},
-                                        "told_to_doctor": {3: np.nan},
-                                        "told_by_doctor_specify": {np.nan: '8'},
-                                        "other_selected": {np.nan: ''},
-                                        }),
-            DropNAOperator(subset=['alcohol', 'concentrating_problem_one', 'concentrating_problem_two',
-                                   'discomfort_in_sleep', 'exercise', 'fatigue_limit', 'feel_tired_frequency',
-                                   'felt_alert', 'had_problem', 'hard_times', 'medication_by_doctor',
-                                   'poor_sleep_problems', 'sleep_aids', 'sleep_problem', 'think_clearly',
-                                   'tired_easily', 'told_by_doctor', 'told_to_doctor', 'trouble_staying_awake']),
-            OneHotEncoderOperator(feature_names=['alcohol', 'concentrating_problem_one', 'concentrating_problem_two',
-                                                 'discomfort_in_sleep', 'exercise', 'fatigue_limit',
-                                                 'feel_tired_frequency', 'felt_alert', 'had_problem', 'hard_times',
-                                                 'medication_by_doctor', 'poor_sleep_problems', 'sleep_aids',
-                                                 'sleep_problem', 'think_clearly', 'tired_easily', 'told_by_doctor',
-                                                 'told_to_doctor', 'trouble_staying_awake', 'told_by_doctor_specify'],
-                                  drop_first=True),
-        ])
+        shc_folder: str = "../data/sleephealth/",
+        dataset_filename: str = "Sleep Assessment.csv",
+        pipeline: ProcessingPipeline = ProcessingPipeline(
+            [
+                ConvertToDatetimeOperator(
+                    feature_names="timestamp", format="%Y-%m-%dT%H:%M:%S%z", utc=True
+                ),
+                SortOperator(by=["participantId", "timestamp"]),
+                DropDuplicatesOperator(subset="participantId", keep="last"),
+                ReplaceOperator(
+                    to_replace={
+                        "alcohol": {7: np.nan},
+                        "medication_by_doctor": {7: np.nan},
+                        "sleep_aids": {7: np.nan},
+                        "told_by_doctor": {3: np.nan},
+                        "told_to_doctor": {3: np.nan},
+                        "told_by_doctor_specify": {np.nan: "8"},
+                        "other_selected": {np.nan: ""},
+                    }
+                ),
+                DropNAOperator(
+                    subset=[
+                        "alcohol",
+                        "concentrating_problem_one",
+                        "concentrating_problem_two",
+                        "discomfort_in_sleep",
+                        "exercise",
+                        "fatigue_limit",
+                        "feel_tired_frequency",
+                        "felt_alert",
+                        "had_problem",
+                        "hard_times",
+                        "medication_by_doctor",
+                        "poor_sleep_problems",
+                        "sleep_aids",
+                        "sleep_problem",
+                        "think_clearly",
+                        "tired_easily",
+                        "told_by_doctor",
+                        "told_to_doctor",
+                        "trouble_staying_awake",
+                    ]
+                ),
+                OneHotEncoderOperator(
+                    feature_names=[
+                        "alcohol",
+                        "concentrating_problem_one",
+                        "concentrating_problem_two",
+                        "discomfort_in_sleep",
+                        "exercise",
+                        "fatigue_limit",
+                        "feel_tired_frequency",
+                        "felt_alert",
+                        "had_problem",
+                        "hard_times",
+                        "medication_by_doctor",
+                        "poor_sleep_problems",
+                        "sleep_aids",
+                        "sleep_problem",
+                        "think_clearly",
+                        "tired_easily",
+                        "told_by_doctor",
+                        "told_to_doctor",
+                        "trouble_staying_awake",
+                        "told_by_doctor_specify",
+                    ],
+                    drop_first=True,
+                ),
+            ]
+        ),
     ):
         """
         Sleep Assessment Dataset details can be found online at ``https://www.synapse.org/#!Synapse:syn18492837/wiki/593721``.
@@ -970,6 +1101,194 @@ class SleepAssessmentDataset:
         pd.Dataframe
             Pandas dataframe object representing the data
         """
+        return self.processed_df
+
+    def _process(self):
+        if self.pipeline:
+            self.processed_df = self.pipeline.process(self.processed_df)[0]
+
+
+class AMCheckinDataset:
+    """Class to work with the Cardio diet survey Table in the MyHeartCounts dataset."""
+
+    class Default:  # pylint: disable=too-few-public-methods
+        """Default parameters used by the class."""
+
+        DROP_FEATURES = []
+
+    def __init__(
+        self,
+        shc_folder="../data/sleephealth/",
+        dataset_filename="AM Check-in.csv",
+        pipeline: ProcessingPipeline = ProcessingPipeline(
+            [
+                ConvertToDatetimeOperator(
+                    feature_names=["timestamp"], format="%Y-%m-%dT%H:%M:%S%z", utc=True
+                ),
+                SortOperator(by=["participantId", "timestamp"]),
+                ReplaceOperator(
+                    to_replace={
+                        "AMCH2A": {np.nan: 0},
+                        "AMCH3A": {np.nan: 0},
+                        "AMCH5": {np.nan: 0},
+                    }
+                ),
+                DropNAOperator(
+                    subset=["participantId", "AMCH1", "AMCH2", "AMCH3", "AMCH4"]
+                ),
+            ],
+        ),
+    ):
+
+        """
+        Some important stats:
+        - This dataset contains unique data for  49480 participants.
+         - `` participantId `` has 0 NAs ( 49480 / 49480 ) = 0.00 %
+         - `` AMCH1 `` has 549 NAs ( 48931 / 49480 ) = 1.11 %
+         - `` AMCH2 `` has 256 NAs ( 49224 / 49480 ) = 0.52 %
+         - `` AMCH2A `` has 40201 NAs ( 9279 / 49480 ) = 81.25 %
+         - `` AMCH3 `` has 1353 NAs ( 48127 / 49480 ) = 2.73 %
+         - `` AMCH3A `` has 13930 NAs ( 35550 / 49480 ) = 28.15 %
+         - `` AMCH4 `` has 377 NAs ( 49103 / 49480 ) = 0.76 %
+         - `` AMCH5 `` has 12761 NAs ( 36719 / 49480 ) = 25.79 %
+         - `` timestamp `` has 0 NAs ( 49480 / 49480 ) = 0.00 %
+        """
+
+        full_path = pathlib.Path(shc_folder, dataset_filename)
+        self.processed_df = pd.read_csv(full_path)
+        self.raw_df = self.processed_df.copy()
+        self.pipeline = pipeline
+        self._process()
+
+    def participant_count(self):
+        """Get the number of participants
+
+        Returns
+        -------
+        int
+            Number of participants in the dataset
+        """
+        number_participants = self.raw_df["participantId"].nunique()
+        return number_participants
+
+    def raw_dataframe(self):
+        """Gets the data frame (without any processing) for the dataset
+
+        Returns
+        -------
+        pd.Dataframe
+            Pandas dataframe object representing the data
+        """
+
+        return self.raw_df
+
+    def processed_dataframe(self):
+        """Gets the processed data frame (after applying the data pipeline) for the dataset
+
+        Returns
+        -------
+        pd.Dataframe
+            Pandas dataframe object representing the data
+        """
+
+        return self.processed_df
+
+    def _process(self):
+        """Gets the processed data frame (after applying the data pipeline) for the dataset
+
+        Returns
+        -------
+        pd.Dataframe
+            Pandas dataframe object representing the data
+        """
+
+        if self.pipeline:
+            self.processed_df = self.pipeline.process(self.processed_df)[0]
+
+
+class PMCheckinDataset:
+    """Class to work with the Cardio diet survey Table in the MyHeartCounts dataset."""
+
+    class Default:  # pylint: disable=too-few-public-methods
+        """Default parameters used by the class."""
+
+        DROP_FEATURES = []
+
+    def __init__(
+        self,
+        shc_folder="../data/sleephealth/",
+        dataset_filename="PM Check-in.csv",
+        pipeline: ProcessingPipeline = ProcessingPipeline(
+            [
+                ConvertToDatetimeOperator(
+                    feature_names=["timestamp"], format="%Y-%m-%dT%H:%M:%S%z", utc=True
+                ),
+                SortOperator(by=["participantId", "timestamp"]),
+                ReplaceOperator(
+                    to_replace={
+                        "AMCH2A": {np.nan: 0},
+                        "AMCH3A": {np.nan: 0},
+                        "AMCH5": {np.nan: 0},
+                    }
+                ),
+                DropNAOperator(
+                    subset=["participantId", "AMCH1", "AMCH2", "AMCH3", "AMCH4"]
+                ),
+            ],
+        ),
+    ):
+
+        """
+        Some important stats:
+            - This dataset contains unique data for  27380 participants.
+             - `` participantId `` has 0 NAs ( 27380 / 27380 ) = 0.00 %
+             - `` NapCount `` has 125 NAs ( 27255 / 27380 ) = 0.46 %
+             - `` PMCH1 `` has 134 NAs ( 27246 / 27380 ) = 0.49 %
+             - `` PMCH2A `` has 19942 NAs ( 7438 / 27380 ) = 72.83 %
+             - `` PMCH3 `` has 192 NAs ( 27188 / 27380 ) = 0.70 %
+             - `` timestamp `` has 0 NAs ( 27380 / 27380 ) = 0.00 %
+             - `` alcohol `` has 0 NAs ( 27380 / 27380 ) = 0.00 %
+             - `` caffeine `` has 0 NAs ( 27380 / 27380 ) = 0.00 %
+
+        """
+
+        full_path = pathlib.Path(shc_folder, dataset_filename)
+        self.processed_df = pd.read_csv(full_path)
+        self.raw_df = self.processed_df.copy()
+        self.pipeline = pipeline
+        self._process()
+
+    def participant_count(self):
+        """Get the number of participants
+
+        Returns
+        -------
+        int
+            Number of participants in the dataset
+        """
+        number_participants = self.raw_df["participantId"].nunique()
+        return number_participants
+
+    def raw_dataframe(self):
+        """Gets the data frame (without any processing) for the dataset
+
+        Returns
+        -------
+        pd.Dataframe
+            Pandas dataframe object representing the data
+        """
+
+        return self.raw_df
+
+    def processed_dataframe(self):
+        """Gets the processed data frame (after applying the data pipeline) for the dataset
+
+        Returns
+        -------
+        pd.Dataframe
+            Pandas dataframe object representing the data
+        """
+
         return self.processed_df
 
     def _process(self):
