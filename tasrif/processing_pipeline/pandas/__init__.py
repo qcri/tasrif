@@ -11,3 +11,6 @@ from tasrif.processing_pipeline.pandas.convert_to_datetime import ConvertToDatet
 from tasrif.processing_pipeline.pandas.json_normalize_operator import JsonNormalizeOperator
 from tasrif.processing_pipeline.pandas.set_index_operator import SetIndexOperator
 from tasrif.processing_pipeline.pandas.astype_operator import AsTypeOperator
+from tasrif.processing_pipeline.pandas.reset_index_operator import ResetIndexOperator
+from tasrif.processing_pipeline.pandas.groupby_operator import GroupbyOperator
+from tasrif.processing_pipeline.custom.drop_index_duplicates_operator import DropIndexDuplicatesOperator
