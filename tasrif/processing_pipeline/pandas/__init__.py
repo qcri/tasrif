@@ -13,4 +13,4 @@ from tasrif.processing_pipeline.pandas.set_index_operator import SetIndexOperato
 from tasrif.processing_pipeline.pandas.astype_operator import AsTypeOperator
 from tasrif.processing_pipeline.pandas.reset_index_operator import ResetIndexOperator
 from tasrif.processing_pipeline.pandas.groupby_operator import GroupbyOperator
-from tasrif.processing_pipeline.custom.drop_index_duplicates_operator import DropIndexDuplicatesOperator
+from tasrif.processing_pipeline.pandas.rename_operator import RenameOperator
