@@ -36,7 +36,7 @@ class ResampleOperator(ProcessingOperator):
 
     """
 
-    def __init__(self, rule, aggregation_definition):
+    def __init__(self, rule, aggregation_definition, **kwargs):
         """Creates a new instance of ResampleOperator
 
         Parameters
@@ -47,9 +47,12 @@ class ResampleOperator(ProcessingOperator):
             - Dictionary containing feature to aggregation functions mapping.
             -or-
             - function defining the aggregation behavior ('sum', 'mean', 'ffill', etc.)
+        kwargs: Arguments to pandas resample function
+
         """
         self.rule = rule
         self.aggregation_definition = aggregation_definition
+        self.kwargs = kwargs
 
 
     def process(self, *data_frames):
@@ -64,11 +67,12 @@ class ResampleOperator(ProcessingOperator):
         processed = []
         for data_frame in data_frames:
             # data_frame = data_frame[~data_frame.index.duplicated(keep='first')]
-            resampler = data_frame.resample(self.rule)
+            resampler = data_frame.resample(self.rule, **self.kwargs)
             if isinstance(self.aggregation_definition, dict):
 
                 data_frame = resampler.agg(self.aggregation_definition)
             else:
+                # similar to resampler.aggregation_definition() 
                 data_frame = getattr(resampler, self.aggregation_definition)()
             processed.append(data_frame)
 
