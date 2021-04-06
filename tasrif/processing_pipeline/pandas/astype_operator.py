@@ -40,7 +40,7 @@ class AsTypeOperator(ProcessingOperator):
     """
 
     def __init__(self, dtype, **kwargs):
-        """Creates a new instance of AddDurationOperator
+        """Creates a new instance of AsTypeOperator
 
         Parameters
         ----------
