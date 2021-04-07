@@ -16,3 +16,4 @@ from tasrif.processing_pipeline.pandas.groupby_operator import GroupbyOperator
 from tasrif.processing_pipeline.pandas.rename_operator import RenameOperator
 from tasrif.processing_pipeline.pandas.apply_operator import ApplyOperator
 from tasrif.processing_pipeline.pandas.pivot_operator import PivotOperator
+from tasrif.processing_pipeline.pandas.rolling_operator import RollingOperator
