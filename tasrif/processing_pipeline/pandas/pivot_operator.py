@@ -1,11 +1,11 @@
 """
-Cast a pandas object to a specified dtype dtype.
+Pivots a dataframe
 """
 from tasrif.processing_pipeline import ProcessingOperator
 
 class PivotOperator(ProcessingOperator):
     """
-    Cast a pandas object to a specified dtype dtype.
+    Pivots a dataframe.
 
     Examples
     --------

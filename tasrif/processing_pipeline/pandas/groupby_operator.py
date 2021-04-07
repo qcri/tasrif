@@ -8,7 +8,7 @@ class GroupbyOperator(ProcessingOperator):
 
       Examples
       --------
-      >>>> import pandas as pd
+      >>> import pandas as pd
       >>> import numpy as np
       >>> 
       >>> from tasrif.processing_pipeline.pandas import GroupbyOperator

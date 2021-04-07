@@ -1,11 +1,11 @@
 """
-Merge multiple dataframes into a single one.
+Applies a function on dataframes
 """
 from tasrif.processing_pipeline import ProcessingOperator
 
 
 class ApplyOperator(ProcessingOperator):
-    """Merge different datasets based on Pandas merge method.
+    """apply function on dataframes based on Pandas apply method
 
     Parameters
     ----------
@@ -37,12 +37,12 @@ class ApplyOperator(ProcessingOperator):
     """
 
     def __init__(self, func, **kwargs):
-        """Merge different datasets on a common feature defined by ``on``.
+        """apply function on dataframes.
 
         Parameters
         ----------
-        data_frames:
-          Variable number of pandas dataframes to be processed
+        func:
+          function to pass
 
         **kwargs:
           key word arguments passed to pandas DataFrame.merge method
