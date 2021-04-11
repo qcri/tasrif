@@ -17,13 +17,13 @@ class ConcatOperator(ProcessingOperator):
     Examples:
     ---------
     >>> import pandas as pd
-    >>> 
+    >>>
     >>> from tasrif.processing_pipeline.pandas import ConcatOperator
-    >>> 
+    >>>
     >>> # Full
     >>> df1 = pd.DataFrame({'id': [1, 2, 3], 'cities': ['Rome', 'Barcelona', 'Stockholm']})
     >>> df2 = pd.DataFrame({'id': [4, 5, 6], 'cities': ['Doha', 'Vienna', 'Belo Horizonte']})
-    >>> 
+    >>>
     >>> concat = ConcatOperator().process(df1, df2)
     >>> concat
 

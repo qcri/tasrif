@@ -26,6 +26,9 @@ class SihaDataset:
         for file_path in pathlib.Path(str(fullpath)).glob("data*.json"):
             file_paths.append(str(file_path))
 
+        if len(file_paths) == 0:
+            raise ValueError('No data file matching the pattern data*.json')
+
         self.raw_df = []
         for file_path in file_paths:
             with open(file_path) as json_file:
@@ -132,8 +135,8 @@ class SihaSleepIntradayDataset(SihaDataset):
         PIPELINE = ProcessingPipeline([
             JqOperator('map({patientID} + (.data.sleep[].data as $data | ($data.sleep | map(.) | .[]) | . * {levels:  {overview : ($data.summary//{})}})) |  ' +
                        'map (if .levels.data != null then . else .levels += {data: []} end) | ' +
-                       'map(. + {type, dateOfSleep, minutesAsleep, logId, startTime, endTime, duration, isMainSleep, minutesToFallAsleep, minutesAwake, minutesAfterWakeup, timeInBed, efficiency, infoCode})'),
-
+                       'map(. + {type, dateOfSleep, minutesAsleep, logId, startTime, endTime, duration, isMainSleep,' +
+                       ' minutesToFallAsleep, minutesAwake, minutesAfterWakeup, timeInBed, efficiency, infoCode})'),
             JsonNormalizeOperator(
                 record_path=['levels', 'data'],
                  meta=["patientID",
@@ -192,7 +195,8 @@ class SihaCaloriesIntradayDataset(SihaDataset):
         """
 
         PIPELINE = ProcessingPipeline([
-            JqOperator('map({patientID} + .data.activities_calories_intraday[].data as $item  | $item."activities-calories-intraday".dataset | map({date: $item."activities-calories"[0].dateTime} + .) | .[])'),
+            JqOperator('map({patientID} + .data.activities_calories_intraday[].data as $item  |' +
+                       ' $item."activities-calories-intraday".dataset | map({date: $item."activities-calories"[0].dateTime} + .) | .[])'),
             JsonNormalizeOperator(),
             CreateFeatureOperator(feature_name="dateTime", feature_creator=lambda df:df['date'] + 'T' + df['time']),
             DropFeaturesOperator(['date', 'time']),
@@ -218,7 +222,8 @@ class SihaDistanceIntradayDataset(SihaDataset):
         """
 
         PIPELINE = ProcessingPipeline([
-            JqOperator('map({patientID} + .data.activities_distance_intraday[].data as $item  | $item."activities-distance-intraday".dataset | map({date: $item."activities-distance"[0].dateTime} + .) | .[])'),
+            JqOperator('map({patientID} + .data.activities_distance_intraday[].data as $item  |' +
+                       ' $item."activities-distance-intraday".dataset | map({date: $item."activities-distance"[0].dateTime} + .) | .[])'),
             JsonNormalizeOperator(),
             CreateFeatureOperator(feature_name="dateTime", feature_creator=lambda df:df['date'] + 'T' + df['time']),
             DropFeaturesOperator(['date', 'time']),
