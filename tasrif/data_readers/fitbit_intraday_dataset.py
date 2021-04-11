@@ -10,7 +10,7 @@ import pathlib
 import json
 from tasrif.processing_pipeline import ProcessingPipeline
 from tasrif.processing_pipeline.pandas import JsonNormalizeOperator, SetIndexOperator, ConvertToDatetimeOperator, AsTypeOperator, MergeOperator
-from tasrif.processing_pipeline.custom import ResampleOperator, SetFeaturesValueOperator, DistributedUpsampleOperator
+from tasrif.processing_pipeline.custom import ResampleOperator, SetFeaturesValueOperator, DistributedUpsampleOperator, DropIndexDuplicatesOperator
 
 
 class FitbitIntradayDataset:
@@ -58,6 +58,7 @@ class FitbitSleepDataset(FitbitIntradayDataset):
                 ["levels", "summary", "rem", "thirtyDayAvgMinutes"]],errors='ignore'),
             ConvertToDatetimeOperator(feature_names=['dateTime'], infer_datetime_format=True),
             SetIndexOperator('dateTime'),
+            DropIndexDuplicatesOperator(keep='first'),
             ResampleOperator('30s', 'ffill'),
             SetFeaturesValueOperator(features=['seconds'], value=30)])
 
@@ -220,6 +221,7 @@ class FitbitPhysicalActivityHeartRateDataset(FitbitPhysicalActivityDataset):
             ConvertToDatetimeOperator(feature_names=['dateTime'], infer_datetime_format=True),
             SetIndexOperator('dateTime'),
             AsTypeOperator({'value.bpm': 'int32', 'value.confidence': 'int32'}),
+            DropIndexDuplicatesOperator(keep='first'),
             ResampleOperator('30s', {'value.bpm': 'mean', 'value.confidence': 'mean'})])
 
     def __init__(self, folder, processing_pipeline=Default.PIPELINE):
