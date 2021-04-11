@@ -12,4 +12,3 @@ from tasrif.processing_pipeline.custom.resample_operator import ResampleOperator
 from tasrif.processing_pipeline.custom.distributed_upsample_operator import DistributedUpsampleOperator
 from tasrif.processing_pipeline.custom.jq_operator import JqOperator
 from tasrif.processing_pipeline.custom.iterate_csv_operator import IterateCsvOperator
-from tasrif.processing_pipeline.custom.drop_index_duplicates_operator import DropIndexDuplicatesOperator

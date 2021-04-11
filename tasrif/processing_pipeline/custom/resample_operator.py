@@ -63,7 +63,7 @@ class ResampleOperator(ProcessingOperator):
 
         processed = []
         for data_frame in data_frames:
-            # data_frame = data_frame[~data_frame.index.duplicated(keep='first')]
+            data_frame = data_frame[~data_frame.index.duplicated(keep='first')]
             resampler = data_frame.resample(self.rule)
             if isinstance(self.aggregation_definition, dict):
 
