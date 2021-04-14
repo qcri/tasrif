@@ -26,9 +26,9 @@ stages:
           # - nbconvert prints html output to stdout and logging information to
           #   stderr. Redirect stderr to stdout and then redirect stdout to
           #   /dev/null.
-          arguments: >-
-            --env PYTHONPATH=/home/
+          arguments: >- # '>-' is the 'block chomping indicator'
+            --env PYTHONPATH=/home/ --entrypoint "/bin/bash"
             qcriswtasrif.azurecr.io/$(Build.Repository.Name):latest
-            jupyter nbconvert --to html --stdout \
-            --execute tasrif/test_scripts/test_pipeline_* 2>&1 > /dev/null
+            -c "jupyter nbconvert --to html --stdout
+            --execute tasrif/test_scripts/test_pipeline_* 2>&1 > /dev/null"
 
