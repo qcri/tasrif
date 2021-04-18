@@ -17,3 +17,6 @@ from tasrif.processing_pipeline.pandas.rename_operator import RenameOperator
 from tasrif.processing_pipeline.pandas.apply_operator import ApplyOperator
 from tasrif.processing_pipeline.pandas.pivot_operator import PivotOperator
 from tasrif.processing_pipeline.pandas.rolling_operator import RollingOperator
+from tasrif.processing_pipeline.pandas.sum_operator import SumOperator
+from tasrif.processing_pipeline.pandas.corr_operator import CorrOperator
+from tasrif.processing_pipeline.pandas.mean_operator import MeanOperator

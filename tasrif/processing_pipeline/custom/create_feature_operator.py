@@ -29,7 +29,7 @@ class CreateFeatureOperator(ProcessingOperator):
       >>> print(df0)
     """
 
-    def __init__(self, feature_name, feature_creator):
+    def __init__(self, feature_name, feature_creator, axis=1):
         """Creates a new instance of CreateFeatureOperator
 
         Parameters
@@ -41,6 +41,7 @@ class CreateFeatureOperator(ProcessingOperator):
         """
         self.feature_name = feature_name
         self.feature_creator = feature_creator
+        self.axis=axis
 
 
     def process(self, *data_frames):
@@ -53,7 +54,7 @@ class CreateFeatureOperator(ProcessingOperator):
         """
         processed = []
         for data_frame in data_frames:
-            data_frame[self.feature_name] = data_frame.apply(self.feature_creator, axis=1)
+            data_frame[self.feature_name] = data_frame.apply(self.feature_creator, axis=self.axis)
             processed.append(data_frame)
 
         return processed

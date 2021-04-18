@@ -67,7 +67,6 @@ class SetFeaturesValueOperator(ProcessingOperator):
         self.value = value
         self.raw_data_frames = None
 
-
     def process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.
 
@@ -76,18 +75,17 @@ class SetFeaturesValueOperator(ProcessingOperator):
         pd.DataFrame -or- list[pd.DataFrame]
             Processed dataframe(s) resulting from applying the operator
         """
-
         self.raw_data_frames = data_frames
 
         processed = []
         for data_frame, raw_data_frame in zip(data_frames, self.raw_data_frames):
-            if self.selector and self.features:
+            if (self.selector is not None) and self.features:
                 filtered_result = self.selector(data_frame)
                 data_frame = data_frame.loc[filtered_result, self.features]
-            elif self.selector and (not self.features): 
+            elif (self.selector is not None) and (not self.features): 
                 filtered_result = self.selector(data_frame)
                 data_frame = data_frame.loc[filtered_result]
-            elif (not self.selector) and self.features:
+            elif (self.selector is None) and self.features:
                 data_frame = data_frame[self.features]
 
             if self.value is not None:

@@ -1,8 +1,9 @@
 """
 Operator to aggregate column features based on a column
 """
-from tasrif.processing_pipeline import ProcessingOperator
+import pandas as pd
 
+from tasrif.processing_pipeline import ProcessingOperator
 
 class AggregateOperator(ProcessingOperator):
     """
@@ -53,6 +54,12 @@ class AggregateOperator(ProcessingOperator):
         """
 
         columns = self.groupby_feature_names.copy() if isinstance(self.groupby_feature_names, list) else [self.groupby_feature_names]
+
+        # Remove column names that are not string
+        for idx, col in enumerate(columns):
+            if not isinstance(col, str):
+                del columns[idx]
+
         for key, value in self.aggregation_definition.items():
             if isinstance(value, list):
                 for i in value:
