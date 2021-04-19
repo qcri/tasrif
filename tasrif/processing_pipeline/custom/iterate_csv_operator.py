@@ -99,7 +99,7 @@ class IterateCsvOperator(ProcessingOperator):
 
     def _create_csv_generator(self, data_frame):
         for row in data_frame.itertuples():
-            csv_file = pd.read_csv(self.folder_path.joinpath(getattr(row, self.field)))
+            csv_file = pd.read_csv(self.folder_path.joinpath(str(getattr(row, self.field))))
             if self.pipeline:
                 csv_file = self.pipeline.process(csv_file)[0]
             yield (row, csv_file)
