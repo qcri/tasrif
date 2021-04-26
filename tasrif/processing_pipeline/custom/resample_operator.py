@@ -7,7 +7,8 @@ from tasrif.processing_pipeline import ProcessingOperator
 class ResampleOperator(ProcessingOperator):
     """
 
-    Group and aggregate rows in 2D data frame based on a column feature. This operator works on a 2D data frames where the
+    Group and aggregate rows in 2D data frame based on a column feature.
+    This operator works on a 2D data frames where the
     columns represent the features. The returned data frame contains aggregated values as the column features together
     with the base feature used for grouping.
 
@@ -35,7 +36,6 @@ class ResampleOperator(ProcessingOperator):
     2020-05-02     1.000000]
 
     """
-
     def __init__(self, rule, aggregation_definition):
         """Creates a new instance of ResampleOperator
 

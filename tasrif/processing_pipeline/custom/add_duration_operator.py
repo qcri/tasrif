@@ -5,6 +5,7 @@ from datetime import datetime
 
 from tasrif.processing_pipeline import ProcessingOperator
 
+
 class AddDurationOperator(ProcessingOperator):
     """
 
@@ -18,7 +19,8 @@ class AddDurationOperator(ProcessingOperator):
       >>>
       >>> from tasrif.processing_pipeline.custom import AddDurationOperator
       >>>
-      >>> df0 = pd.DataFrame([[1, "2020-05-01 00:00:00", 1], [1, "2020-05-01 01:00:00", 1], [1, "2020-05-01 03:00:00", 2], [2, "2020-05-02 00:00:00", 1],[2, "2020-05-02 01:00:00", 1]
+      >>> df0 = pd.DataFrame([[1, "2020-05-01 00:00:00", 1], [1, "2020-05-01 01:00:00", 1],
+      >>> [1, "2020-05-01 03:00:00", 2], [2, "2020-05-02 00:00:00", 1],[2, "2020-05-02 01:00:00", 1]
       >>>                     columns=['logId', 'timestamp', 'sleep_level'])
       >>> df0['timestamp'] = pd.to_datetime(df0['timestamp'])
       >>>
@@ -30,8 +32,10 @@ class AddDurationOperator(ProcessingOperator):
       >>>
       >>> print(df0)
     """
-
-    def __init__(self, groupby_feature_names, timestamp_feature_name="timestamp", duration_feature_name="duration"):
+    def __init__(self,
+                 groupby_feature_names,
+                 timestamp_feature_name="timestamp",
+                 duration_feature_name="duration"):
         """Creates a new instance of AddDurationOperator
 
         Parameters
@@ -45,7 +49,6 @@ class AddDurationOperator(ProcessingOperator):
         self.timestamp_feature_name = timestamp_feature_name
         self.duration_feature_name = duration_feature_name
 
-
     def process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.
 
@@ -55,14 +58,17 @@ class AddDurationOperator(ProcessingOperator):
             Processed dataframe(s) resulting from applying the operator
         """
 
-
         processed = []
         for data_frame in data_frames:
-            data_frame[self.duration_feature_name] = data_frame[self.timestamp_feature_name].sub(data_frame[self.timestamp_feature_name].shift())
+            data_frame[self.duration_feature_name] = data_frame[
+                self.timestamp_feature_name].sub(
+                    data_frame[self.timestamp_feature_name].shift())
             now = datetime.now()
             zero_duration = now - now
             # Change the duration of the first entry of every sleep log  group to zero
-            data_frame.loc[data_frame.groupby(self.groupby_feature_names)[self.duration_feature_name].head(1).index, self.duration_feature_name] = zero_duration
+            data_frame.loc[data_frame.groupby(self.groupby_feature_names)[
+                self.duration_feature_name].head(1).index,
+                           self.duration_feature_name] = zero_duration
 
             processed.append(data_frame)
 

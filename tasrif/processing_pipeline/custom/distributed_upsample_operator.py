@@ -43,15 +43,14 @@ class DistributedUpsampleOperator(ProcessingOperator):
 
     def _distributed_upsample(self, data_frame):
         freq = self.rule
-        data_frame = data_frame[~data_frame.index.duplicated(keep='first')]
-        data_frame['group'] = data_frame.index
-        data_frame['count'] = data_frame.resample(freq).ffill()['group'].value_counts()
+        data_frame = data_frame[~data_frame.index.duplicated(keep="first")]
+        data_frame["group"] = data_frame.index
+        data_frame["count"] = data_frame.resample(freq).ffill()["group"].value_counts()
         data_frame = data_frame.resample(freq).ffill()
-        data_frame = data_frame.drop('group', axis=1)
-        data_frame = data_frame.div(data_frame['count'], axis = 0)
-        data_frame = data_frame.drop('count', axis = 1)
+        data_frame = data_frame.drop("group", axis=1)
+        data_frame = data_frame.div(data_frame["count"], axis=0)
+        data_frame = data_frame.drop("count", axis=1)
         return data_frame
-
 
     def __init__(self, rule):
         """Creates a new instance of ResampleOperator
@@ -62,7 +61,6 @@ class DistributedUpsampleOperator(ProcessingOperator):
             The offset string or object representing target conversion.
         """
         self.rule = rule
-
 
     def process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.

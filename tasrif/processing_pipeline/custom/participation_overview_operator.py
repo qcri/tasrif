@@ -7,12 +7,19 @@ from tasrif.processing_pipeline import ProcessingOperator
 class ParticipationOverviewOperator(ProcessingOperator):
     """
 
-        Creates a dataframe showing the overview of a dataframe representing data collected from people over several days.
+        Creates a dataframe showing the overview of a dataframe representing data
+        collected from people over several days.
+
         Specifically two types of overviews are generated:
-        - partipant_vs_features: This overview creates a dataframe where each cell (where row identifies the participant and column identifies the feature)
-        is assigned a value corresponding to the number of days for which data is available (or was measured) for this participant
-        - date_vs_features: This overview creates a dataframe where each cell (where row identifies the date and column identifies the feature)
-        is assigned a value corresponding to the number of participants for which data is available (or was measured) for this day.
+        - partipant_vs_features: This overview creates a dataframe where each cell
+        (where row identifies the participant and column identifies the feature)
+        is assigned a value corresponding to the number of days
+        for which data is available (or was measured) for this participant
+
+        - date_vs_features: This overview creates a dataframe where each cell
+        (where row identifies the date and column identifies the feature)
+        is assigned a value corresponding to the number of participants
+        for which data is available (or was measured) for this day.
 
 
         Examples
@@ -35,7 +42,8 @@ class ParticipationOverviewOperator(ProcessingOperator):
         >>> 1         2      3      2         3
         >>> 2         3      3      2         3]
         >>>
-        >>> op2 = ParticipationOverviewOperator(participant_identifier='PersonId', date_feature_name='Day', overview_type='date_vs_features')
+        >>> op2 = ParticipationOverviewOperator(participant_identifier='PersonId',
+        >>>                                     date_feature_name='Day', overview_type='date_vs_features')
         >>>
         >>> df2 = op2.process(df)
         >>> df2
@@ -49,7 +57,8 @@ class ParticipationOverviewOperator(ProcessingOperator):
         >>>     'Steps': lambda x: x > 1000
         >>> }
         >>>
-        >>> op3 = ParticipationOverviewOperator(participant_identifier='PersonId', date_feature_name='Day', filter_features=od)
+        >>> op3 = ParticipationOverviewOperator(participant_identifier='PersonId',
+        >>>                                     date_feature_name='Day', filter_features=od)
         >>>
         >>> df3 = op3.process(df)
         >>> df3
@@ -61,7 +70,9 @@ class ParticipationOverviewOperator(ProcessingOperator):
         >>>
         >>> # Count only days where the number of steps > 1000
         >>>
-        >>> op4 = ParticipationOverviewOperator(participant_identifier='PersonId', date_feature_name='Day', overview_type='date_vs_features', filter_features=od)
+        >>> op4 = ParticipationOverviewOperator(participant_identifier='PersonId',
+        >>>                                     date_feature_name='Day',
+        >>>                                     overview_type='date_vs_features', filter_features=od)
         >>>
         >>> df4 = op4.process(df)
         >>> df4
@@ -71,7 +82,11 @@ class ParticipationOverviewOperator(ProcessingOperator):
         >>> 2  2020-02-22      3         3      3]
         >>>
     """
-    def __init__(self, participant_identifier="Id", date_feature_name="Date", overview_type="participant_vs_features", filter_features=None):
+    def __init__(self,
+                 participant_identifier="Id",
+                 date_feature_name="Date",
+                 overview_type="participant_vs_features",
+                 filter_features=None):
         """Creates a new instance of ParticipationOverviewOperator
 
         Parameters
@@ -84,14 +99,14 @@ class ParticipationOverviewOperator(ProcessingOperator):
             Type of overview which can take one of the two values  `participant_vs_features` or `date_vs_features`
         filter_features: dict(str->func)
             Dictionary of column/feature name to (lambda) function providing a selection clause.
-            Note that if a column or feature name is omitted then a default selection of non-zero or non-empty values is applied.
+            Note that if a column or feature name is omitted
+            then a default selection of non-zero or non-empty values is applied.
 
         """
         self.participant_identifier = participant_identifier
         self.date_feature_name = date_feature_name
         self.filter_features = filter_features
         self.overview_type = overview_type
-
 
     def process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.
@@ -103,12 +118,16 @@ class ParticipationOverviewOperator(ProcessingOperator):
         """
 
         if self.overview_type == "date_vs_features":
-            return self._create_overview(self.date_feature_name, self.participant_identifier, *data_frames)
+            return self._create_overview(self.date_feature_name,
+                                         self.participant_identifier,
+                                         *data_frames)
         if self.overview_type == "participant_vs_features":
-            return self._create_overview(self.participant_identifier, self.date_feature_name, *data_frames)
+            return self._create_overview(self.participant_identifier,
+                                         self.date_feature_name, *data_frames)
         raise ValueError(f"Unknown type of overview: {self.overview_type}")
 
-    def _create_overview(self, group_by_feature, counted_feature, *data_frames):
+    def _create_overview(self, group_by_feature, counted_feature,
+                         *data_frames):
 
         count_non_na = lambda x: x.notna().sum()
 
@@ -119,16 +138,20 @@ class ParticipationOverviewOperator(ProcessingOperator):
             filter_features = {}
             for column in columns:
                 if column == counted_feature:
-                    filter_features[counted_feature] = (counted_feature, lambda x: x.notna().sum())
+                    filter_features[counted_feature] = (
+                        counted_feature, lambda x: x.notna().sum())
                 elif column == group_by_feature:
                     pass
                 else:
                     if self.filter_features and column in self.filter_features:
                         column_map_func = self.filter_features[column]
-                        filter_features[column] = (column, lambda x, func=column_map_func: func(x).sum())
+                        filter_features[column] = (
+                            column,
+                            lambda x, func=column_map_func: func(x).sum())
                     else:
                         filter_features[column] = (column, count_non_na)
-            data_frame = data_frame.groupby(group_by_feature, as_index=False).agg(**filter_features)
+            data_frame = data_frame.groupby(
+                group_by_feature, as_index=False).agg(**filter_features)
             processed.append(data_frame)
 
         return processed

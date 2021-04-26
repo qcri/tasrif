@@ -1,7 +1,7 @@
 """Module that defines the SequenceOperator class
 """
 
-from tasrif.processing_pipeline import ProcessingOperator
+from tasrif.processing_pipeline.processing_operator import ProcessingOperator
 
 class SequenceOperator(ProcessingOperator):
     """Class representing a pipeline of processing operators. The definition of the pipeline

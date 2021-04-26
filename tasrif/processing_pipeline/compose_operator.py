@@ -1,7 +1,7 @@
 """Module that defines the ComposeOperator class
 """
 
-from tasrif.processing_pipeline import ProcessingOperator
+from tasrif.processing_pipeline.processing_operator import ProcessingOperator
 
 class ComposeOperator(ProcessingOperator):
     """Class representing a composiition of processing operators. The same data flows to all the

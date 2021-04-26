@@ -8,15 +8,18 @@
 import pathlib
 import json
 from tasrif.processing_pipeline import ProcessingPipeline
-from tasrif.processing_pipeline.pandas import JsonNormalizeOperator, SetIndexOperator, ConvertToDatetimeOperator, AsTypeOperator, DropFeaturesOperator
+from tasrif.processing_pipeline.pandas import (
+    JsonNormalizeOperator,
+    SetIndexOperator,
+    ConvertToDatetimeOperator,
+    AsTypeOperator,
+    DropFeaturesOperator,
+)
 from tasrif.processing_pipeline.custom import JqOperator, CreateFeatureOperator
 
+
 class SihaDataset:
-    """Base class to work with the all SIHA based datasets.
-
-    """
-
-
+    """Base class to work with the all SIHA based datasets."""
     def __init__(self, folder, processing_pipeline):
         self.folder = folder
         fullpath = pathlib.Path(folder)
@@ -26,8 +29,8 @@ class SihaDataset:
         for file_path in pathlib.Path(str(fullpath)).glob("data*.json"):
             file_paths.append(str(file_path))
 
-        if len(file_paths) == 0:
-            raise ValueError('No data file matching the pattern data*.json')
+        if not file_paths:
+            raise ValueError("No data file matching the pattern data*.json")
 
         self.raw_df = []
         for file_path in file_paths:
@@ -36,7 +39,6 @@ class SihaDataset:
 
                 self.raw_df.extend(json_data)
         self._process()
-
 
     def _process(self):
 
@@ -64,10 +66,8 @@ class SihaDataset:
 
 
 class SihaSleepDataset(SihaDataset):
-    """Class to work with the sleep data (aggregated on a day basis) from a SIHA dump.
-
-    """
-    class Default: #pylint: disable=too-few-public-methods
+    """Class to work with the sleep data (aggregated on a day basis) from a SIHA dump."""
+    class Default:  # pylint: disable=too-few-public-methods
         """Default parameters used by the class.
         The default pipeline consists of the following high level steps:
         - JQ query to select Sleep data from the dump
@@ -78,7 +78,7 @@ class SihaSleepDataset(SihaDataset):
         PIPELINE = ProcessingPipeline([
             JqOperator("map({patientID} + .data.sleep[].data)"),
             JsonNormalizeOperator(
-                record_path=['sleep'],
+                record_path=["sleep"],
                 meta=[
                     "patientID",
                     ["summary", "stages", "rem"],
@@ -86,9 +86,14 @@ class SihaSleepDataset(SihaDataset):
                     ["summary", "stages", "light"],
                     ["summary", "stages", "wake"],
                     ["summary", "totalMinutesAsleep"],
-                    ["summary", "totalTimeInBed"]], errors='ignore'),
-            ConvertToDatetimeOperator(feature_names=['dateOfSleep'], infer_datetime_format=True),
-            SetIndexOperator('dateOfSleep')])
+                    ["summary", "totalTimeInBed"],
+                ],
+                errors="ignore",
+            ),
+            ConvertToDatetimeOperator(feature_names=["dateOfSleep"],
+                                      infer_datetime_format=True),
+            SetIndexOperator("dateOfSleep"),
+        ])
 
     def __init__(self, folder, processing_pipeline=Default.PIPELINE):
 
@@ -119,12 +124,10 @@ class SihaSleepDataset(SihaDataset):
         """
         return self.processed_df
 
+
 class SihaSleepIntradayDataset(SihaDataset):
-    """Class to work with intraday sleep data from a SIHA dump
-
-    """
-
-    class Default: #pylint: disable=too-few-public-methods
+    """Class to work with intraday sleep data from a SIHA dump"""
+    class Default:  # pylint: disable=too-few-public-methods
         """Default parameters used by the class.
         The default pipeline consists of the following high level steps:
         - JQ query to select the intraday calories
@@ -133,13 +136,21 @@ class SihaSleepIntradayDataset(SihaDataset):
         """
 
         PIPELINE = ProcessingPipeline([
-            JqOperator('map({patientID} + (.data.sleep[].data as $data | ($data.sleep | map(.) | .[]) | . * {levels:  {overview : ($data.summary//{})}})) |  ' +
-                       'map (if .levels.data != null then . else .levels += {data: []} end) | ' +
-                       'map(. + {type, dateOfSleep, minutesAsleep, logId, startTime, endTime, duration, isMainSleep,' +
-                       ' minutesToFallAsleep, minutesAwake, minutesAfterWakeup, timeInBed, efficiency, infoCode})'),
+            JqOperator(
+                "map({patientID} + (.data.sleep[].data as $data | "
+                +
+                "($data.sleep | map(.) | .[]) | . * {levels:  {overview : ($data.summary//{})}})) |  "
+                +
+                "map (if .levels.data != null then . else .levels += {data: []} end) | "
+                +
+                "map(. + {type, dateOfSleep, minutesAsleep, logId, startTime, endTime, duration, isMainSleep,"
+                +
+                " minutesToFallAsleep, minutesAwake, minutesAfterWakeup, timeInBed, efficiency, infoCode})"
+            ),
             JsonNormalizeOperator(
-                record_path=['levels', 'data'],
-                 meta=["patientID",
+                record_path=["levels", "data"],
+                meta=[
+                    "patientID",
                     "logId",
                     "dateOfSleep",
                     "startTime",
@@ -171,22 +182,23 @@ class SihaSleepIntradayDataset(SihaDataset):
                     ["levels", "overview", "stages", "rem"],
                     ["levels", "overview", "stages", "deep"],
                     ["levels", "overview", "stages", "light"],
-                    ["levels", "overview", "stages", "wake"]
-                     ],
-                errors='ignore'),
-            ConvertToDatetimeOperator(feature_names=['dateTime'], infer_datetime_format=True),
-            SetIndexOperator('dateTime')])
+                    ["levels", "overview", "stages", "wake"],
+                ],
+                errors="ignore",
+            ),
+            ConvertToDatetimeOperator(feature_names=["dateTime"],
+                                      infer_datetime_format=True),
+            SetIndexOperator("dateTime"),
+        ])
 
     def __init__(self, folder, processing_pipeline=Default.PIPELINE):
 
         super().__init__(folder, processing_pipeline)
 
+
 class SihaCaloriesIntradayDataset(SihaDataset):
-    """Class to work with the Physical Activity/calories from a SIHA dump
-
-    """
-
-    class Default: #pylint: disable=too-few-public-methods
+    """Class to work with the Physical Activity/calories from a SIHA dump"""
+    class Default:  # pylint: disable=too-few-public-methods
         """Default parameters used by the class.
         The default pipeline consists of the following high level steps:
         - JQ query to select the intraday calories
@@ -195,25 +207,33 @@ class SihaCaloriesIntradayDataset(SihaDataset):
         """
 
         PIPELINE = ProcessingPipeline([
-            JqOperator('map({patientID} + .data.activities_calories_intraday[].data as $item  |' +
-                       ' $item."activities-calories-intraday".dataset | map({date: $item."activities-calories"[0].dateTime} + .) | .[])'),
+            JqOperator(
+                "map({patientID} + .data.activities_calories_intraday[].data as $item  |"
+                +
+                ' $item."activities-calories-intraday".dataset | '
+                +
+                'map({date: $item."activities-calories"[0].dateTime} + .) | .[])'
+            ),
             JsonNormalizeOperator(),
-            CreateFeatureOperator(feature_name="dateTime", feature_creator=lambda df:df['date'] + 'T' + df['time']),
-            DropFeaturesOperator(['date', 'time']),
-            ConvertToDatetimeOperator(feature_names=['dateTime'], infer_datetime_format=True),
-            SetIndexOperator('dateTime'),
-            AsTypeOperator({'value': 'float32'})])
+            CreateFeatureOperator(
+                feature_name="dateTime",
+                feature_creator=lambda df: df["date"] + "T" + df["time"],
+            ),
+            DropFeaturesOperator(["date", "time"]),
+            ConvertToDatetimeOperator(feature_names=["dateTime"],
+                                      infer_datetime_format=True),
+            SetIndexOperator("dateTime"),
+            AsTypeOperator({"value": "float32"}),
+        ])
 
     def __init__(self, folder, processing_pipeline=Default.PIPELINE):
 
         super().__init__(folder, processing_pipeline)
 
+
 class SihaDistanceIntradayDataset(SihaDataset):
-    """Class to work with the Physical Activity/distance from a SIHA dump
-
-    """
-
-    class Default: #pylint: disable=too-few-public-methods
+    """Class to work with the Physical Activity/distance from a SIHA dump"""
+    class Default:  # pylint: disable=too-few-public-methods
         """Default parameters used by the class.
         The default pipeline consists of the following high level steps:
         - JQ query to select the intraday distance
@@ -222,26 +242,33 @@ class SihaDistanceIntradayDataset(SihaDataset):
         """
 
         PIPELINE = ProcessingPipeline([
-            JqOperator('map({patientID} + .data.activities_distance_intraday[].data as $item  |' +
-                       ' $item."activities-distance-intraday".dataset | map({date: $item."activities-distance"[0].dateTime} + .) | .[])'),
+            JqOperator(
+                "map({patientID} + .data.activities_distance_intraday[].data as $item  |"
+                +
+                ' $item."activities-distance-intraday".dataset | '
+                +
+                'map({date: $item."activities-distance"[0].dateTime} + .) | .[])'
+            ),
             JsonNormalizeOperator(),
-            CreateFeatureOperator(feature_name="dateTime", feature_creator=lambda df:df['date'] + 'T' + df['time']),
-            DropFeaturesOperator(['date', 'time']),
-            ConvertToDatetimeOperator(feature_names=['dateTime'], infer_datetime_format=True),
-            SetIndexOperator('dateTime'),
-            AsTypeOperator({'value': 'float32'})])
-
+            CreateFeatureOperator(
+                feature_name="dateTime",
+                feature_creator=lambda df: df["date"] + "T" + df["time"],
+            ),
+            DropFeaturesOperator(["date", "time"]),
+            ConvertToDatetimeOperator(feature_names=["dateTime"],
+                                      infer_datetime_format=True),
+            SetIndexOperator("dateTime"),
+            AsTypeOperator({"value": "float32"}),
+        ])
 
     def __init__(self, folder, processing_pipeline=Default.PIPELINE):
 
         super().__init__(folder, processing_pipeline)
 
+
 class SihaHeartRateIntradayDataset(SihaDataset):
-    """Class to work with the Physical Activity/heart rate from a SIHA dump
-
-    """
-
-    class Default: #pylint: disable=too-few-public-methods
+    """Class to work with the Physical Activity/heart rate from a SIHA dump"""
+    class Default:  # pylint: disable=too-few-public-methods
         """Default parameters used by the class.
         The default pipeline consists of the following high level steps:
         - JQ query to select the intraday heartrate
@@ -250,13 +277,24 @@ class SihaHeartRateIntradayDataset(SihaDataset):
         """
 
         PIPELINE = ProcessingPipeline([
-            JqOperator('map({patientID} + .data.activities_heart_intraday[].data as $item  | $item."activities-heart-intraday".dataset | map({date: $item."activities-heart"[0].dateTime} + .) | .[])'),
+            JqOperator(
+                'map({patientID} + .data.activities_heart_intraday[].data as $item  | '
+                +
+                '$item."activities-heart-intraday".dataset | '
+                +
+                'map({date: $item."activities-heart"[0].dateTime} + .) | .[])'
+            ),
             JsonNormalizeOperator(),
-            CreateFeatureOperator(feature_name="dateTime", feature_creator=lambda df:df['date'] + 'T' + df['time']),
-            DropFeaturesOperator(['date', 'time']),
-            ConvertToDatetimeOperator(feature_names=['dateTime'], infer_datetime_format=True),
-            SetIndexOperator('dateTime'),
-            AsTypeOperator({'value': 'float32'})])
+            CreateFeatureOperator(
+                feature_name="dateTime",
+                feature_creator=lambda df: df["date"] + "T" + df["time"],
+            ),
+            DropFeaturesOperator(["date", "time"]),
+            ConvertToDatetimeOperator(feature_names=["dateTime"],
+                                      infer_datetime_format=True),
+            SetIndexOperator("dateTime"),
+            AsTypeOperator({"value": "float32"}),
+        ])
 
     def __init__(self, folder, processing_pipeline=Default.PIPELINE):
 
@@ -264,11 +302,8 @@ class SihaHeartRateIntradayDataset(SihaDataset):
 
 
 class SihaVeryActiveMinutesDataset(SihaDataset):
-    """Class to work with the Physical Activity/very active minutes from a SIHA dump
-
-    """
-
-    class Default: #pylint: disable=too-few-public-methods
+    """Class to work with the Physical Activity/very active minutes from a SIHA dump"""
+    class Default:  # pylint: disable=too-few-public-methods
         """Default parameters used by the class.
         The default pipeline consists of the following high level steps:
         - JQ query to select the very active minutes
@@ -277,22 +312,26 @@ class SihaVeryActiveMinutesDataset(SihaDataset):
         """
 
         PIPELINE = ProcessingPipeline([
-            JqOperator('map({patientID} + .data.activities_tracker_minutesVeryActive[].data."activities-tracker-minutesVeryActive"[0])'),
+            JqOperator(
+                'map({patientID} + .data.activities_tracker_minutesVeryActive[].data.'
+                +
+                '"activities-tracker-minutesVeryActive"[0])'
+            ),
             JsonNormalizeOperator(),
-            ConvertToDatetimeOperator(feature_names=['dateTime'], infer_datetime_format=True),
-            SetIndexOperator('dateTime'),
-            AsTypeOperator({'value': 'float32'})])
+            ConvertToDatetimeOperator(feature_names=["dateTime"],
+                                      infer_datetime_format=True),
+            SetIndexOperator("dateTime"),
+            AsTypeOperator({"value": "float32"}),
+        ])
 
     def __init__(self, folder, processing_pipeline=Default.PIPELINE):
 
         super().__init__(folder, processing_pipeline)
 
+
 class SihaLightlyActiveMinutesDataset(SihaDataset):
-    """Class to work with the Physical Activity/lightly active minutes from a SIHA dump
-
-    """
-
-    class Default: #pylint: disable=too-few-public-methods
+    """Class to work with the Physical Activity/lightly active minutes from a SIHA dump"""
+    class Default:  # pylint: disable=too-few-public-methods
         """Default parameters used by the class.
         The default pipeline consists of the following high level steps:
         - JQ query to select the lightly active minutes
@@ -301,22 +340,26 @@ class SihaLightlyActiveMinutesDataset(SihaDataset):
         """
 
         PIPELINE = ProcessingPipeline([
-            JqOperator('map({patientID} + .data.activities_tracker_minutesLightlyActive[].data."activities-tracker-minutesLightlyActive"[0])'),
+            JqOperator(
+                'map({patientID} + .data.activities_tracker_minutesLightlyActive[].data.'
+                +
+                '"activities-tracker-minutesLightlyActive"[0])'
+            ),
             JsonNormalizeOperator(),
-            ConvertToDatetimeOperator(feature_names=['dateTime'], infer_datetime_format=True),
-            SetIndexOperator('dateTime'),
-            AsTypeOperator({'value': 'float32'})])
+            ConvertToDatetimeOperator(feature_names=["dateTime"],
+                                      infer_datetime_format=True),
+            SetIndexOperator("dateTime"),
+            AsTypeOperator({"value": "float32"}),
+        ])
 
     def __init__(self, folder, processing_pipeline=Default.PIPELINE):
 
         super().__init__(folder, processing_pipeline)
 
+
 class SihaSedentaryMinutesDataset(SihaDataset):
-    """Class to work with the Physical Activity/sedentary minutes from a SIHA dump
-
-    """
-
-    class Default: #pylint: disable=too-few-public-methods
+    """Class to work with the Physical Activity/sedentary minutes from a SIHA dump"""
+    class Default:  # pylint: disable=too-few-public-methods
         """Default parameters used by the class.
         The default pipeline consists of the following high level steps:
         - JQ query to select the sedentary minutes
@@ -325,22 +368,26 @@ class SihaSedentaryMinutesDataset(SihaDataset):
         """
 
         PIPELINE = ProcessingPipeline([
-            JqOperator('map({patientID} + .data.activities_tracker_minutesSedentary[].data."activities-tracker-minutesSedentary"[0])'),
+            JqOperator(
+                'map({patientID} + .data.activities_tracker_minutesSedentary[].data.'
+                +
+                '"activities-tracker-minutesSedentary"[0])'
+            ),
             JsonNormalizeOperator(),
-            ConvertToDatetimeOperator(feature_names=['dateTime'], infer_datetime_format=True),
-            SetIndexOperator('dateTime'),
-            AsTypeOperator({'value': 'float32'})])
+            ConvertToDatetimeOperator(feature_names=["dateTime"],
+                                      infer_datetime_format=True),
+            SetIndexOperator("dateTime"),
+            AsTypeOperator({"value": "float32"}),
+        ])
 
     def __init__(self, folder, processing_pipeline=Default.PIPELINE):
 
         super().__init__(folder, processing_pipeline)
 
+
 class SihaModeratelyActiveMinutesDataset(SihaDataset):
-    """Class to work with the Physical Activity/moderately active from a SIHA dump
-
-    """
-
-    class Default:#pylint: disable=too-few-public-methods
+    """Class to work with the Physical Activity/moderately active from a SIHA dump"""
+    class Default:  # pylint: disable=too-few-public-methods
         """Default parameters used by the class.
         The default pipeline consists of the following high level steps:
         - JQ query to select the moderately active (aka fairly active) minutes
@@ -349,22 +396,26 @@ class SihaModeratelyActiveMinutesDataset(SihaDataset):
         """
 
         PIPELINE = ProcessingPipeline([
-            JqOperator('map({patientID} + .data.activities_tracker_minutesFairlyActive[].data."activities-tracker-minutesFairlyActive"[0])'),
+            JqOperator(
+                'map({patientID} + .data.activities_tracker_minutesFairlyActive[].data.'
+                +
+                '"activities-tracker-minutesFairlyActive"[0])'
+            ),
             JsonNormalizeOperator(),
-            ConvertToDatetimeOperator(feature_names=['dateTime'], infer_datetime_format=True),
-            SetIndexOperator('dateTime'),
-            AsTypeOperator({'value': 'float32'})])
+            ConvertToDatetimeOperator(feature_names=["dateTime"],
+                                      infer_datetime_format=True),
+            SetIndexOperator("dateTime"),
+            AsTypeOperator({"value": "float32"}),
+        ])
 
     def __init__(self, folder, processing_pipeline=Default.PIPELINE):
 
         super().__init__(folder, processing_pipeline)
 
+
 class SihaStepsDataset(SihaDataset):
-    """Class to work with the Physical Activity/steps (aggregated daily counts) from a SIHA dump
-
-    """
-
-    class Default:#pylint: disable=too-few-public-methods
+    """Class to work with the Physical Activity/steps (aggregated daily counts) from a SIHA dump"""
+    class Default:  # pylint: disable=too-few-public-methods
         """Default parameters used by the class.
         The default pipeline consists of the following high level steps:
         - JQ query to select the tracker steps
@@ -373,11 +424,15 @@ class SihaStepsDataset(SihaDataset):
         """
 
         PIPELINE = ProcessingPipeline([
-            JqOperator('map({patientID} + .data.activities_tracker_steps[].data."activities-tracker-steps"[0])'),
+            JqOperator(
+                'map({patientID} + .data.activities_tracker_steps[].data."activities-tracker-steps"[0])'
+            ),
             JsonNormalizeOperator(),
-            ConvertToDatetimeOperator(feature_names=['dateTime'], infer_datetime_format=True),
-            SetIndexOperator('dateTime'),
-            AsTypeOperator({'value': 'int32'})])
+            ConvertToDatetimeOperator(feature_names=["dateTime"],
+                                      infer_datetime_format=True),
+            SetIndexOperator("dateTime"),
+            AsTypeOperator({"value": "int32"}),
+        ])
 
     def __init__(self, folder, processing_pipeline=Default.PIPELINE):
 
@@ -385,11 +440,8 @@ class SihaStepsDataset(SihaDataset):
 
 
 class SihaCaloriesDataset(SihaDataset):
-    """Class to work with the Physical Activity/caloreis (aggregated daily count) from a SIHA dump
-
-    """
-
-    class Default:#pylint: disable=too-few-public-methods
+    """Class to work with the Physical Activity/caloreis (aggregated daily count) from a SIHA dump"""
+    class Default:  # pylint: disable=too-few-public-methods
         """Default parameters used by the class.
         The default pipeline consists of the following high level steps:
         - JQ query to select the tracker calories
@@ -398,22 +450,24 @@ class SihaCaloriesDataset(SihaDataset):
         """
 
         PIPELINE = ProcessingPipeline([
-            JqOperator('map({patientID} + .data.activities_tracker_calories[].data."activities-tracker-calories"[0])'),
+            JqOperator(
+                'map({patientID} + .data.activities_tracker_calories[].data."activities-tracker-calories"[0])'
+            ),
             JsonNormalizeOperator(),
-            ConvertToDatetimeOperator(feature_names=['dateTime'], infer_datetime_format=True),
-            SetIndexOperator('dateTime'),
-            AsTypeOperator({'value': 'float32'})])
+            ConvertToDatetimeOperator(feature_names=["dateTime"],
+                                      infer_datetime_format=True),
+            SetIndexOperator("dateTime"),
+            AsTypeOperator({"value": "float32"}),
+        ])
 
     def __init__(self, folder, processing_pipeline=Default.PIPELINE):
 
         super().__init__(folder, processing_pipeline)
 
+
 class SihaDistanceDataset(SihaDataset):
-    """Class to work with the Physical Activity/distance (aggregated daily count) from a SIHA dump
-
-    """
-
-    class Default:#pylint: disable=too-few-public-methods
+    """Class to work with the Physical Activity/distance (aggregated daily count) from a SIHA dump"""
+    class Default:  # pylint: disable=too-few-public-methods
         """Default parameters used by the class.
         The default pipeline consists of the following high level steps:
         - JQ query to select the distance
@@ -422,22 +476,24 @@ class SihaDistanceDataset(SihaDataset):
         """
 
         PIPELINE = ProcessingPipeline([
-            JqOperator('map({patientID} + .data.activities_tracker_distance[].data."activities-tracker-distance"[0])'),
+            JqOperator(
+                'map({patientID} + .data.activities_tracker_distance[].data."activities-tracker-distance"[0])'
+            ),
             JsonNormalizeOperator(),
-            ConvertToDatetimeOperator(feature_names=['dateTime'], infer_datetime_format=True),
-            SetIndexOperator('dateTime'),
-            AsTypeOperator({'value': 'float32'})])
+            ConvertToDatetimeOperator(feature_names=["dateTime"],
+                                      infer_datetime_format=True),
+            SetIndexOperator("dateTime"),
+            AsTypeOperator({"value": "float32"}),
+        ])
 
     def __init__(self, folder, processing_pipeline=Default.PIPELINE):
 
         super().__init__(folder, processing_pipeline)
 
+
 class SihaCgmDataset(SihaDataset):
-    """Class to work with the glucose levels measured by a CGM from a SIHA dump
-
-    """
-
-    class Default:#pylint: disable=too-few-public-methods
+    """Class to work with the glucose levels measured by a CGM from a SIHA dump"""
+    class Default:  # pylint: disable=too-few-public-methods
         """Default parameters used by the class.
         The default pipeline consists of the following high level steps:
         - JQ query to select the CGM data
@@ -446,22 +502,22 @@ class SihaCgmDataset(SihaDataset):
         """
 
         PIPELINE = ProcessingPipeline([
-            JqOperator('map({patientID} + .data.cgm[])'),
+            JqOperator("map({patientID} + .data.cgm[])"),
             JsonNormalizeOperator(),
-            ConvertToDatetimeOperator(feature_names=['time'], infer_datetime_format=True),
-            SetIndexOperator('time'),
-            AsTypeOperator({'value': 'float32'})])
+            ConvertToDatetimeOperator(feature_names=["time"],
+                                      infer_datetime_format=True),
+            SetIndexOperator("time"),
+            AsTypeOperator({"value": "float32"}),
+        ])
 
     def __init__(self, folder, processing_pipeline=Default.PIPELINE):
 
         super().__init__(folder, processing_pipeline)
 
+
 class SihaEmrDataset(SihaDataset):
-    """Class to work with the EMR (electronic medical records data) from a SIHA dump
-
-    """
-
-    class Default:#pylint: disable=too-few-public-methods
+    """Class to work with the EMR (electronic medical records data) from a SIHA dump"""
+    class Default:  # pylint: disable=too-few-public-methods
         """Default parameters used by the class.
         The default pipeline consists of the following high level steps:
         - JQ query to select the EMR data
@@ -470,20 +526,21 @@ class SihaEmrDataset(SihaDataset):
         """
 
         PIPELINE = ProcessingPipeline([
-            JqOperator('map({patientID} + .data.emr[])'),
+            JqOperator("map({patientID} + .data.emr[])"),
             JsonNormalizeOperator(),
-            ConvertToDatetimeOperator(feature_names=['time'], infer_datetime_format=True),
-            SetIndexOperator('time')])
+            ConvertToDatetimeOperator(feature_names=["time"],
+                                      infer_datetime_format=True),
+            SetIndexOperator("time"),
+        ])
 
     def __init__(self, folder, processing_pipeline=Default.PIPELINE):
 
         super().__init__(folder, processing_pipeline)
+
+
 class SihaTimeInHeartRateZonesDataset(SihaDataset):
-    """Class to work with the time in different HR zones (aggregated daily counts) from a SIHA dump
-
-    """
-
-    class Default: #pylint: disable=too-few-public-methods
+    """Class to work with the time in different HR zones (aggregated daily counts) from a SIHA dump"""
+    class Default:  # pylint: disable=too-few-public-methods
         """Default parameters used by the class.
         The default pipeline consists of the following high level steps:
         - JQ query to select HRzones data
@@ -492,12 +549,18 @@ class SihaTimeInHeartRateZonesDataset(SihaDataset):
         """
 
         PIPELINE = ProcessingPipeline([
-            JqOperator('map({patientID} + .data.activities_heart[].data."activities-heart"[] as $item |' +
-                       '{dateTime: $item.dateTime, restingHeartRate: $item.value.restingHeartRate} +' +
-                       'reduce $item.value.heartRateZones[] as $i ({}; .[$i.name] = $i.minutes))'),
+            JqOperator(
+                'map({patientID} + .data.activities_heart[].data."activities-heart"[] as $item |'
+                +
+                "{dateTime: $item.dateTime, restingHeartRate: $item.value.restingHeartRate} +"
+                +
+                "reduce $item.value.heartRateZones[] as $i ({}; .[$i.name] = $i.minutes))"
+            ),
             JsonNormalizeOperator(),
-            ConvertToDatetimeOperator(feature_names=['dateTime'], infer_datetime_format=True),
-            SetIndexOperator('dateTime')])
+            ConvertToDatetimeOperator(feature_names=["dateTime"],
+                                      infer_datetime_format=True),
+            SetIndexOperator("dateTime"),
+        ])
 
     def __init__(self, folder, processing_pipeline=Default.PIPELINE):
 
@@ -505,11 +568,8 @@ class SihaTimeInHeartRateZonesDataset(SihaDataset):
 
 
 class SihaStepsIntradayDataset(SihaDataset):
-    """Class to work with the Physical Activity/steps (15 min samples) from a SIHA dump
-
-    """
-
-    class Default: #pylint: disable=too-few-public-methods
+    """Class to work with the Physical Activity/steps (15 min samples) from a SIHA dump"""
+    class Default:  # pylint: disable=too-few-public-methods
         """Default parameters used by the class.
         The default pipeline consists of the following high level steps:
         - JQ query to select intraday steps
@@ -517,15 +577,25 @@ class SihaStepsIntradayDataset(SihaDataset):
         - set index to date time field
         """
 
-
         PIPELINE = ProcessingPipeline([
-            JqOperator('map({patientID} + .data.activities_steps_intraday[].data as $item  | $item."activities-steps-intraday".dataset | map({date: $item."activities-steps"[0].dateTime} + .) | .[])'),
+            JqOperator(
+                'map({patientID} + .data.activities_steps_intraday[].data as $item  | '
+                +
+                '$item."activities-steps-intraday".dataset | '
+                +
+                'map({date: $item."activities-steps"[0].dateTime} + .) | .[])'
+            ),
             JsonNormalizeOperator(),
-            CreateFeatureOperator(feature_name="dateTime", feature_creator=lambda df:df['date'] + 'T' + df['time']),
-            DropFeaturesOperator(['date', 'time']),
-            ConvertToDatetimeOperator(feature_names=['dateTime'], infer_datetime_format=True),
-            SetIndexOperator('dateTime'),
-            AsTypeOperator({'value': 'float32'})])
+            CreateFeatureOperator(
+                feature_name="dateTime",
+                feature_creator=lambda df: df["date"] + "T" + df["time"],
+            ),
+            DropFeaturesOperator(["date", "time"]),
+            ConvertToDatetimeOperator(feature_names=["dateTime"],
+                                      infer_datetime_format=True),
+            SetIndexOperator("dateTime"),
+            AsTypeOperator({"value": "float32"}),
+        ])
 
     def __init__(self, folder, processing_pipeline=Default.PIPELINE):
 

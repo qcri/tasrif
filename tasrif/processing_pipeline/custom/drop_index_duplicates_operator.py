@@ -23,7 +23,8 @@ class DropIndexDuplicatesOperator(ProcessingOperator):
     >>> from tasrif.processing_pipeline.custom import DropDuplicatesOperator
     >>>
     >>> idx = pd.Index(['1', '2', '2', '3'])
-    >>> df = pd.DataFrame([['tom', 10], ['Alfred', 15], ['Alfred', 18], ['juli', 14]], columns=['name', 'age'], index=idx)
+    >>> df = pd.DataFrame([['tom', 10], ['Alfred', 15], ['Alfred', 18],
+    >>> ['juli', 14]], columns=['name', 'age'], index=idx)
     >>>
     >>> operator = DropIndexDuplicatesOperator(keep='first')
     >>> df = operator.process(df)[0]

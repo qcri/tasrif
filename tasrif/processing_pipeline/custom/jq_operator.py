@@ -12,7 +12,7 @@ class JqOperator(ProcessingOperator):
 
     Examples
     --------
->>>
+    >>>
     >>> import pandas as pd
     >>> from tasrif.processing_pipeline.custom import JqOperator
     >>> df = [

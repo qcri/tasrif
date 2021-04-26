@@ -53,7 +53,7 @@ class AsTypeOperator(ProcessingOperator):
         kwargs: Arguments to pandas pd.astype function
 
         """
-        self.dtype =dtype
+        self.dtype = dtype
         self.kwargs = kwargs
 
 

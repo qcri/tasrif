@@ -76,7 +76,8 @@ class JsonNormalizeOperator(ProcessingOperator):
     >>>     }
     >>> ]
     >>>
-    >>> op = JsonNormalizeOperator(record_path=['data', 'time_series'], meta=['date', 'main_sleep', ['data', 'total_sleep']])
+    >>> op = JsonNormalizeOperator(record_path=['data', 'time_series'],
+    >>>                            meta=['date', 'main_sleep', ['data', 'total_sleep']])
     >>>
     >>> df = op.process(data)
     >>> print(df)

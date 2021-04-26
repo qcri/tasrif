@@ -48,12 +48,12 @@ class SetIndexOperator(ProcessingOperator):
     2020-05-02 01:00:00      2            1]
 
     """
-
-    def __init__(self,  keys, **kwargs):
+    def __init__(self, keys, **kwargs):
         """
         Initializes the operator
 
-        keys: This parameter can be either a single column key, a single array of the same length as the calling DataFrame,
+        keys: This parameter can be either a single column key,
+        a single array of the same length as the calling DataFrame,
         or a list containing an arbitrary combination of column keys and arrays
 
         **kwargs:
