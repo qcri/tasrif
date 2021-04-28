@@ -23,7 +23,8 @@ from tasrif.processing_pipeline.pandas import DropFeaturesOperator
 from tasrif.processing_pipeline.pandas import DropDuplicatesOperator
 from tasrif.processing_pipeline.pandas import DropNAOperator
 from tasrif.processing_pipeline.pandas import ConvertToDatetimeOperator
-
+from tasrif.processing_pipeline.pandas import SetIndexOperator
+from tasrif.processing_pipeline.pandas import PivotOperator
 
 class MyHeartCountsDataset:  # pylint: disable=too-few-public-methods
     """
@@ -895,23 +896,33 @@ class HealthKitDataDataset:
          (3) the generator returns a pandas dataframe per next() call
     """
     class Defaults:  # pylint: disable=too-few-public-methods
-        """Default parameters used by the class."""
-
-        CSV_FOLDER = "E:/Development/siha/HealthData_timeseries"
+        """Default parameters used by the class.
+        """
+        CSV_FOLDER = 'E:/Development/siha/HealthData_timeseries'
         CSV_PIPELINE = ProcessingPipeline([
             DropNAOperator(),
-            ConvertToDatetimeOperator(feature_names=["startTime", "endTime"],
-                                      utc=True),
+            ConvertToDatetimeOperator(
+                feature_names=["endTime"],
+                errors='coerce', utc=True),
+            CreateFeatureOperator(
+                feature_name='Date',
+                feature_creator=lambda df: df['endTime'].date()),
+            DropFeaturesOperator(drop_features=['startTime', 'endTime']),
+            AggregateOperator(
+                groupby_feature_names=["Date", "type"],
+                aggregation_definition={'value': 'sum'}),
+            SetIndexOperator('Date'),
+            PivotOperator(columns='type'),
         ])
 
         PIPELINE = ProcessingPipeline([
             CreateFeatureOperator(
-                feature_name="file_name",
-                feature_creator=lambda df: df["recordId"] + ".csv",
-            ),
-            IterateCsvOperator(folder_path=CSV_FOLDER,
-                               field="file_name",
-                               pipeline=CSV_PIPELINE),
+                feature_name='file_name',
+                feature_creator=lambda df: str(df['data.csv'])),
+            IterateCsvOperator(
+                folder_path=CSV_FOLDER,
+                field='file_name',
+                pipeline=CSV_PIPELINE),
         ])
 
     def __init__(
