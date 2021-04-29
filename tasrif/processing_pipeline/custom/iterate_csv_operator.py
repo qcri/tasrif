@@ -97,6 +97,13 @@ class IterateCsvOperator(ProcessingOperator):
         self.field = field
         self.pipeline = pipeline
 
+    def _create_csv_generator(self, data_frame):
+        for row in data_frame.itertuples():
+            csv_file = pd.read_csv(self.folder_path.joinpath(getattr(row, self.field)))
+            if self.pipeline:
+                csv_file = self.pipeline.process(csv_file)[0]
+            yield (row, csv_file)
+
 
     def process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.
@@ -107,11 +114,9 @@ class IterateCsvOperator(ProcessingOperator):
         The series is the record information (one row of data_frame).
         The generator returns a dataframe per next() call.
         """
-
+        output = []
         for data_frame in data_frames:
-            for row in data_frame.itertuples():
-                csv_file = pd.read_csv(self.folder_path.joinpath(getattr(row, self.field)))
-                if self.pipeline:
-                    csv_file = self.pipeline.process(csv_file)[0]
+            generator = self._create_csv_generator(data_frame)
+            output.append(generator)
 
-                yield (row, csv_file)
+        return output
