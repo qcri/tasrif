@@ -57,4 +57,4 @@ class MergeOperator(ProcessingOperator):
         for dataframe in data_frames[1:]:
             data_frame = data_frame.merge(dataframe, **self.kwargs)
 
-        return data_frame
+        return (data_frame,)

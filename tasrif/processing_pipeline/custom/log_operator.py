@@ -8,12 +8,13 @@ class LogOperator(ProcessingOperator):
     The input data_frames not modified and are passed as an output
     """
 
-    def __init__(self, function: callable):
+    def __init__(self, function: callable, string=None):
         """Constructs a log operator
 
         Parameters
         ----------
         function : python function
+        string : additional string to add before the print statement
 
         Examples
         --------
@@ -52,6 +53,7 @@ class LogOperator(ProcessingOperator):
         """
 
         self.function = function
+        self.string = string
 
 
     def process(self, *data_frames):
@@ -60,6 +62,9 @@ class LogOperator(ProcessingOperator):
 
         for dataframe in data_frames:
             result = self.function(dataframe)
-            print(result)
+            if self.string:
+                print(self.string, result)
+            else:
+                print(result)
 
         return data_frames

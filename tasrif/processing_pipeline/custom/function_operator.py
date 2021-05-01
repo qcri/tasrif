@@ -4,7 +4,7 @@
 from tasrif.processing_pipeline import ProcessingOperator
 
 class FunctionOperator(ProcessingOperator):
-    """Class representing a combination of arguments. 
+    """Class representing a function call on given arguments. 
     The output of the `process` function is a dataframe
     constructed via the given arguments.
     """
