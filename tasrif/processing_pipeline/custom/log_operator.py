@@ -3,11 +3,11 @@
 
 from tasrif.processing_pipeline import ProcessingOperator
 
+
 class LogOperator(ProcessingOperator):
     """Class to log the given input (currently, stdout). 
     The input data_frames not modified and are passed as an output
     """
-
     def __init__(self, function: callable, string=None):
         """Constructs a log operator
 
@@ -54,7 +54,6 @@ class LogOperator(ProcessingOperator):
 
         self.function = function
         self.string = string
-
 
     def process(self, *data_frames):
         """Provides a dataframe to the function, then prints the result

@@ -56,7 +56,6 @@ class RenameOperator(ProcessingOperator):
 
 
     """
-
     def __init__(self, **kwargs):
         """
         Initializes the operator
@@ -64,7 +63,7 @@ class RenameOperator(ProcessingOperator):
         **kwargs:
           key word arguments passed to pandas DataFrame.reset_index method
         """
-        
+
         self.kwargs = kwargs
         super().__init__()
 

@@ -35,7 +35,6 @@ class ApplyOperator(ProcessingOperator):
     4    2
     dtype: int64
     """
-
     def __init__(self, func, **kwargs):
         """apply function on dataframes.
 

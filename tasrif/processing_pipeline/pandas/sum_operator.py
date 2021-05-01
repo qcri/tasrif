@@ -3,6 +3,7 @@ Sum operator
 """
 from tasrif.processing_pipeline import ProcessingOperator
 
+
 class SumOperator(ProcessingOperator):
     """
 
@@ -30,7 +31,6 @@ class SumOperator(ProcessingOperator):
       dtype: int64
       
     """
-
     def __init__(self, **kwargs):
         """Creates a new instance of SumOperator
 
@@ -41,7 +41,6 @@ class SumOperator(ProcessingOperator):
         """
         self.kwargs = kwargs
 
-
     def process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.
 
@@ -50,7 +49,6 @@ class SumOperator(ProcessingOperator):
         pd.DataFrame -or- list[pd.DataFrame]
             Processed dataframe(s) resulting from applying the operator
         """
-
 
         processed = []
         for data_frame in data_frames:

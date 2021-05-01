@@ -3,6 +3,7 @@ Groupby Operator
 """
 from tasrif.processing_pipeline import ProcessingOperator
 
+
 class GroupbyOperator(ProcessingOperator):
     """
 
@@ -52,7 +53,6 @@ class GroupbyOperator(ProcessingOperator):
       9   3 2016-03-12 10:00:00       300
 
     """
-
     def __init__(self, select=None, **kwargs):
         """Creates a new instance of GroupbyOperator
 
@@ -66,7 +66,6 @@ class GroupbyOperator(ProcessingOperator):
         self.kwargs = kwargs
         super().__init__()
 
-
     def process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.
 
@@ -75,7 +74,6 @@ class GroupbyOperator(ProcessingOperator):
         pd.DataFrame -or- list[pd.DataFrame]
             Processed dataframe(s) resulting from applying the operator
         """
-
 
         processed = []
         for data_frame in data_frames:

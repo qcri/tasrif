@@ -48,8 +48,10 @@ class SetFeaturesValueOperator(ProcessingOperator):
 
 
     """
-
-    def __init__(self, features: list = None, selector: callable = None, value=None):
+    def __init__(self,
+                 features: list = None,
+                 selector: callable = None,
+                 value=None):
         """Creates a new instance of CreateFeatureOperator
 
         Parameters
@@ -75,18 +77,20 @@ class SetFeaturesValueOperator(ProcessingOperator):
         self.raw_data_frames = data_frames
 
         processed = []
-        for data_frame, raw_data_frame in zip(data_frames, self.raw_data_frames):
+        for data_frame, raw_data_frame in zip(data_frames,
+                                              self.raw_data_frames):
             if (self.selector is not None) and self.features:
                 filtered_result = self.selector(data_frame)
                 data_frame = data_frame.loc[filtered_result, self.features]
-            elif (self.selector is not None) and (not self.features): 
+            elif (self.selector is not None) and (not self.features):
                 filtered_result = self.selector(data_frame)
                 data_frame = data_frame.loc[filtered_result]
             elif (self.selector is None) and self.features:
                 data_frame = data_frame[self.features]
 
             if self.value is not None:
-                raw_data_frame.loc[data_frame.index, data_frame.columns] = self.value
+                raw_data_frame.loc[data_frame.index,
+                                   data_frame.columns] = self.value
                 data_frame = raw_data_frame
 
             processed.append(data_frame)

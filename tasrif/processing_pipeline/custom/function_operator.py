@@ -3,12 +3,12 @@
 
 from tasrif.processing_pipeline import ProcessingOperator
 
+
 class FunctionOperator(ProcessingOperator):
     """Class representing a function call on given arguments. 
     The output of the `process` function is a dataframe
     constructed via the given arguments.
     """
-
     def __init__(self, function: callable):
         """Constructs a function operator
 
@@ -56,10 +56,9 @@ class FunctionOperator(ProcessingOperator):
 
         self.function = function
 
-
     def process(self, *args):
         """Provides args to the function
         """
 
         result = self.function(*args)
-        return (result,)
+        return (result, )

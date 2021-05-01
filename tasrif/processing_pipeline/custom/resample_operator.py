@@ -36,7 +36,6 @@ class ResampleOperator(ProcessingOperator):
     2020-05-02     1.000000]
 
     """
-
     def __init__(self, rule, aggregation_definition, **kwargs):
         """Creates a new instance of ResampleOperator
 
@@ -71,7 +70,7 @@ class ResampleOperator(ProcessingOperator):
 
                 data_frame = resampler.agg(self.aggregation_definition)
             else:
-                # similar to resampler.aggregation_definition() 
+                # similar to resampler.aggregation_definition()
                 data_frame = getattr(resampler, self.aggregation_definition)()
             processed.append(data_frame)
 

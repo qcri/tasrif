@@ -3,6 +3,7 @@ Rolling Operator
 """
 from tasrif.processing_pipeline import ProcessingOperator
 
+
 class RollingOperator(ProcessingOperator):
     """
 
@@ -27,7 +28,6 @@ class RollingOperator(ProcessingOperator):
     4   7.0
 
     """
-
     def __init__(self, window, select=None, **kwargs):
         """Creates a new instance of RollingOperator
 
@@ -43,7 +43,6 @@ class RollingOperator(ProcessingOperator):
         self.kwargs = kwargs
         super().__init__()
 
-
     def process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.
 
@@ -53,11 +52,11 @@ class RollingOperator(ProcessingOperator):
             Processed dataframe(s) resulting from applying the operator
         """
 
-
         processed = []
         for data_frame in data_frames:
             if self.select:
-                data_frame = data_frame.rolling(self.window, **self.kwargs)[self.select]
+                data_frame = data_frame.rolling(self.window,
+                                                **self.kwargs)[self.select]
             else:
                 data_frame = data_frame.rolling(self.window, **self.kwargs)
             processed.append(data_frame)
