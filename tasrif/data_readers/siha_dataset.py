@@ -694,10 +694,10 @@ class SihaStepsIntradayDataset(SihaDataset):
 
 
 class SihaCompositeDataset:
-    """Class to work with merged datasets of 
-        SihaHeartRateIntradayDataset, 
+    """Class to work with merged datasets of
+        SihaHeartRateIntradayDataset,
         SihaCaloriesIntradayDataset,
-        SihaStepsIntradayDataset, 
+        SihaStepsIntradayDataset,
         SihaDistanceIntradayDataset.
     """
     class Default:  #pylint: disable=too-few-public-methods
@@ -891,8 +891,8 @@ class SihaCompositeDataset:
 
     def _process(self):
         """Modifies self.cd_df by dropping columns (features) that
-        are given in self.drop_features 
-        
+        are given in self.drop_features
+
         Returns
         -------
         sets the result in self.processed_df
@@ -922,8 +922,7 @@ class SihaCompositeDataset:
             ResetIndexOperator(),
             FunctionOperator(lambda df: df[df["level_2"] == main_col]),
             CreateFeatureOperator(feature_name='Ramadan',
-                                  feature_creator=lambda df, fun=self.Default.
-                                  ramadan_flag: fun(df['Date']))
+                                  feature_creator=lambda df, fun=self.Default.ramadan_flag: fun(df['Date']))
         ])
 
         df_tmp = pipeline.process(df_tmp)[0]

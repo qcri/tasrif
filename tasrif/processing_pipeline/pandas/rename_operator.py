@@ -17,11 +17,11 @@ class RenameOperator(ProcessingOperator):
     --------
     >>> import pandas as pd
     >>> import numpy as np
-    >>> 
+    >>>
     >>> from tasrif.processing_pipeline.pandas import RenameOperator
-    >>> 
-    >>> 
-    >>> 
+    >>>
+    >>>
+    >>>
     >>> df = pd.DataFrame([
     >>>     [1,'2016-03-12 01:00:00',10],
     >>>     [1,'2016-03-12 04:00:00',250],
@@ -34,10 +34,10 @@ class RenameOperator(ProcessingOperator):
     >>>     [2,'2016-03-12 23:08:00',50],
     >>>     [3,'2016-03-12 10:00:00',300]
     >>> ], columns=['Id', 'ActivityTime', 'Calories'])
-    >>> 
+    >>>
     >>> df['ActivityTime'] = pd.to_datetime(df['ActivityTime'])
-    >>> 
-    >>> 
+    >>>
+    >>>
     >>> operator = RenameOperator(columns={"ActivityTime": "time"})
     >>> df = operator.process(df)[0]
     >>> df

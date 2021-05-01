@@ -15,12 +15,12 @@ class SumOperator(ProcessingOperator):
       >>> from tasrif.processing_pipeline.pandas import SumOperator
       >>> df = pd.DataFrame([
       >>>     [1, 1, 3],
-      >>>     [1, 1, 5], 
-      >>>     [1, 2, 3], 
+      >>>     [1, 1, 5],
+      >>>     [1, 2, 3],
       >>>     [2, 1, 10],
       >>>     [2, 1, 0]],
       >>>     columns=['logId', 'sleep_level', 'awake_count'])
-      >>> 
+      >>>
       >>> df = df.set_index('logId')
       >>> op = SumOperator()
       >>> df1 = op.process(df)
@@ -29,7 +29,7 @@ class SumOperator(ProcessingOperator):
       sleep_level     6
       awake_count    21
       dtype: int64
-      
+
     """
     def __init__(self, **kwargs):
         """Creates a new instance of SumOperator

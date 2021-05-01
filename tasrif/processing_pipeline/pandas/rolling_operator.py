@@ -9,14 +9,14 @@ class RollingOperator(ProcessingOperator):
 
     Examples
     --------
-  
+
     >>> import pandas as pd
     >>> import numpy as np
     >>> from tasrif.processing_pipeline.pandas import RollingOperator
-    >>> 
-    >>> 
+    >>>
+    >>>
     >>> df = pd.DataFrame({'B': [0, 1, 2, 3, 4]})
-    >>> 
+    >>>
     >>> op = RollingOperator(2)
     >>> op.process(df)[0].sum()
 
