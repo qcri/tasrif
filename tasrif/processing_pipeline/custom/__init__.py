@@ -13,3 +13,4 @@ from tasrif.processing_pipeline.custom.distributed_upsample_operator import Dist
 from tasrif.processing_pipeline.custom.jq_operator import JqOperator
 from tasrif.processing_pipeline.custom.drop_index_duplicates_operator import DropIndexDuplicatesOperator
 from tasrif.processing_pipeline.custom.function_operator import FunctionOperator
+from tasrif.processing_pipeline.custom.log_operator import LogOperator
