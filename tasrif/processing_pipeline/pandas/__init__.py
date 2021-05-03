@@ -16,3 +16,4 @@ from tasrif.processing_pipeline.pandas.astype_operator import AsTypeOperator
 from tasrif.processing_pipeline.pandas.concat_operator import ConcatOperator
 from tasrif.processing_pipeline.pandas.groupby_operator import GroupbyOperator
 from tasrif.processing_pipeline.pandas.pivot_operator import PivotOperator
+from tasrif.processing_pipeline.pandas.pivot_reset_columns_operator import PivotResetColumnsOperator

@@ -18,7 +18,7 @@ import pandas as pd
 from tasrif.data_readers.my_heart_counts import HealthKitDataDataset
 
 hkd = HealthKitDataDataset(mhc_folder='/mnt/c/Development/projects/siha/MHC_subset_with_csv')
-record, df = next(hkd.processed_df)
+record, df = next(hkd.processed_df[0])
 
 # %%
 hkd.raw_df

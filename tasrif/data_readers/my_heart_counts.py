@@ -24,7 +24,7 @@ from tasrif.processing_pipeline.pandas import DropDuplicatesOperator
 from tasrif.processing_pipeline.pandas import DropNAOperator
 from tasrif.processing_pipeline.pandas import ConvertToDatetimeOperator
 from tasrif.processing_pipeline.pandas import SetIndexOperator
-from tasrif.processing_pipeline.pandas import PivotOperator
+from tasrif.processing_pipeline.pandas import PivotResetColumnsOperator
 
 class MyHeartCountsDataset:  # pylint: disable=too-few-public-methods
     """
@@ -912,7 +912,7 @@ class HealthKitDataDataset:
                 groupby_feature_names=["Date", "type"],
                 aggregation_definition={'value': 'sum'}),
             SetIndexOperator('Date'),
-            PivotOperator(columns='type'),
+            PivotResetColumnsOperator(level=1, columns='type')
         ])
 
         PIPELINE = ProcessingPipeline([
