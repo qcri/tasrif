@@ -22,13 +22,17 @@ stages:
         inputs:
           command: run
           containerRegistry: tasrif-acr
-          # - Run ipynb tests on 'latest' Tasrif build.
-          # - nbconvert prints html output to stdout and logging information to
-          #   stderr. Redirect stderr to stdout and then redirect stdout to
-          #   /dev/null.
           arguments: >- # '>-' is the 'block chomping indicator'
             --env PYTHONPATH=/home/ --entrypoint "/bin/bash"
+            -v $(System.DefaultWorkingDirectory):/home/
             qcriswtasrif.azurecr.io/$(Build.Repository.Name):latest
-            -c "jupyter nbconvert --to html --stdout
-            --execute tasrif/test_scripts/test_pipeline_* 2>&1 > /dev/null"
-
+            -c "pytest -v /home/tasrif/test_scripts/entrypoint.py --junitxml=/home/notebook-tests.xml"
+      - task: PublishTestResults@2
+        displayName: 'Publish pylint Results'
+        inputs:
+          testResultsFormat: 'Junit'
+          testResultsFiles: '**/*.xml'
+          searchFolder: '$(System.DefaultWorkingDirectory)'
+          publishRunAttachments: true
+          testRunTitle: 'Pylint'
+        condition: succeededOrFailed()
