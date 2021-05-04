@@ -40,18 +40,14 @@ class StatisticsOperator(ProcessingOperator):
 
     sop = StatisticsOperator(participant_identifier='PersonId',
                              date_feature_name='Day', filter_features=filter_features)
-    sop.process(df)
+    sop.process(df)[0]
 
-    [                   statistic         Day       Steps    Calories    PersonId
-    0                  row_count          12           9          12          12
-    1         missing_data_count           0           1           0           0
-    2       duplicate_rows_count           3           3           3           3
-    3          participant_count           3           3           3           3
-    4                   min_date  2020-02-20  2020-02-20  2020-02-20  2020-02-20
-    5                   max_date  2020-02-22  2020-02-22  2020-02-22  2020-02-22
-    6                   duration           2           2           2           2
-    7  mean_days_per_participant           4           3           4           3
-    8  mean_participants_per_day           3           3           4           4]"""
+             row_count missing_data_count  ... mean_days_per_participant mean_participants_per_day
+    Day             12                  0  ...                         4                         3
+    Steps            9                  1  ...                         3                         3
+    Calories        12                  0  ...                         4                         4
+    PersonId        12                  0  ...                         3                         4
+    """
     def __init__(
             self,
             participant_identifier="Id",
@@ -111,7 +107,13 @@ class StatisticsOperator(ProcessingOperator):
             self._get_overview("date_vs_features", data_frame,
                                "mean_participants_per_day"))
 
-        return pd.DataFrame.from_records(result)
+        # Transpose and manipulate the final dataframe so that each row is a feature
+        # and columns are the different statistics.
+        final_df = pd.DataFrame.from_records(result)
+        final_df = final_df.set_index('statistic')
+        final_df = final_df.T
+        final_df.columns.name = None
+        return final_df
 
     def _get_participant_count(self, data_frame):
 
