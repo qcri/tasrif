@@ -23,6 +23,7 @@ from tsfresh import extract_features
 from tsfresh.utilities.dataframe_functions import impute
 from tsfresh import extract_relevant_features
 
+from sklearn import metrics
 from sklearn.model_selection import LeaveOneGroupOut, KFold, GroupKFold
 
 
@@ -214,7 +215,7 @@ def generate_slide_wins_from_block(df_in, start_seq=0, winsize="1h00t",
     labels = []
     label_times = []
 
-    pid = df_in[pid_col].unique()
+    pid = df_in[pid_col].unique().copy()
     if len(pid) > 1:
         print("ERROR: We should have only one pid here. Aborting")
         return
@@ -238,7 +239,6 @@ def generate_slide_wins_from_block(df_in, start_seq=0, winsize="1h00t",
     labels_of_interest = []
     for label_col in label_cols:
         label_of_interest = label_col + "_" + win_of_interest
-        print("label of interest", label_of_interest)
         dftime[label_of_interest] = dftime[label_col].shift(freq="-%s" % (win_of_interest))
         dftime[label_of_interest] = dftime[label_of_interest].fillna(0.0).rolling(win_of_interest, center=False, closed="both").sum(skipna=True)
         labels_of_interest.append(label_of_interest)
@@ -289,15 +289,13 @@ def generate_timeseries_df_from_block(df, signals, winsize, delta, win_of_intere
     df_pids = []
 
     last_seq_id = 0
-    
-    signals += label_cols
+    sigs_and_labels = signals.copy() + label_cols.copy()
 
     for pid in tqdm(df[pid_col].unique()):
 
-        print("PID:", pid)
         df_tmp = df[df[pid_col] == pid]
 
-        last_seq_id, df_ts, df_label, df_label_time, df_pid = generate_slide_wins_from_block(df_tmp[signals],
+        last_seq_id, df_ts, df_label, df_label_time, df_pid = generate_slide_wins_from_block(df_tmp[sigs_and_labels],
                                                                                              label_cols=label_cols,
                                                                                              start_seq=last_seq_id,
                                                                                              winsize=winsize,
@@ -315,8 +313,7 @@ def generate_timeseries_df_from_block(df, signals, winsize, delta, win_of_intere
     df_pids = pd.concat(df_pids).reset_index(drop=True)
     df_pids.name = "pid"
     
-    for col in label_cols:
-        del df_timeseries[col]
+    df_timeseries = df_timeseries.drop(columns=label_cols)
     
     return df_timeseries, df_labels, df_label_times, df_pids
 
@@ -340,22 +337,61 @@ def extract_features_from_df(experiment_path, df_timeseries, df_labels, winsize,
 # TSFresh is an expensive procedure. We use the following methods to save/load the processed data.
 
 # %%
-def get_filename(experiment_path, winsize, delta, win_of_interest="0h"):
-    filename = os.path.join(experiment_path, "data_%s_d%s_wi%s.csv.gz" % (winsize, delta, win_of_interest))
+def get_filename(experiment_path, feattype, winsize, delta, win_of_interest="0h"):
+    filename = os.path.join(experiment_path, "data_%s_%s_d%s_wi%s.csv.gz" % (feattype, winsize, delta, win_of_interest))
     return filename
 
-def save_data(experiment_path, df, winsize, delta, win_of_interest="0h"):
-    output_filename = os.path.join(experiment_path, "data_%s_d%s_wi%s.csv.gz" % (winsize, delta, win_of_interest))
+def save_data(experiment_path, feattype, df, winsize, delta, win_of_interest="0h"):
+    output_filename = os.path.join(experiment_path, "data_%s_%s_d%s_wi%s.csv.gz" % (feattype, winsize, delta, win_of_interest))
     df.to_csv(output_filename, index=False)
     
-def load_data(experiment_path, winsize, delta, win_of_interest="0h"):
-    filename = get_filename(experiment_path, winsize, delta, win_of_interest)
+def load_data(experiment_path, feattype, winsize, delta, win_of_interest="0h"):
+    filename = get_filename(experiment_path, feattype, winsize, delta, win_of_interest)
     return pd.read_csv(filename)
 
-def data_exists(experiment_path, winsize, delta, win_of_interest="0h"):
-    filename = get_filename(experiment_path, winsize, delta, win_of_interest)
+def data_exists(experiment_path, feattype, winsize, delta, win_of_interest="0h"):
+    filename = get_filename(experiment_path, feattype, winsize, delta, win_of_interest)
     print("Filename:", filename)
     return os.path.exists(filename)
+
+
+
+# %%
+def merge_ehr_features(df_ehr_time, df_data, dropna=True):
+
+    df_data = pd.merge(df_ehr_time, df_data,
+                    left_on=["patientID", "time"], right_on=["pid", "gt_time"])
+    df_data = df_data.drop(columns=["patientID","time"])
+    
+    print("Note that there were many NAN in the ERM files.")
+    print("If we dropall NAN, we go from %d rows to %d (i.e., from %d to %d participants)" % (df_data.shape[0], 
+                                                                                                  df_data.dropna().shape[0],
+                                                                                                  df_data["pid"].unique().shape[0],
+                                                                                                  df_data.dropna()["pid"].unique().shape[0]))
+
+    if dropna:
+        print("So, lets dropping NAs...")
+        df_data = df_data.dropna()
+        
+    return df_data
+    
+
+
+# %%
+def calculate_raw_features(df_in, raw_cols, seq_id_col="seq_id"):
+    """
+    The df input here is the ``df_timeseries`` from the generate_slide_wins above.
+    The raw_cols are features such as 'activity' and/or 'mean_hr'
+    """
+    
+    df = df_in.copy()
+    df["tcounter"] = 1
+    df["tcounter"] = df.groupby(seq_id_col)["tcounter"].cumsum()
+
+    pivoted_df = df.pivot(index=seq_id_col, columns="tcounter", values=raw_cols)
+    pivoted_df.columns = ["_".join(map(str, c)) for c in pivoted_df.columns]
+    
+    return pivoted_df
 
 
 
@@ -375,7 +411,7 @@ def get_feature_mapping(signals, data):
 
     feature_mapping["other"] = []
     for k in data.keys():
-        if k not in mapped_feature and k not in ['pid', 'ground_truth', 'gt_time']:
+        if k not in mapped_feature and k not in ['pid', 'ground_truth', 'gt_time', 'fold']:
             feature_mapping["other"].append(k)
 
     return feature_mapping
@@ -398,8 +434,8 @@ def map_id_fold(all_ids, n, pid_col="pid"):
 
 
 # %%
-def prepare_ml(winsize, delta, win_of_interest, signals):
-    data = load_data(experiment_path, winsize, delta, win_of_interest)
+def prepare_ml(experiment_path, feattype, winsize, delta, win_of_interest, signals):
+    data = load_data(experiment_path, feattype, winsize, delta, win_of_interest)
     
     df_folds = map_id_fold(data, -1)
     data = data.merge(df_folds)
@@ -409,17 +445,17 @@ def prepare_ml(winsize, delta, win_of_interest, signals):
     return data, feature_mapping
 
 
-def split_train_test(data, featset, feature_mapping):
+def split_train_test(data, featset, feature_mapping, test_fold_idx):
     
     train_data = data[get_cols_by_featureset(data, featset, feature_mapping)]
-    test_fold = train_data["fold"].max()
-    test_data = train_data[train_data["fold"] == test_fold]
-    train_data = train_data[train_data["fold"] != test_fold]
+    test_data = train_data[train_data["fold"] == test_fold_idx]
+    train_data = train_data[train_data["fold"] != test_fold_idx]
 
     return train_data, test_data
 
 
 # %%
+
 def classification_both_hyper_hypo(row):
     if is_hyper(cgm_value):
         return 1
@@ -472,7 +508,7 @@ def get_cols_by_featureset(data, featset, feature_mapping):
     acc_feats = []
     for f in featset:
         acc_feats.extend(feature_mapping[f])
-        
+           
     return ["pid", "ground_truth", "fold"] + acc_feats
 
 def get_classification_results_from_regression(df_test, cgm_gt="ground_truth", cgm_predicted="Label"):
@@ -494,3 +530,18 @@ def get_classification_results_from_regression(df_test, cgm_gt="ground_truth", c
     
     
     return f1_mac, f1_mic, prec, recall, mcc, fig
+
+
+# %%
+def define_ground_truth(data, gt_strategy):
+    
+    if gt_strategy == "hyper":
+        ground_truth = data["hyper"] > 0
+    elif gt_strategy == "hypo":
+        ground_truth = data["hypo"] > 0
+    elif gt_strategy == "both":
+        ground_truth = data[["hyper", "hypo"]].apply(lambda x: 0 if x["hyper"] == 0 and x["hypo"] == 0 else
+                                                                       1 if x["hyper"] > 0 and x["hypo"] == 0 else
+                                                                       2 if x["hypo"] > 0 and x["hyper"] == 0 else
+                                                                       3, axis=1) 
+    return ground_truth
