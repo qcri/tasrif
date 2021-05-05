@@ -208,8 +208,8 @@ class StatisticsOperator(ProcessingOperator):
                     max_day[column] = data_frame[
                         data_frame[column].notna()][dt_feature].max()
                 duration[column] = (max_day[column] - min_day[column]).days
-                min_day[column] = min_day[column].strftime("%Y-%m-%d")
-                max_day[column] = max_day[column].strftime("%Y-%m-%d")
+                min_day[column] = pd.to_datetime(min_day[column].strftime("%Y-%m-%d"))
+                max_day[column] = pd.to_datetime(max_day[column].strftime("%Y-%m-%d"))
 
         return [min_day, max_day, duration]
 
