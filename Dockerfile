@@ -1,4 +1,4 @@
-FROM python:3.6.5
+FROM python:3.7
 LABEL maintainer="Ummar Abbas <uabbas@hbku.edu.qa>"
 
 ARG worker
@@ -13,6 +13,10 @@ RUN pip3 install -r qa-requirements.txt
 # copy common requirements to cache the dependencies
 COPY requirements.txt /home/requirements.txt
 RUN pip3 install -r requirements.txt
+
+# install tasrif and its dependencies in editable mode
+COPY setup.py /home/setup.py
+RUN pip install -e .
 
 COPY run-prospector.sh /home
 COPY run-pylint.sh /home
