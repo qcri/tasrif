@@ -13,10 +13,11 @@
 # ---
 
 # %%
+import os
 from tasrif.data_readers.sleep_health import PMCheckinDataset
 
 
-pm = PMCheckinDataset(shc_folder='E:/Development/siha/sleephealth/')
+pm = PMCheckinDataset(os.environ['SLEEPHEALTH_PMCHECKIN_PATH'])
 
 print(pm.raw_dataframe())
 print(pm.processed_dataframe())

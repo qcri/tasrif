@@ -5,7 +5,7 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.7.1
+#       jupytext_version: 1.11.2
 #   kernelspec:
 #     display_name: Python 3
 #     language: python
@@ -16,12 +16,15 @@
 # # MyHeartCounts - Physical Activity Readiness Questionnaire
 
 # %%
+import os
 from tasrif.data_readers.my_heart_counts import PARQSurveyDataset
 
 
 # %%
-parq = PARQSurveyDataset(mhc_folder='E:\\Development\\siha')
+parq_file_path = os.environ['MYHEARTCOUNTS_PARQSURVEY_PATH']
 
+# %%
+parq = PARQSurveyDataset(parq_file_path)
 # %%
 parq.raw_dataframe()
 

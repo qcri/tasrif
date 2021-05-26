@@ -19,18 +19,19 @@
 # # Preprocessing
 
 # %% tags=[]
+import os
 import pandas as pd
 import numpy as np
 import pathlib
 import datetime
 from tasrif.data_readers.zenodo_fitbit_dataset import (
-    ZenodoFitbitActivityDataset, 
-    ZenodoFitbitWeightDataset, 
-    ZenodoFitbitSleepDataset, 
+    ZenodoFitbitActivityDataset,
+    ZenodoFitbitWeightDataset,
+    ZenodoFitbitSleepDataset,
     ZenodoCompositeFitbitDataset)
 
 nan = np.nan
-zenodo_folder = '~/Documents/Data/Zenodo'
+zenodo_folder = os.environ['ZENODOFITBIT_PATH']
 
 zfd = ZenodoFitbitActivityDataset(zenodo_folder=zenodo_folder)
 df = zfd.processed_dataframe()

@@ -13,11 +13,11 @@
 # ---
 
 # %%
-import pandas as pd
+import os
 from tasrif.data_readers.my_heart_counts import RiskFactorSurvey
 
-
-rf = RiskFactorSurvey()
+rf_file_path = os.environ['MYHEARTCOUNTS_RISKFACTORSURVEY_PATH']
+rf = RiskFactorSurvey(rf_file_path)
 
 print(rf.raw_dataframe())
 print(rf.processed_dataframe())

@@ -5,7 +5,7 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.7.1
+#       jupytext_version: 1.11.2
 #   kernelspec:
 #     display_name: Python 3
 #     language: python
@@ -16,11 +16,15 @@
 # # MyHeartCounts - Day One Survey
 
 # %%
+import os
 from tasrif.data_readers.my_heart_counts import DayOneSurveyDataset
 
 
 # %%
-dcs = DayOneSurveyDataset(mhc_folder='E:\\Development\\siha', drop_device_na=True, drop_labwork_na=True)
+dos_file_path = os.environ['MYHEARTCOUNTS_DAYONESURVEY_PATH']
+
+# %%
+dcs = DayOneSurveyDataset(dos_file_path, drop_device_na=True, drop_labwork_na=True)
 
 # %%
 dcs.raw_dataframe()

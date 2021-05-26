@@ -13,11 +13,10 @@
 # ---
 
 # %%
+import os
 import pandas as pd
 
 import numpy as np
-import pathlib
-import datetime
 from tasrif.data_readers.zenodo_fitbit_dataset import (
     ZenodoFitbitIntradayCaloriesDataset,
     ZenodoFitbitIntradayIntensitiesDataset,
@@ -25,7 +24,7 @@ from tasrif.data_readers.zenodo_fitbit_dataset import (
     ZenodoFitbitIntradayStepsDataset,
 )
 
-zenodo_folder = 'E:/Development/sleep'
+zenodo_folder = os.environ['ZENODOFITBIT_PATH']
 zcd = ZenodoFitbitIntradayCaloriesDataset(zenodo_folder=zenodo_folder)
 print(zcd.processed_dataframe())
 print(zcd.grouped_dataframe())

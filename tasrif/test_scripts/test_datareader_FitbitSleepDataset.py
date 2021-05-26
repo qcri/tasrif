@@ -13,14 +13,11 @@
 # ---
 
 # %%
-import pandas as pd
-import numpy as np
-import pathlib
-import datetime
+import os
 from tasrif.data_readers.fitbit_intraday_dataset import FitbitSleepDataset
 
 # %%
-sds = FitbitSleepDataset(folder='/home/ummar/Downloads/Data/VolunteerFitbitData-1March21/FahimDalvi/')
+sds = FitbitSleepDataset(os.environ['FITBIT_INTRADAY_PATH'])
 
 # %%
 sds.raw_dataframe()

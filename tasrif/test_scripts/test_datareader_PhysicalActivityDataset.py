@@ -13,10 +13,7 @@
 # ---
 
 # %%
-import pandas as pd
-import numpy as np
-import pathlib
-import datetime
+import os
 from tasrif.data_readers.fitbit_intraday_dataset import \
     FitbitPhysicalActivityCaloriesDataset, \
     FitbitPhysicalActivityDistanceDataset, \
@@ -30,7 +27,7 @@ from tasrif.data_readers.fitbit_intraday_dataset import \
     FitbitIntradayCompositeDataset
 
 # %%
-ds = FitbitPhysicalActivityCaloriesDataset(folder='/home/ummar/Downloads/Data/VolunteerFitbitData-1March21/FahimDalvi/')
+ds = FitbitPhysicalActivityCaloriesDataset(os.environ['FITBIT_INTRADAY_PATH'])
 
 df1 = ds.processed_dataframe()
 
@@ -38,7 +35,7 @@ df1 = ds.processed_dataframe()
 df1
 
 # %%
-ds = FitbitPhysicalActivityDistanceDataset(folder='/home/ummar/Downloads/Data/VolunteerFitbitData-1March21/FahimDalvi/')
+ds = FitbitPhysicalActivityDistanceDataset(os.environ['FITBIT_INTRADAY_PATH'])
 
 df2 = ds.processed_dataframe()
 
@@ -46,36 +43,36 @@ df2 = ds.processed_dataframe()
 df2
 
 # %%
-ds = FitbitPhysicalActivityHeartRateDataset(folder='/home/ummar/Downloads/Data/VolunteerFitbitData-1March21/FahimDalvi/')
+ds = FitbitPhysicalActivityHeartRateDataset(os.environ['FITBIT_INTRADAY_PATH'])
 df3 = ds.processed_dataframe()
 
 # %%
-ds = FitbitPhysicalActivityVeryActiveMinutesDataset(folder='/home/ummar/Downloads/Data/VolunteerFitbitData-1March21/FahimDalvi/')
+ds = FitbitPhysicalActivityVeryActiveMinutesDataset(os.environ['FITBIT_INTRADAY_PATH'])
 df4 = ds.processed_dataframe()
 df4
 
 # %%
-ds = FitbitPhysicalActivityLightlyActiveMinutesDataset(folder='/home/ummar/Downloads/Data/VolunteerFitbitData-1March21/FahimDalvi/')
+ds = FitbitPhysicalActivityLightlyActiveMinutesDataset(os.environ['FITBIT_INTRADAY_PATH'])
 df5 = ds.processed_dataframe()
 df5
 
 # %%
-ds = FitbitPhysicalActivitySedentaryMinutesDataset(folder='/home/ummar/Downloads/Data/VolunteerFitbitData-1March21/FahimDalvi/')
+ds = FitbitPhysicalActivitySedentaryMinutesDataset(os.environ['FITBIT_INTRADAY_PATH'])
 df6 = ds.processed_dataframe()
 df6
 
 # %%
-ds = FitbitPhysicalActivityModeratelyActiveMinutesDataset(folder='/home/ummar/Downloads/Data/VolunteerFitbitData-1March21/FahimDalvi/')
+ds = FitbitPhysicalActivityModeratelyActiveMinutesDataset(os.environ['FITBIT_INTRADAY_PATH'])
 df7 = ds.processed_dataframe()
 df7
 
 # %%
-ds = FitbitPhysicalActivityTimeInHeartRateZonesDataset(folder='/home/ummar/Downloads/Data/VolunteerFitbitData-1March21/FahimDalvi/')
+ds = FitbitPhysicalActivityTimeInHeartRateZonesDataset(os.environ['FITBIT_INTRADAY_PATH'])
 df8 = ds.processed_dataframe()
 df8
 
 # %%
-ds = FitbitPhysicalActivityStepsDataset(folder='/home/ummar/Downloads/Data/VolunteerFitbitData-1March21/FahimDalvi/')
+ds = FitbitPhysicalActivityStepsDataset(os.environ['FITBIT_INTRADAY_PATH'])
 df9 = ds.processed_dataframe()
 
 # %%
@@ -88,7 +85,7 @@ df1.merge(df2, how="outer", on="dateTime", suffixes=['_calories', '_distance'])
 from tasrif.data_readers.fitbit_intraday_dataset import FitbitSleepDataset
 
 # %%
-ds = FitbitSleepDataset(folder='/home/ummar/Downloads/Data/VolunteerFitbitData-1March21/FahimDalvi/')
+ds = FitbitSleepDataset(os.environ['FITBIT_INTRADAY_PATH'])
 
 # %%
 df10 = ds.processed_dataframe()

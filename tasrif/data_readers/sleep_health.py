@@ -42,15 +42,6 @@ from tasrif.processing_pipeline.custom import (
     OneHotEncoderOperator,
 )
 
-
-class SleepHealthDataset:  # pylint: disable=too-few-public-methods
-    """
-    Class to work with Sleep Health Dataset
-    """
-    def __init__(self, shc_folder="../data/sleephealth/"):
-        self.shc_folder = shc_folder
-
-
 class AboutMeDataset:
     """Provides access to the AboutMe dataset
 
@@ -64,8 +55,7 @@ class AboutMeDataset:
 
     def __init__(
             self,
-            shc_folder: str = "../data/sleephealth/",
-            dataset_filename: str = "About Me.csv",
+            amd_file_path,
             pipeline: ProcessingPipeline = ProcessingPipeline([
                 DropNAOperator(subset=[
                     "alcohol",
@@ -120,8 +110,7 @@ class AboutMeDataset:
 
         """
 
-        full_path = pathlib.Path(shc_folder, dataset_filename)
-        self.raw_df = pd.read_csv(full_path)
+        self.raw_df = pd.read_csv(amd_file_path)
         self.processed_df = self.raw_df.copy()
         self.pipeline = pipeline
         self._process()
@@ -170,8 +159,7 @@ class SleepQualityCheckerDataset:
     """
     def __init__(
             self,
-            shc_folder: str = "../data/sleephealth/",
-            dataset_filename: str = "Sleep Quality Checker.csv",
+            sqc_file_path,
             pipeline: ProcessingPipeline = ProcessingPipeline([
                 SortOperator(by=["participantId", "timestamp"]),
                 AggregateOperator(
@@ -212,8 +200,7 @@ class SleepQualityCheckerDataset:
 
         """
 
-        full_path = pathlib.Path(shc_folder, dataset_filename)
-        self.raw_df = pd.read_csv(full_path)
+        self.raw_df = pd.read_csv(sqc_file_path)
 
         self.processed_df = self.raw_df.copy()
         self.pipeline = pipeline
@@ -263,8 +250,7 @@ class OnboardingDemographicsDataset:
     """
     def __init__(
             self,
-            shc_folder: str = "../data/sleephealth/",
-            dataset_filename: str = "Onboarding Demographics.csv",
+            obd_file_path,
             pipeline: ProcessingPipeline = ProcessingPipeline([
                 ReplaceOperator(to_replace="CENSORED", value=np.nan),
                 DropNAOperator()
@@ -285,8 +271,7 @@ class OnboardingDemographicsDataset:
                 2.(d) height_inches: 337 (4.1%)
         The final dataset size after removing all NAs is 7558 (retaining 93% of the original dataset).
         """
-        full_path = pathlib.Path(shc_folder, dataset_filename)
-        self.raw_df = pd.read_csv(full_path)
+        self.raw_df = pd.read_csv(obd_file_path)
         self.processed_df = self.raw_df.copy()
         self.pipeline = pipeline
         self._process()
@@ -335,8 +320,7 @@ class SleepHabitDataset:
     """
     def __init__(
             self,
-            shc_folder: str = "../data/sleephealth/",
-            dataset_filename: str = "Sleep Habits.csv",
+            shd_file_path,
             pipeline: ProcessingPipeline = ProcessingPipeline([
                 ConvertToDatetimeOperator(feature_names=["timestamp"],
                                           format="%Y-%m-%dT%H:%M:%S",
@@ -413,8 +397,7 @@ class SleepHabitDataset:
             (4) One hot encode categorical features.
 
         """
-        full_path = pathlib.Path(shc_folder, dataset_filename)
-        self.raw_df = pd.read_csv(full_path)
+        self.raw_df = pd.read_csv(shd_file_path)
         self.processed_df = self.raw_df.copy()
         self.pipeline = pipeline
         self._process()
@@ -463,8 +446,7 @@ class MyFamilyDataset:
     """
     def __init__(
             self,
-            shc_folder: str = "../data/sleephealth/",
-            dataset_filename: str = "My Family.csv",
+            mf_file_path,
             pipeline: ProcessingPipeline = ProcessingPipeline([
                 ConvertToDatetimeOperator(feature_names="timestamp",
                                           format="%Y-%m-%dT%H:%M:%S%z",
@@ -525,8 +507,7 @@ class MyFamilyDataset:
 
         Final dataset shape after default preprocessing pipeline: (2695, 21)
         """
-        full_path = pathlib.Path(shc_folder, dataset_filename)
-        self.raw_df = pd.read_csv(full_path)
+        self.raw_df = pd.read_csv(mf_file_path)
         self.processed_df = self.raw_df.copy()
         self.pipeline = pipeline
         self._process()
@@ -575,8 +556,7 @@ class MyHealthDataset:
     """
     def __init__(
             self,
-            shc_folder: str = "../data/sleephealth/",
-            dataset_filename: str = "My Health.csv",
+            mh_file_path,
             pipeline: ProcessingPipeline = ProcessingPipeline([
                 ConvertToDatetimeOperator(feature_names="timestamp",
                                           format="%Y-%m-%dT%H:%M:%S%z",
@@ -824,8 +804,7 @@ class MyHealthDataset:
 
         Final dataset shape after default preprocessing pipeline: (1445, 160)
         """
-        full_path = pathlib.Path(shc_folder, dataset_filename)
-        self.raw_df = pd.read_csv(full_path)
+        self.raw_df = pd.read_csv(mh_file_path)
         self.processed_df = self.raw_df.copy()
         self.pipeline = pipeline
         self._process()
@@ -874,8 +853,7 @@ class ResearchInterestDataset:
     """
     def __init__(
             self,
-            shc_folder: str = "../data/sleephealth/",
-            dataset_filename: str = "Research Interest.csv",
+            ri_file_path,
             pipeline: ProcessingPipeline = ProcessingPipeline([
                 ConvertToDatetimeOperator(feature_names="timestamp",
                                           format="%Y-%m-%dT%H:%M:%S%z",
@@ -934,8 +912,7 @@ class ResearchInterestDataset:
 
         Final dataset shape after default preprocessing pipeline: (2072, 21)
         """
-        full_path = pathlib.Path(shc_folder, dataset_filename)
-        self.raw_df = pd.read_csv(full_path)
+        self.raw_df = pd.read_csv(ri_file_path)
         self.processed_df = self.raw_df.copy()
         self.pipeline = pipeline
         self._process()
@@ -984,8 +961,7 @@ class SleepAssessmentDataset:
     """
     def __init__(
             self,
-            shc_folder: str = "../data/sleephealth/",
-            dataset_filename: str = "Sleep Assessment.csv",
+            sa_file_path,
             pipeline: ProcessingPipeline = ProcessingPipeline([
                 ConvertToDatetimeOperator(feature_names="timestamp",
                                           format="%Y-%m-%dT%H:%M:%S%z",
@@ -1106,7 +1082,7 @@ class SleepAssessmentDataset:
 
         Final dataset shape after default preprocessing pipeline: (2123, 83)
         """
-        full_path = pathlib.Path(shc_folder, dataset_filename)
+        full_path = pathlib.Path(sa_file_path)
         self.raw_df = pd.read_csv(full_path)
         self.processed_df = self.raw_df.copy()
         self.pipeline = pipeline
@@ -1156,8 +1132,7 @@ class AMCheckinDataset:
 
     def __init__(
             self,
-            shc_folder="../data/sleephealth/",
-            dataset_filename="AM Check-in.csv",
+            amc_file_path,
             pipeline: ProcessingPipeline = ProcessingPipeline([
                 ConvertToDatetimeOperator(feature_names=["timestamp"],
                                           format="%Y-%m-%dT%H:%M:%S%z",
@@ -1193,8 +1168,7 @@ class AMCheckinDataset:
          - `` timestamp `` has 0 NAs ( 49480 / 49480 ) = 0.00 %
         """
 
-        full_path = pathlib.Path(shc_folder, dataset_filename)
-        self.processed_df = pd.read_csv(full_path)
+        self.processed_df = pd.read_csv(amc_file_path)
         self.raw_df = self.processed_df.copy()
         self.pipeline = pipeline
         self._process()
@@ -1254,8 +1228,7 @@ class PMCheckinDataset:
 
     def __init__(
             self,
-            shc_folder="../data/sleephealth/",
-            dataset_filename="PM Check-in.csv",
+            pmc_file_path,
             pipeline: ProcessingPipeline = ProcessingPipeline([
                 ConvertToDatetimeOperator(feature_names=["timestamp"],
                                           format="%Y-%m-%dT%H:%M:%S%z",
@@ -1291,8 +1264,7 @@ class PMCheckinDataset:
 
         """
 
-        full_path = pathlib.Path(shc_folder, dataset_filename)
-        self.processed_df = pd.read_csv(full_path)
+        self.processed_df = pd.read_csv(pmc_file_path)
         self.raw_df = self.processed_df.copy()
         self.pipeline = pipeline
         self._process()

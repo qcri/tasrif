@@ -13,9 +13,11 @@
 # ---
 
 # %%
+import os
 import pandas as pd
 
-df = pd.read_csv('E:\\Development\\siha\\Qaulity of Life Survey.csv')
+qol_file_path = os.environ['MYHEARTCOUNTS_QUALITYOFLIFE_PATH']
+df = pd.read_csv(qol_file_path)
 
 
 def col_stats(df):
@@ -24,14 +26,14 @@ def col_stats(df):
     print('\t- This dataset contains unique data for ', len(df) ,'participants.')
     for col in df.columns:
         null_percentage = "{:.2f}".format(df[col].isnull().sum()/len(df)*100)
-        print('\t - `', col, '` has', df[col].isnull().sum(), 'NAs (', df[col].count().sum(), '/', len(df), ') =', 
+        print('\t - `', col, '` has', df[col].isnull().sum(), 'NAs (', df[col].count().sum(), '/', len(df), ') =',
               null_percentage, '%')
-        
+
 col_stats(df)
 
 from tasrif.data_readers.my_heart_counts import QualityOfLifeSurveyDataset
 
-qol = QualityOfLifeSurveyDataset(mhc_folder='E:\\Development\\siha\\')
+qol = QualityOfLifeSurveyDataset(qol_file_path)
 
 # %%
 qol.raw_dataframe()

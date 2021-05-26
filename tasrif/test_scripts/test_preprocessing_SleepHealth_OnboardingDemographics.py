@@ -15,6 +15,7 @@
 # %%
 # %load_ext autoreload
 # %autoreload 2
+import os
 from tasrif.processing_pipeline import ProcessingPipeline
 from tasrif.processing_pipeline.pandas import ReplaceOperator, DropNAOperator
 from tasrif.data_readers.sleep_health import OnboardingDemographicsDataset
@@ -23,7 +24,7 @@ import numpy as np
 
 # %%
 # Full AboutMeDataset
-obd = OnboardingDemographicsDataset(shc_folder="../../data/sleephealth/", pipeline=None)
+obd = OnboardingDemographicsDataset(os.environ['SLEEPHEALTH_ONBOARDINGDEMOGRAPHICS_PATH'], pipeline=None)
 df = obd.raw_df.copy()
 print("Shape:", df.shape)
 
@@ -45,7 +46,7 @@ pipeline = ProcessingPipeline([
     DropNAOperator()
     ])
 
-obd = OnboardingDemographicsDataset(shc_folder="../../data/sleephealth/", pipeline=pipeline)
+obd = OnboardingDemographicsDataset(os.environ['SLEEPHEALTH_ONBOARDINGDEMOGRAPHICS_PATH'], pipeline=pipeline)
 df = obd.processed_dataframe()
 df
 

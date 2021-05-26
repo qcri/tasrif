@@ -16,6 +16,7 @@
 # %load_ext autoreload
 # %autoreload 2
 
+import os
 from tasrif.data_readers.sleep_health import AboutMeDataset
 from tasrif.processing_pipeline import ProcessingPipeline
 from tasrif.processing_pipeline.pandas import DropNAOperator
@@ -23,23 +24,20 @@ from tasrif.processing_pipeline.pandas import DropDuplicatesOperator
 
 # %%
 # Full AboutMeDataset
-aboutMe_full = AboutMeDataset(shc_folder="../../data/sleephealth/",
-                         amd_filename="About Me.csv",
-                         processing_pipeline=None)
+aboutMe_full = AboutMeDataset(os.environ['SLEEPHEALTH_ABOUTME_PATH'], pipeline=None)
 df_full = aboutMe_full.processed_dataframe()
 print("Full Shape:", df_full.shape)
 
 # %% pycharm={"name": "#%%\n"}
 # Default AboutMeDataset
-aboutMe_default = AboutMeDataset(shc_folder="../../data/sleephealth/", amd_filename="About Me.csv")
+aboutMe_default = AboutMeDataset(os.environ['SLEEPHEALTH_ABOUTME_PATH'])
 df_default = aboutMe_default.processed_dataframe()
 print("Default Shape:", df_default.shape)
 
 # %% pycharm={"name": "#%%\n"}
 for key in df_full.keys():
-    aboutMe_tmp = AboutMeDataset(shc_folder="../../data/sleephealth/",
-                             amd_filename="About Me.csv",
-                             processing_pipeline=ProcessingPipeline([
+    aboutMe_tmp = AboutMeDataset(os.environ['SLEEPHEALTH_ABOUTME_PATH'],
+                             pipeline=ProcessingPipeline([
                                  DropNAOperator(subset=[key])
                              ])
                             )
@@ -49,9 +47,8 @@ for key in df_full.keys():
     print("- ``%s`` has %d NAs (%d/%d = %.2f%%)" % (key, nNAs, nNAs, ntotal, 100.*nNAs/ntotal))
 
 # %% pycharm={"name": "#%%\n"}
-aboutMe_dropdup = AboutMeDataset(shc_folder="../../data/sleephealth/",
-                              amd_filename="About Me.csv",
-                              processing_pipeline=ProcessingPipeline([
+aboutMe_dropdup = AboutMeDataset(os.environ['SLEEPHEALTH_ABOUTME_PATH'],
+                              pipeline=ProcessingPipeline([
                                 DropDuplicatesOperator(subset='participantId',
                                                        keep='last')
                                   ])

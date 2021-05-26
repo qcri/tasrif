@@ -16,6 +16,7 @@
 # %load_ext autoreload
 # %autoreload 2
 
+import os
 import numpy as np
 from tasrif.data_readers.sleep_health import SleepHabitDataset
 
@@ -38,14 +39,14 @@ def col_stats(df):
 
 # %%
 # Full AboutMeDataset
-shd = SleepHabitDataset(shc_folder="../../data/sleephealth/", pipeline=None)
+shd = SleepHabitDataset(os.environ['SLEEPHEALTH_SLEEPHABIT_PATH'], pipeline=None)
 
 df_full = shd.processed_dataframe()
 print("Full Shape:", df_full.shape)
 col_stats(df_full)
 
 # %%
-shd = SleepHabitDataset(shc_folder="../../data/sleephealth/")
+shd = SleepHabitDataset(os.environ['SLEEPHEALTH_SLEEPHABIT_PATH'])
 
 df_full = shd.processed_dataframe()
 print("Full Shape:", df_full.shape)

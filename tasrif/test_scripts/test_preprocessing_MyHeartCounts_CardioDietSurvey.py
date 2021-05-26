@@ -13,11 +13,12 @@
 # ---
 
 # %%
+import os
 import pandas as pd
 from tasrif.data_readers.my_heart_counts import CardioDietSurveyDataset
 
-
-cds = CardioDietSurveyDataset(mhc_folder='E:\\Development\\siha')
+cds_file_path = os.environ['MYHEARTCOUNTS_CARDIODIETSURVEY_PATH']
+cds = CardioDietSurveyDataset(cds_file_path)
 
 print(cds.raw_dataframe())
 print(cds.processed_dataframe())

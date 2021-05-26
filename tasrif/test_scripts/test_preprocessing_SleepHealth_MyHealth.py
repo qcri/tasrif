@@ -15,7 +15,7 @@
 # %%
 # %load_ext autoreload
 # %autoreload 2
-
+import os
 import numpy as np
 
 from tasrif.processing_pipeline import ProcessingPipeline
@@ -38,7 +38,7 @@ def col_stats(df):
 
 # %% pycharm={"name": "#%%\n"}
 # Full MyFamilyDataset
-mf = MyHealthDataset(shc_folder="../../data/sleephealth/", pipeline=None)
+mf = MyHealthDataset(os.environ['SLEEPHEALTH_MYHEALTH_PATH'], pipeline=None)
 df = mf.raw_df.copy()
 print("Shape:", df.shape)
 df.head()
@@ -73,7 +73,7 @@ pipeline = ProcessingPipeline([
                           drop_first=True),
     ])
 
-mypipe = MyHealthDataset(shc_folder="../../data/sleephealth/", pipeline=pipeline)
+mypipe = MyHealthDataset(os.environ['SLEEPHEALTH_MYHEALTH_PATH'], pipeline=pipeline)
 df_piped = mypipe.processed_dataframe()
 print("Shape:", df_piped.shape)
 df_piped.head()

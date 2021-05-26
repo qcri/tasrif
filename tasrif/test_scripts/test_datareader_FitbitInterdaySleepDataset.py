@@ -14,10 +14,11 @@
 # ---
 
 # %%
+import os
 from tasrif.data_readers.fitbit_interday_dataset import FitbitSleepDataset
 
 # %%
-sds = FitbitSleepDataset(folder='/home/fabubaker/qcri/tasrif/fitbit_export_20210301.csv')
+sds = FitbitSleepDataset(os.environ['FITBIT_INTERDAY_PATH'])
 
 # %%
 sds.raw_dataframe()

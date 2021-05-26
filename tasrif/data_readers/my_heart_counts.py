@@ -11,7 +11,6 @@
         QualityOfLifeSurveyDataset
         DemographicsSurveyDataset
 """
-import pathlib
 import pandas as pd
 
 from tasrif.processing_pipeline import ProcessingPipeline
@@ -30,7 +29,7 @@ class MyHeartCountsDataset:  # pylint: disable=too-few-public-methods
     """
     Class to work with Standford meds public dataset MyHeartCounts
     """
-    def __init__(self, mhc_folder="~/Documents/Data/MyHeartCounts"):
+    def __init__(self, mhc_folder):
         self.mhc_folder = mhc_folder
 
 
@@ -161,14 +160,12 @@ class DailyCheckSurveyDataset:
 
     def __init__(
             self,
-            mhc_folder="~/Documents/Data/MyHeartCounts",
-            dcs_filename="Daily Check Survey.csv",
+            dcs_file_path,
             processing_pipeline: ProcessingPipeline = Defaults.PIPELINE,
             group_pipeline: ProcessingPipeline = Defaults.GROUP_PIPELINE,
         ):  # pylint: disable=too-many-arguments
 
-        full_path = pathlib.Path(mhc_folder, dcs_filename)
-        self.dcs_df = pd.read_csv(full_path)
+        self.dcs_df = pd.read_csv(dcs_file_path)
         self.raw_df = self.dcs_df.copy()
         self.processing_pipeline = processing_pipeline
         self.group_pipeline = group_pipeline
@@ -255,14 +252,12 @@ class DayOneSurveyDataset:  # pylint: disable=too-many-arguments
 
     def __init__(
             self,
-            mhc_folder="~/Documents/Data/MyHeartCounts",
-            dos_filename="Day One Survey.csv",
+            dos_file_path,
             processing_pipeline: ProcessingPipeline = ProcessingPipeline(
                 [DropNAOperator(subset=["device", "labwork"])]),
         ):
 
-        full_path = pathlib.Path(mhc_folder, dos_filename)
-        self.dos_df = pd.read_csv(full_path)
+        self.dos_df = pd.read_csv(dos_file_path)
         self.raw_df = self.dos_df.copy()
         self.processing_pipeline = processing_pipeline
 
@@ -321,8 +316,7 @@ class PARQSurveyDataset:  # pylint: disable=too-many-arguments
 
     def __init__(
             self,
-            mhc_folder="~/Documents/Data/MyHeartCounts",
-            dos_filename="PAR-Q Survey.csv",
+            parq_file_path,
             processing_pipeline: ProcessingPipeline = ProcessingPipeline([
                 DropNAOperator(subset=[
                     "chestPain",
@@ -337,8 +331,7 @@ class PARQSurveyDataset:  # pylint: disable=too-many-arguments
             ]),
         ):
 
-        full_path = pathlib.Path(mhc_folder, dos_filename)
-        self.parq_df = pd.read_csv(full_path)
+        self.parq_df = pd.read_csv(parq_file_path)
         self.raw_df = self.parq_df.copy()
         self.processing_pipeline = processing_pipeline
 
@@ -398,14 +391,12 @@ class RiskFactorSurvey:
 
     def __init__(
             self,
-            mhc_folder="~/Documents/Data/MyHeartCounts",
-            rfs_filename="Risk Factor Survey.csv",
+            rfs_file_path,
             processing_pipeline: ProcessingPipeline = ProcessingPipeline(
                 [DropFeaturesOperator(Default.DROP_FEATURES)]),
         ):
 
-        full_path = pathlib.Path(mhc_folder, rfs_filename)
-        self.rf_df = pd.read_csv(full_path)
+        self.rf_df = pd.read_csv(rfs_file_path)
         self.raw_df = self.rf_df.copy()
         self.processing_pipeline = processing_pipeline
 
@@ -457,14 +448,12 @@ class CardioDietSurveyDataset:
 
     def __init__(
             self,
-            mhc_folder="~/Documents/Data/MyHeartCounts",
-            cds_filename="Cardio Diet Survey.csv",
+            cds_file_path,
             processing_pipeline: ProcessingPipeline = ProcessingPipeline(
                 [DropFeaturesOperator(Default.DROP_FEATURES)]),
         ):
 
-        full_path = pathlib.Path(mhc_folder, cds_filename)
-        self.cd_df = pd.read_csv(full_path)
+        self.cd_df = pd.read_csv(cds_file_path)
         self.raw_df = self.cd_df.copy()
         self.processing_pipeline = processing_pipeline
 
@@ -545,16 +534,14 @@ class ActivitySleepSurveyDataset:
     """
     def __init__(
             self,
-            mhc_folder="~/Documents/Data/HeartAgeSurvey",
-            has_filename="Activity Sleep Survey.csv",
+            aas_file_path,
             processing_pipeline: ProcessingPipeline = ProcessingPipeline([
                 DropNAOperator(),
                 DropDuplicatesOperator(subset=["healthCode"], keep="last"),
             ]),
         ):
 
-        full_path = pathlib.Path(mhc_folder, has_filename)
-        self.processed_df = pd.read_csv(full_path)
+        self.processed_df = pd.read_csv(aas_file_path)
         self.raw_df = self.processed_df.copy()
         self.processing_pipeline = processing_pipeline
         self._process()
@@ -645,16 +632,14 @@ class HeartAgeSurveyDataset:
     """
     def __init__(
             self,
-            mhc_folder="~/Documents/Data/HeartAgeSurvey",
-            has_filename="Heart Age Survey.csv",
+            has_file_path,
             processing_pipeline: ProcessingPipeline = ProcessingPipeline([
                 DropNAOperator(),
                 DropDuplicatesOperator(subset=["healthCode"], keep="last"),
             ]),
         ):
 
-        full_path = pathlib.Path(mhc_folder, has_filename)
-        self.processed_df = pd.read_csv(full_path)
+        self.processed_df = pd.read_csv(has_file_path)
         self.raw_df = self.processed_df.copy()
         self.processing_pipeline = processing_pipeline
         self._process()
@@ -738,16 +723,14 @@ class QualityOfLifeSurveyDataset:
     """
     def __init__(
             self,
-            mhc_folder="~/Documents/Data/",
-            qol_filename="Qaulity of Life Survey.csv",
+            qol_file_path,
             processing_pipeline: ProcessingPipeline = ProcessingPipeline([
                 DropNAOperator(),
                 DropDuplicatesOperator(subset=["healthCode"], keep="last"),
             ]),
         ):
 
-        full_path = pathlib.Path(mhc_folder, qol_filename)
-        self.processed_df = pd.read_csv(full_path)
+        self.processed_df = pd.read_csv(qol_file_path)
         self.raw_df = self.processed_df.copy()
         self.processing_pipeline = processing_pipeline
         self._process()
@@ -818,16 +801,14 @@ class DemographicsSurveyDataset:
     """
     def __init__(
             self,
-            mhc_folder="~/Documents/Data/",
-            has_filename="Demographics Survey.csv",
+            dmo_file_path,
             processing_pipeline: ProcessingPipeline = ProcessingPipeline([
                 DropNAOperator(),
                 DropDuplicatesOperator(subset=["healthCode"], keep="last"),
             ]),
         ):
 
-        full_path = pathlib.Path(mhc_folder, has_filename)
-        self.processed_df = pd.read_csv(full_path)
+        self.processed_df = pd.read_csv(dmo_file_path)
         self.raw_df = self.processed_df.copy()
         self.processing_pipeline = processing_pipeline
         self._process()
@@ -898,7 +879,6 @@ class HealthKitDataDataset:
     class Defaults:  # pylint: disable=too-few-public-methods
         """Default parameters used by the class.
         """
-        CSV_FOLDER = 'E:/Development/siha/HealthData_timeseries'
         CSV_PIPELINE = ProcessingPipeline([
             DropNAOperator(),
             ConvertToDatetimeOperator(
@@ -915,28 +895,48 @@ class HealthKitDataDataset:
             PivotResetColumnsOperator(level=1, columns='type')
         ])
 
-        PIPELINE = ProcessingPipeline([
+    def __init__(
+            self,
+            hkd_file_path,
+            csv_folder_path,
+            processing_pipeline_constructor = None,
+        ):
+        """
+        Constructs a new data reader for reading HealthKit data
+
+        Parameters
+        ----------
+        hkd_file_path: str
+            Path to the HealthKit data csv file
+
+        csv_folder_path: str
+            Path to the folder containing the csv files for each row
+
+        processing_pipeline_constructor: function
+            Function that takes a path to the csv folder for HealthKit data and returns a processing pipeline
+        """
+
+        self.processed_df = pd.read_csv(hkd_file_path)
+        self.raw_df = self.processed_df.copy()
+        if processing_pipeline_constructor:
+            self.processing_pipeline = processing_pipeline_constructor(csv_folder_path)
+        else:
+            self.processing_pipeline = self.make_default_processing_pipeline(csv_folder_path)
+        self._process()
+
+    def make_default_processing_pipeline(self, csv_folder_path):
+        """
+        Creates the default processing pipeline for HealthKit data
+        """
+        return ProcessingPipeline([
             CreateFeatureOperator(
                 feature_name='file_name',
                 feature_creator=lambda df: str(df['data.csv'])),
             IterateCsvOperator(
-                folder_path=CSV_FOLDER,
+                folder_path=csv_folder_path,
                 field='file_name',
-                pipeline=CSV_PIPELINE),
+                pipeline=self.Defaults.CSV_PIPELINE),
         ])
-
-    def __init__(
-            self,
-            mhc_folder="~/Documents/Data/",
-            hkd_filename="HealthKit Data.csv",
-            processing_pipeline: ProcessingPipeline = Defaults.PIPELINE,
-        ):
-
-        full_path = pathlib.Path(mhc_folder, hkd_filename)
-        self.processed_df = pd.read_csv(full_path)
-        self.raw_df = self.processed_df.copy()
-        self.processing_pipeline = processing_pipeline
-        self._process()
 
     def participant_count(self):
         """Get the number of participants

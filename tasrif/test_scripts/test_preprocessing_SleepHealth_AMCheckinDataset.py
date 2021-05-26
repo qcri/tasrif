@@ -13,11 +13,12 @@
 # ---
 
 # %%
+import os
 import pandas as pd
 from tasrif.data_readers.sleep_health import AMCheckinDataset
 
 
-am = AMCheckinDataset(shc_folder='E:/Development/siha/sleephealth/')
+am = AMCheckinDataset(os.environ['SLEEPHEALTH_AMCHECKIN_PATH'])
 
 print(am.raw_dataframe())
 print(am.processed_dataframe())

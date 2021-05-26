@@ -13,9 +13,11 @@
 # ---
 
 # %%
+import os
 import pandas as pd
 
-df = pd.read_csv('E:\\Development\\siha\\Demographics Survey.csv')
+dem_file_path = os.environ['MYHEARTCOUNTS_DEMOGRAPHICS_PATH']
+df = pd.read_csv(dem_file_path)
 
 
 def col_stats(df):
@@ -24,14 +26,14 @@ def col_stats(df):
     print('\t- This dataset contains unique data for ', len(df) ,'participants.')
     for col in df.columns:
         null_percentage = "{:.2f}".format(df[col].isnull().sum()/len(df)*100)
-        print('\t - `', col, '` has', df[col].isnull().sum(), 'NAs (', df[col].count().sum(), '/', len(df), ') =', 
+        print('\t - `', col, '` has', df[col].isnull().sum(), 'NAs (', df[col].count().sum(), '/', len(df), ') =',
               null_percentage, '%')
-        
+
 col_stats(df)
 
 from tasrif.data_readers.my_heart_counts import DemographicsSurveyDataset
 
-demo = DemographicsSurveyDataset(mhc_folder='E:\\Development\\siha\\')
+demo = DemographicsSurveyDataset(dem_file_path)
 
 # %%
 demo.raw_dataframe()

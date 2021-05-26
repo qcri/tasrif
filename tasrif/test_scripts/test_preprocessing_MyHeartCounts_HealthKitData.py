@@ -13,11 +13,13 @@
 # ---
 
 # %%
-import pandas as pd
+import os
 
 from tasrif.data_readers.my_heart_counts import HealthKitDataDataset
 
-hkd = HealthKitDataDataset(mhc_folder='/mnt/c/Development/projects/siha/MHC_subset_with_csv')
+hkd_file_path = os.environ['MYHEARTCOUNTS_HEALTHKITDATA_PATH']
+csv_folder_path = os.environ['MYHEARTCOUNTS_HEALTHKITDATA_CSV_FOLDER_PATH']
+hkd = HealthKitDataDataset(hkd_file_path, csv_folder_path)
 record, df = next(hkd.processed_df[0])
 
 # %%

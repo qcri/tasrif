@@ -13,6 +13,7 @@
 # ---
 
 # %%
+import os
 from tasrif.processing_pipeline.custom import AggregateOperator, AddDurationOperator
 # %load_ext autoreload
 # %autoreload 2
@@ -26,7 +27,7 @@ import pandas as pd
 
 # %%
 # Full SleepQualityCheckerDataset
-sqc = SleepQualityCheckerDataset(shc_folder="../../data/sleephealth/", pipeline=None)
+sqc = SleepQualityCheckerDataset(os.environ['SLEEPHEALTH_SLEEPQUALITYCHECKER_PATH'], pipeline=None)
 df = sqc.raw_df.copy()
 print("Shape:", df.shape)
 df.head()
@@ -58,7 +59,7 @@ pipeline = ProcessingPipeline([
                           feature_creator=lambda row: row['timestamp_last'] - row['timestamp_first'])
     ])
 
-sqc = SleepQualityCheckerDataset(shc_folder="../../data/sleephealth/", pipeline=pipeline)
+sqc = SleepQualityCheckerDataset(os.environ['SLEEPHEALTH_SLEEPQUALITYCHECKER_PATH'], pipeline=pipeline)
 df = sqc.processed_dataframe()
 print("Shape:", df.shape)
 df.head()
