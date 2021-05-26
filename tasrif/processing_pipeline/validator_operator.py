@@ -1,10 +1,10 @@
 """Module that defines the NoopOperator class
 """
 
-
 from enum import IntFlag
-from tasrif.processing_pipeline import ProcessingOperator
 import pandas as pd
+from tasrif.processing_pipeline.processing_pipeline import ProcessingOperator
+
 
 class InvCode(IntFlag):
     """
@@ -35,7 +35,6 @@ class InvCode(IntFlag):
 class ValidatorOperator(ProcessingOperator):
     """Class representing a validator operator.
     """
-
     def __init__(self,
                  time_col='time',
                  pid_col='patientID',
@@ -68,7 +67,8 @@ class ValidatorOperator(ProcessingOperator):
 
             # Create day column if it doesn't exist
             if self.experiment_day_col not in data_frame.columns:
-                exp_days = data_frame.groupby(self.pid_col).apply(self._add_exp_day).values
+                exp_days = data_frame.groupby(self.pid_col).apply(
+                    self._add_exp_day).values
                 data_frame[self.experiment_day_col] = exp_days
 
             processed.append(data_frame)
@@ -80,7 +80,9 @@ class ValidatorOperator(ProcessingOperator):
         Internal method to create exp_day col per id_col
         """
         day_zero = data_frame.iloc[0][self.time_col].toordinal()
-        new_exp_day = (data_frame[self.time_col] - pd.DateOffset(hours=0)).apply(lambda x, day_zero=day_zero: x.toordinal() - day_zero)
+        new_exp_day = (
+            data_frame[self.time_col] - pd.DateOffset(hours=0)
+        ).apply(lambda x, day_zero=day_zero: x.toordinal() - day_zero)
         return new_exp_day
 
     def flag_list_or(self, data_frame, list_of_flags: list):
@@ -92,7 +94,9 @@ class ValidatorOperator(ProcessingOperator):
         :return: A pandas Series object with True if any of the InvCode were used in a given epoch.
         """
 
-        result = data_frame[self.invalid_col].apply(lambda x: list_of_flags[0] in InvCode.check_flag(x))
+        result = data_frame[self.invalid_col].apply(
+            lambda x: list_of_flags[0] in InvCode.check_flag(x))
         for flag in list_of_flags[1:]:
-            result |= data_frame[self.invalid_col].apply(lambda x, flag=flag: flag in InvCode.check_flag(x))
+            result |= data_frame[self.invalid_col].apply(
+                lambda x, flag=flag: flag in InvCode.check_flag(x))
         return result

@@ -42,9 +42,9 @@ class FlagPatientIfNotEnoughDaysOperator(ValidatorOperator):
         for data_frame in data_frames:
             days_per_patient = data_frame.set_index([self.pid_col, self.experiment_day_col]).index.unique().tolist()
             days_per_patient = pd.DataFrame(days_per_patient, columns=[self.pid_col, self.experiment_day_col])
-            
+ 
             patient_days = days_per_patient.groupby(self.pid_col)[self.experiment_day_col].count()
-            
+
             patients_without_enough_days = patient_days < self.days_threshold
             patients_without_enough_days = patients_without_enough_days[patients_without_enough_days].index.tolist()
 

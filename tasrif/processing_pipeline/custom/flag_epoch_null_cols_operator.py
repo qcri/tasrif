@@ -7,7 +7,8 @@ from tasrif.processing_pipeline import InvCode
 
 class FlagEpochNullColsOperator(ValidatorOperator):
     """
-    For each on of the columns in ``col_list``, this method marks as invalid (InvCode.FLAG_EPOCH_NULL_VALUE) if the value for an epoch is None/Null.
+    For each on of the columns in ``col_list``, this method marks as invalid
+    (InvCode.FLAG_EPOCH_NULL_VALUE) if the value for an epoch is None/Null.
 
     :param col_list: List of columns to check for Null/None values.
     """
@@ -26,7 +27,9 @@ class FlagEpochNullColsOperator(ValidatorOperator):
 
     def process(self, *data_frames):
         """
-        For each on of the columns in ``col_list``, this method marks as invalid (InvCode.FLAG_EPOCH_NULL_VALUE) if the value for an epoch is None/Null.
+        For each on of the columns in ``col_list``,
+        this method marks as invalid (InvCode.FLAG_EPOCH_NULL_VALUE)
+        if the value for an epoch is None/Null.
 
         :param col_list: List of columns to check for Null/None values.
         """
