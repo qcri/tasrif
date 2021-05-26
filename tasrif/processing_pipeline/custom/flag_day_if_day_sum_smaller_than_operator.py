@@ -1,10 +1,10 @@
 """
-Operator to flag days if valid epochs are larger than some value
+Operator to flag days if sum of col values is smaller than threshold
 """
 from tasrif.processing_pipeline import ValidatorOperator
 from tasrif.processing_pipeline import InvCode
 
-class FlagDayIfValidEpochsLargerThanOperator(ValidatorOperator):
+class FlagDayIfDaySumSmallerThanOperator(ValidatorOperator):
     """
     Marks as invalid (InvCode.FLAG_DAY_TOO_MANY_INVALID_EPOCHS) if activity is larger than ``max_invalid_minutes_per_day``.
 
@@ -13,7 +13,8 @@ class FlagDayIfValidEpochsLargerThanOperator(ValidatorOperator):
     """
 
     def __init__(self, 
-                 max_invalid_minutes_per_day: int = 0,
+                 col,
+                 sum_threshold: int = 0,
                  **kwargs):
         """Creates a new instance of FlagEpochActivityLargerThanOperator
 
@@ -26,26 +27,22 @@ class FlagDayIfValidEpochsLargerThanOperator(ValidatorOperator):
         **kwargs: arguments passed to ValidatorOperator
         """
         super().__init__(**kwargs)
-        self.max_invalid_minutes_per_day = max_invalid_minutes_per_day
+        self.col = col
+        self.sum_threshold = sum_threshold
 
 
     def process(self, *data_frames):
         """
-        Marks as invalid (InvCode.FLAG_DAY_TOO_MANY_INVALID_EPOCHS) if activity is above ``max_invalid_epochs_per_day``.
-
-        :param max_invalid_minutes_per_day: Integer threshold. Default: 0
+        Marks as invalid (InvCode.FLAG_DAY_SHORT_COL_SUM) if activity is less than sum_threshold
         """
         data_frames = super().process(*data_frames)
 
+
         processed = []
         for data_frame in data_frames:
-            max_invalid_epochs_per_day = self.max_invalid_minutes_per_day
-
-            data_frame["_tmp_flag_"] = data_frame[self.invalid_col] == InvCode.FLAG_OKAY
-
-            invalid_epochs = data_frame.groupby([self.experiment_day_col])["_tmp_flag_"].transform(
-                lambda x: x.sum()) > max_invalid_epochs_per_day
-            data_frame.loc[invalid_epochs, self.invalid_col] |= InvCode.FLAG_DAY_TOO_MANY_INVALID_EPOCHS
-            del data_frame["_tmp_flag_"]
+            days_smaller_than_threshold = data_frame.groupby([self.pid_col, self.experiment_day_col])[self.col].transform(
+                lambda x: x.sum()) < self.sum_threshold
+            data_frame.loc[days_smaller_than_threshold, self.invalid_col] |= InvCode.FLAG_DAY_SHORT_COL_SUM
             processed.append(data_frame)
+
         return processed

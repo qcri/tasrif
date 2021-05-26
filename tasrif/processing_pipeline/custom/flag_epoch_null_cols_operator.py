@@ -34,7 +34,7 @@ class FlagEpochNullColsOperator(ValidatorOperator):
         :param col_list: List of columns to check for Null/None values.
         """
 
-        super().process(*data_frames)
+        data_frames = super().process(*data_frames)
 
         processed = []
         for data_frame in data_frames:

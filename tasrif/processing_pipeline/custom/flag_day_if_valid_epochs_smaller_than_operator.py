@@ -13,17 +13,17 @@ class FlagDayIfValidEpochsSmallerThanOperator(ValidatorOperator):
     """
 
     def __init__(self, 
-                 valid_minutes_per_day: int = 60,
+                 minimum_number_of_valid_epochs: int = 60,
                  **kwargs):
         """Creates a new instance of FlagDayIfValidEpochsSmallerThanOperator
 
         Parameters
         ----------
-        valid_minutes_per_day: Minimum minutes of valid (i.e., without any other flag) in a day.
+        minimum_number_of_valid_epochs: Minimum minutes of valid epochs (rows) in a day.
         **kwargs: arguments passed to ValidatorOperator
         """
         super().__init__(**kwargs)
-        self.valid_minutes_per_day = valid_minutes_per_day
+        self.minimum_number_of_valid_epochs = minimum_number_of_valid_epochs
 
 
     def process(self, *data_frames):
@@ -33,15 +33,15 @@ class FlagDayIfValidEpochsSmallerThanOperator(ValidatorOperator):
         :param valid_minutes_per_day: Minimum minutes of valid (i.e., without any other flag) in a day.
 
         """
-        super().process(*data_frames)
+        data_frames = super().process(*data_frames)
 
         processed = []
         for data_frame in data_frames:
-            valid_epochs_per_day = self.valid_minutes_per_day
+            valid_epochs_per_day = self.minimum_number_of_valid_epochs
 
             data_frame["_tmp_flag_"] = data_frame[self.invalid_col] == InvCode.FLAG_OKAY
 
-            invalid_epochs = data_frame.groupby([self.experiment_day_col])["_tmp_flag_"].transform(
+            invalid_epochs = data_frame.groupby([self.pid_col, self.experiment_day_col])["_tmp_flag_"].transform(
                 lambda x: x.sum()) <= valid_epochs_per_day
             data_frame.loc[invalid_epochs, self.invalid_col] |= InvCode.FLAG_DAY_NOT_ENOUGH_VALID_EPOCHS
             del data_frame["_tmp_flag_"]

@@ -1,6 +1,8 @@
 """
 Operator to flag 
 """
+import pandas as pd
+
 from tasrif.processing_pipeline import ValidatorOperator
 from tasrif.processing_pipeline import InvCode
 
@@ -32,12 +34,15 @@ class FlagDayIfNotEnoughConsecutiveDaysOperator(ValidatorOperator):
         In case the number of consecutive days is smaller than ``min_number_days``, we mark all as invalid.
         We also try to find any subset that has at least ``min_number_days``.
         """
-        super().process(*data_frames)
+        data_frames = super().process(*data_frames)
 
         processed = []
         for data_frame in data_frames:
             # Mark activity smaller than minimal
-            days = self.get_valid_days(data_frame)
+            days_per_patient = data_frame.set_index([self.pid_col, self.experiment_day_col]).index.unique().tolist()
+            days_per_patient = pd.DataFrame(days_per_patient, columns=[self.pid_col, self.experiment_day_col])
+            
+            days = days_per_patient.groupby(self.pid_col)[self.experiment_day_col].count()
 
             if len(days) == 0:
                 continue

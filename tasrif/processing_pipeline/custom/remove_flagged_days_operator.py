@@ -22,18 +22,23 @@ class RemoveFlaggedDaysOperator(ValidatorOperator):
         Fully removes from the wearable data the days that are flagged with problems.
         Only if all epochs in the day are flagged.
         """
-        super().process(*data_frames)
+        data_frames = super().process(*data_frames)
 
         processed = []
-        total_days_removed = 0
         for data_frame in data_frames:
-            experiment_days = list(data_frame[self.experiment_day_col].unique())
-            all_days = set(experiment_days)
-            valid_days = set(self.get_valid_days(data_frame))
-            data_frame = data_frame[data_frame[self.experiment_day_col].isin(valid_days)].copy()
 
-            # Get the length of the invalid_days without having to run get_invalid_daysL
-            total_days_removed += len(all_days - valid_days)
+            # Valid days in dataframe
+            # grp_days assigns True to days that have invalid_col value of non 0 for all the day, 
+            # False otherwise.
+            grp_days = data_frame.groupby([self.pid_col, self.experiment_day_col])[self.invalid_col].all()
+
+            # valid days are invalid_col that have 0s in a particular day.
+            valid_days = grp_days[~grp_days]
+
+            # Return the data_frame with valid days only
+            data_frame = data_frame.set_index([self.pid_col, self.experiment_day_col]).loc[valid_days.index]
+            data_frame = data_frame.reset_index()
+
             processed.append(data_frame)
 
 
