@@ -7,7 +7,8 @@ from tasrif.processing_pipeline import InvCode
 
 class FlagDayIfValidEpochsLargerThanOperator(ValidatorOperator):
     """
-    Marks as invalid (InvCode.FLAG_DAY_TOO_MANY_INVALID_EPOCHS) if activity is larger than ``max_invalid_minutes_per_day``.
+    Marks as invalid (InvCode.FLAG_DAY_TOO_MANY_INVALID_EPOCHS)
+    if activity is larger than ``max_invalid_minutes_per_day``.
 
     :param max_invalid_minutes_per_day: Integer threshold. Default: 0
     :return: None

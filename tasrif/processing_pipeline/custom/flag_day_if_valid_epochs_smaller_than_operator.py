@@ -7,7 +7,8 @@ from tasrif.processing_pipeline import InvCode
 
 class FlagDayIfValidEpochsSmallerThanOperator(ValidatorOperator):
     """
-    Marks as invalid the whole day (InvCode.FLAG_DAY_NOT_ENOUGH_VALID_EPOCHS) if the number of valid minutes in a day is smaller than ``valid_minutes_per_day``.
+    Marks as invalid the whole day (InvCode.FLAG_DAY_NOT_ENOUGH_VALID_EPOCHS)
+    if the number of valid minutes in a day is smaller than ``valid_minutes_per_day``.
 
     :param valid_minutes_per_day: Minimum minutes of valid (i.e., without any other flag) in a day.
 
@@ -25,7 +26,8 @@ class FlagDayIfValidEpochsSmallerThanOperator(ValidatorOperator):
 
     def process(self, *data_frames):
         """
-        Marks as invalid the whole day (InvCode.FLAG_DAY_NOT_ENOUGH_VALID_EPOCHS) if the number of valid minutes in a day is smaller than ``valid_minutes_per_day``.
+        Marks as invalid the whole day (InvCode.FLAG_DAY_NOT_ENOUGH_VALID_EPOCHS)
+        if the number of valid minutes in a day is smaller than ``valid_minutes_per_day``.
 
         :param valid_minutes_per_day: Minimum minutes of valid (i.e., without any other flag) in a day.
 
