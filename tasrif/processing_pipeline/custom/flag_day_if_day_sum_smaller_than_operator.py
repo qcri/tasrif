@@ -12,7 +12,7 @@ class FlagDayIfDaySumSmallerThanOperator(ValidatorOperator):
     :return: None
     """
 
-    def __init__(self, 
+    def __init__(self,
                  col,
                  sum_threshold: int = 0,
                  **kwargs):

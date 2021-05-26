@@ -8,9 +8,9 @@ import pandas as pd
 
 class InvCode(IntFlag):
     """
-    Base class for creating enumerated constants 
-    that can be combined using the bitwise operators without 
-    losing their IntFlag membership. 
+    Base class for creating enumerated constants
+    that can be combined using the bitwise operators without
+    losing their IntFlag membership.
     IntFlag members are also subclasses of int.
     """
     FLAG_OKAY = 0
@@ -36,8 +36,8 @@ class ValidatorOperator(ProcessingOperator):
     """Class representing a validator operator.
     """
 
-    def __init__(self, 
-                 time_col='time', 
+    def __init__(self,
+                 time_col='time',
                  pid_col='patientID',
                  experiment_day_col='exp_day',
                  hour_start_experiment=0):
@@ -45,7 +45,7 @@ class ValidatorOperator(ProcessingOperator):
 
         Examples
         --------
-    
+
 
         """
         self.invalid_col = "invalid_code"
@@ -72,7 +72,7 @@ class ValidatorOperator(ProcessingOperator):
                 data_frame[self.experiment_day_col] = exp_days
 
             processed.append(data_frame)
-        
+
         return tuple(processed)
 
     def _add_exp_day(self, data_frame):

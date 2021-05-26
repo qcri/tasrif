@@ -4,6 +4,7 @@ Operator to flag days if valid epochs are smaller than some value
 from tasrif.processing_pipeline import ValidatorOperator
 from tasrif.processing_pipeline import InvCode
 
+
 class FlagDayIfValidEpochsSmallerThanOperator(ValidatorOperator):
     """
     Marks as invalid the whole day (InvCode.FLAG_DAY_NOT_ENOUGH_VALID_EPOCHS) if the number of valid minutes in a day is smaller than ``valid_minutes_per_day``.
@@ -11,10 +12,7 @@ class FlagDayIfValidEpochsSmallerThanOperator(ValidatorOperator):
     :param valid_minutes_per_day: Minimum minutes of valid (i.e., without any other flag) in a day.
 
     """
-
-    def __init__(self, 
-                 minimum_number_of_valid_epochs: int = 60,
-                 **kwargs):
+    def __init__(self, minimum_number_of_valid_epochs: int = 60, **kwargs):
         """Creates a new instance of FlagDayIfValidEpochsSmallerThanOperator
 
         Parameters
@@ -24,7 +22,6 @@ class FlagDayIfValidEpochsSmallerThanOperator(ValidatorOperator):
         """
         super().__init__(**kwargs)
         self.minimum_number_of_valid_epochs = minimum_number_of_valid_epochs
-
 
     def process(self, *data_frames):
         """
@@ -39,11 +36,16 @@ class FlagDayIfValidEpochsSmallerThanOperator(ValidatorOperator):
         for data_frame in data_frames:
             valid_epochs_per_day = self.minimum_number_of_valid_epochs
 
-            data_frame["_tmp_flag_"] = data_frame[self.invalid_col] == InvCode.FLAG_OKAY
+            data_frame["_tmp_flag_"] = data_frame[
+                self.invalid_col] == InvCode.FLAG_OKAY
 
-            invalid_epochs = data_frame.groupby([self.pid_col, self.experiment_day_col])["_tmp_flag_"].transform(
+            invalid_epochs = data_frame.groupby([
+                self.pid_col, self.experiment_day_col
+            ])["_tmp_flag_"].transform(
                 lambda x: x.sum()) <= valid_epochs_per_day
-            data_frame.loc[invalid_epochs, self.invalid_col] |= InvCode.FLAG_DAY_NOT_ENOUGH_VALID_EPOCHS
+            data_frame.loc[
+                invalid_epochs,
+                self.invalid_col] |= InvCode.FLAG_DAY_NOT_ENOUGH_VALID_EPOCHS
             del data_frame["_tmp_flag_"]
             processed.append(data_frame)
         return processed

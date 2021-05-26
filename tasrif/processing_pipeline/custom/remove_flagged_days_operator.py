@@ -28,7 +28,7 @@ class RemoveFlaggedDaysOperator(ValidatorOperator):
         for data_frame in data_frames:
 
             # Valid days in dataframe
-            # grp_days assigns True to days that have invalid_col value of non 0 for all the day, 
+            # grp_days assigns True to days that have invalid_col value of non 0 for all the day,
             # False otherwise.
             grp_days = data_frame.groupby([self.pid_col, self.experiment_day_col])[self.invalid_col].all()
 

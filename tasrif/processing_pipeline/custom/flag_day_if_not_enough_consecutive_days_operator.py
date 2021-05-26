@@ -1,10 +1,11 @@
 """
-Operator to flag 
+Operator to flag
 """
 import pandas as pd
 
 from tasrif.processing_pipeline import ValidatorOperator
 from tasrif.processing_pipeline import InvCode
+
 
 class FlagDayIfNotEnoughConsecutiveDaysOperator(ValidatorOperator):
     """
@@ -13,11 +14,7 @@ class FlagDayIfNotEnoughConsecutiveDaysOperator(ValidatorOperator):
 
     :param min_number_days: minimum number of consecutive days
     """
-
-    def __init__(self, 
-                 min_number_days: int = 0,
-                 **kwargs
-                 ):
+    def __init__(self, min_number_days: int = 0, **kwargs):
         """Creates a new instance of FlagDayIfNotEnoughConsecutiveDaysOperator
 
         Parameters
@@ -39,10 +36,15 @@ class FlagDayIfNotEnoughConsecutiveDaysOperator(ValidatorOperator):
         processed = []
         for data_frame in data_frames:
             # Mark activity smaller than minimal
-            days_per_patient = data_frame.set_index([self.pid_col, self.experiment_day_col]).index.unique().tolist()
-            days_per_patient = pd.DataFrame(days_per_patient, columns=[self.pid_col, self.experiment_day_col])
-            
-            days = days_per_patient.groupby(self.pid_col)[self.experiment_day_col].count()
+            days_per_patient = data_frame.set_index(
+                [self.pid_col,
+                 self.experiment_day_col]).index.unique().tolist()
+            days_per_patient = pd.DataFrame(
+                days_per_patient,
+                columns=[self.pid_col, self.experiment_day_col])
+
+            days = days_per_patient.groupby(
+                self.pid_col)[self.experiment_day_col].count()
 
             if len(days) == 0:
                 continue
@@ -77,7 +79,8 @@ class FlagDayIfNotEnoughConsecutiveDaysOperator(ValidatorOperator):
             # In the okay set, we have all days that we can keep.
             new_invalid = set(days) - set(okay)
 
-            data_frame.loc[data_frame[self.experiment_day_col].isin(
-                new_invalid), self.invalid_col] |= InvCode.FLAG_DAY_NOT_ENOUGH_CONSECUTIVE_DAYS
+            data_frame.loc[
+                data_frame[self.experiment_day_col].isin(new_invalid), self.
+                invalid_col] |= InvCode.FLAG_DAY_NOT_ENOUGH_CONSECUTIVE_DAYS
             processed.append(data_frame)
         return processed
