@@ -18,12 +18,14 @@ from tasrif.processing_pipeline.custom import SetFeaturesValueOperator
 from tasrif.processing_pipeline.custom import CreateFeatureOperator
 from tasrif.processing_pipeline.custom import AggregateOperator
 from tasrif.processing_pipeline.custom import IterateCsvOperator
+from tasrif.processing_pipeline.custom import IterateJsonOperator
 from tasrif.processing_pipeline.pandas import DropFeaturesOperator
 from tasrif.processing_pipeline.pandas import DropDuplicatesOperator
 from tasrif.processing_pipeline.pandas import DropNAOperator
 from tasrif.processing_pipeline.pandas import ConvertToDatetimeOperator
 from tasrif.processing_pipeline.pandas import SetIndexOperator
 from tasrif.processing_pipeline.pandas import PivotResetColumnsOperator
+from tasrif.processing_pipeline.pandas import JsonNormalizeOperator
 
 class MyHeartCountsDataset:  # pylint: disable=too-few-public-methods
     """
@@ -936,6 +938,107 @@ class HealthKitDataDataset:
                 folder_path=csv_folder_path,
                 field='file_name',
                 pipeline=self.Defaults.CSV_PIPELINE),
+        ])
+
+    def participant_count(self):
+        """Get the number of participants
+
+        Returns
+        -------
+        int
+            Number of participants in the dataset
+        """
+        number_participants = self.raw_df["healthCode"].nunique()
+        return number_participants
+
+    def raw_dataframe(self):
+        """Gets the data frame (without any processing) for the dataset
+
+        Returns
+        -------
+        pd.Dataframe
+            Pandas dataframe object representing the data
+        """
+
+        return self.raw_df
+
+    def processed_dataframe(self):
+        """Gets the processed data frame (after applying the data pipeline) for the dataset
+
+        Returns
+        -------
+        pd.Dataframe
+            Pandas dataframe object representing the data
+        """
+
+        return self.processed_df
+
+    def _process(self):
+        """Modifies self.processed_df by dropping columns (features) that
+        are given in self.drop_features
+
+        Returns
+        -------
+        sets the result in self.processed_df
+        """
+        if self.processing_pipeline:
+            self.processed_df = self.processing_pipeline.process(
+                self.processed_df)
+
+class SixMinuteWalkActivityDataset:
+    """
+    Class to work with the Six Minute Walk Activity table
+    """
+    class Defaults: # pylint: disable=too-few-public-methods
+        """
+        Default parameters used by the class.
+        """
+        # JSON_PIPELINE is meant to work with pedometer json data from the Six Minute Walk Activity table
+        JSON_PIPELINE = ProcessingPipeline([
+            JsonNormalizeOperator()
+        ])
+
+    def __init__(
+            self,
+            smwa_file_path,
+            json_folder_path,
+            processing_pipeline_constructor = None,
+        ):
+        """
+        Constructs a new data reader for reading SixMinuteWalkActivity data
+
+        Parameters
+        ----------
+        smwa_file_path: str
+            Path to SixMinuteWalkActivity data csv file
+
+        json_folder_path: str
+            Path to the folder containing the json files for each row
+
+        processing_pipeline_constructor: function
+            Function that takes path to the json folder for SixMinuteWalkActivity data and returns a processing pipeline
+        """
+        self.processed_df = pd.read_csv(smwa_file_path)
+        self.raw_df = self.processed_df.copy()
+        if processing_pipeline_constructor:
+            self.processsing_pipeline = processing_pipeline_constructor(json_folder_path)
+        else:
+            self.processing_pipeline = self.make_default_processing_pipeline(json_folder_path)
+        self._process()
+
+    def make_default_processing_pipeline(self, json_folder_path):
+        """
+        Creates the default processing pipeline for HealthKit data. By default, it returns the pedometer json data.
+        """
+        return ProcessingPipeline([
+            CreateFeatureOperator(
+                feature_name='file_name',
+                # The json filename has an extra '.0' appended to it.
+                feature_creator=lambda df: str(df['pedometer_fitness.walk.items'])[:-2]),
+            IterateJsonOperator(
+                folder_path=json_folder_path,
+                field='file_name',
+                pipeline=self.Defaults.JSON_PIPELINE),
         ])
 
     def participant_count(self):
