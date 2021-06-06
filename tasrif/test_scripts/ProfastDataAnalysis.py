@@ -301,7 +301,7 @@ print(r)
 r.plot(x="#Days")
 
 # %%
-amount_of_days = 5
+amount_of_days = 0
 good_avail = data_availability[(data_availability["before"] >= amount_of_days) & (data_availability["during"] >= amount_of_days)]
 good_avail
 
@@ -521,7 +521,27 @@ boxplot_delayed_correlation_with_filter(df_cleaned, "HeartRate")
 # #### Load EMR data, clean and pivot it
 
 # %%
-df_emr = read_data(SihaEmrDataset, {SihaEmrDataset: "value"})
+# df_emr = read_data(SihaEmrDataset, {SihaEmrDataset: "value"}).drop_duplicates(["patientID", "variable", "value"])
+# df_emr = df_emr.pivot(index="patientID", columns="variable", values="value")
+
+# emr_cols = ['BMI', 'Cholesterol', 'Creatinine', 'Diabetes Duration',
+#             'Diastolic Blood Pressure', 'HDL', 'HbA1c', 'LDL', 'Systolic Blood Pressure']
+
+# # For some reason this was understood as a string col and we need to replace empty string to NAN manually
+# df_emr["Diabetes Duration"] = df_emr["Diabetes Duration"].replace('', np.nan)
+
+# for emr_col in emr_cols:
+#     print(emr_col)
+#     df_emr[emr_col] = df_emr[emr_col].astype(np.float)
+
+# df_emr.head()
+# # TODO: get pids of missing EMR data
+
+# %%
+# HACK
+df_emr = read_data(SihaEmrDataset, {SihaEmrDataset: "value"}).drop_duplicates(["patientID", "variable", "value"])
+df_emr = df_emr.drop(index=[28,29])
+
 df_emr = df_emr.pivot(index="patientID", columns="variable", values="value")
 
 emr_cols = ['BMI', 'Cholesterol', 'Creatinine', 'Diabetes Duration',
@@ -534,8 +554,16 @@ for emr_col in emr_cols:
     print(emr_col)
     df_emr[emr_col] = df_emr[emr_col].astype(np.float)
 
+# Mistakes that I did and tried to fix
+df_emr.loc[71, "Systolic Blood Pressure"] = 120
+df_emr.loc[71, "Diastolic Blood Pressure"] = 70
+
+# Still missing some data
+df_emr["Diabetes Duration"].fillna(df_emr["Diabetes Duration"].mean(), inplace=True)
+df_emr["Triglyceride"] = df_emr["Triglyceride"].astype(float)
+df_emr["Triglyceride"].fillna(df_emr["Triglyceride"].mean(), inplace=True)
+
 df_emr.head()
-# TODO: get pids of missing EMR data
 
 # %%
 # Missing data listed below:
@@ -543,7 +571,7 @@ df_emr[df_emr.isnull().any(axis=1)]
 
 # %%
 has_any_missing_emr = df_emr[df_emr.isnull().any(axis=1)].index
-set(df_cleaned["patientID"].unique()) & set(has_any_missing_emr) 
+set(df_cleaned["patientID"].unique()) & set(has_any_missing_emr) # fillna for this guy
 
 # %%
 # Tried to normalize the drug names
@@ -627,8 +655,8 @@ for d in drugs:
 df_grp1 = df_merged[(df_merged['Liraglutide'] == True)]
 df_grp2 = df_merged[~((df_merged['Liraglutide'] == True))]
 
-print("Corr CGM-HeartRate Grp1: %.3f, Grp2: %.3f" % (df_grp1.corr()["MeanCGM"]["MeanHeartRate"],
-                                                     df_grp2.corr()["MeanCGM"]["MeanHeartRate"]))
+print("Corr CGM-HeartRate Grp1: %.3f, Grp2: %.3f" % (df_grp1.corr()["MeanCGM"]["MaxHeartRate"],
+                                                     df_grp2.corr()["MeanCGM"]["MaxHeartRate"]))
 
 # %% [markdown]
 # Before moving to the next section, we save a postprocessed dataframe to disk in order to speed up futher ML pipelines.
@@ -640,484 +668,3 @@ if not os.path.exists(profast_ml):
 
 df_cleaned.to_csv(os.path.join(profast_ml, "df_cleaned.csv.gz"), index=False)
 df_emr.to_csv(os.path.join(profast_ml, "df_cleaned_emr.csv.gz"))
-
-# %% [markdown]
-# # CODE FROM BELOW THIS PART WILL BE REMOVED
-
-# %% [markdown]
-# Different winsizes will render different number of epochs. 
-# For example, if we do not have continous CGM recorded for 5 hours, we cannot generate features with a winsize bigger than 4:45min.
-#
-
-# %%
-signals = ["time", "patientID", "HeartRate", "mets", "Calories", "Steps", "Distance", "CGM"]
-
-# Add to this code a check to see if saved data is already there. 
-
-winsizes = ["5h", "3h", "4h"]
-deltas = ["0h"]
-wins_of_interest = ["5h", "1h", "2h", "3h", "4h", "6h", "7h", "8h"]
-
-data = None
-
-params = []
-for winsize in winsizes:
-    for delta in deltas:
-        for win_of_interest in wins_of_interest:
-            params.append([winsize, delta, win_of_interest])
-            
-print("Processing %d param combinations." % (len(params)))
-
-for param in tqdm(params):
-    
-    winsize, delta, win_of_interest = param
-    
-    if data_exists(winsize, delta, win_of_interest):
-        print("%s, %s, %s Already processed" % (winsize, delta, win_of_interest))
-        continue
-    
-    signals = ["time", "patientID", "HeartRate", "mets", "Calories", "Steps", "Distance", "CGM", "hyper", "hypo"]
-
-    df_timeseries, df_labels, df_label_time, df_pids = generate_timeseries_df_from_block(df, signals, winsize, delta, win_of_interest)
-
-    for col in ["hyper", "hypo"]:
-        del df_timeseries[col]
-
-    features_filtered = extract_features_from_df(df_timeseries, df_labels["hyper"] > 0, winsize, delta, win_of_interest)
-
-
-    data = pd.concat([df_pids, df_labels, df_label_time, features_filtered], axis=1)
-        
-    
-    
-    data = pd.merge(data, df[["patientID", "time", "time_sin", "time_cos"]], left_on=["pid", "gt_time"], right_on=["patientID", "time"])
-    add_weekend(data, "time")
-    
-    # Add EMR data
-    data = data.merge(df_emr, left_on="pid", right_on="patientID")
-
-    print("Note that there were many NAN in the ERM files.")
-    print("If we dropall NAN, we go from %d rows to %d (i.e., from %d to %d participants)" % (data.shape[0], 
-                                                                                                  data.dropna().shape[0],
-                                                                                                  data["pid"].unique().shape[0],
-                                                                                                  data.dropna()["pid"].unique().shape[0]))
-
-    print("So, lets dropping NAs...")
-
-    data = data.dropna()
-    save_data(data, winsize, delta, win_of_interest)
-
-
-# %% [markdown]
-# ### Now the number of examples depend only on the size of the win that we use to build the feature set
-
-# %%
-df_result = []
-delta = "0h"
-for winsize in winsizes:
-    for win_of_interest in wins_of_interest:
-        data = load_data(winsize, delta, win_of_interest)
-        row = {}
-        row["win_of_interest"] = win_of_interest
-        row["delta"] = delta
-        row["winsize"] = winsize
-        row["total_number_examples"] = data.shape[0]
-        df_result.append(row)
-    
-pd.DataFrame(df_result).pivot(index="winsize", values="total_number_examples", columns="win_of_interest").plot()
-
-# %% [markdown]
-# ### Testing how good the classification task can be
-
-# %%
-# data distribution:
-# 0    0.521041
-# 1    0.341038
-# 2    0.115113
-# 3    0.022808
-# 0    6785
-# 1    4441
-# 2    1499
-# 3     297
-
-# %%
-delta = "0h"
-featset = ['time','mets', "HeartRate", 'Calories', 'Steps', 'Distance', 'CGM', 'other']
-params = []
-
-for winsize in winsizes:
-    for win_of_interest in wins_of_interest:
-        for gt_strategy in ["hyper", "hypo", "both"]:
-            params.append([winsize, win_of_interest, gt_strategy])
-            
-rows = []
-for param in params:
-    winsize, win_of_interest, gt_strategy = param
-    
-    train_results, test_results = test_classification(gt_strategy, winsize, delta, win_of_interest, featset)
-    row = {}
-    row["winsize"] = winsize
-    row["win_of_interest"] = win_of_interest
-    row["gt_strategy"] = gt_strategy
-    row["delta"] = delta
-    row["featset"] = "_".join(sorted(featset))
-    row["delta"] = delta
-    row["model"] = test_results["Model"].values[0]
-    for m in ["Accuracy", "AUC", "Recall", "Prec.", "F1", "Kappa", "MCC"]:
-        row["%s_test" % (m)] = test_results[m].values[0]
-        row["%s_train" % (m)] = train_results.loc["Mean"][m]
-        
-    rows.append(row)
-    
-pd.DataFrame(rows)
-
-# %%
-winsizes = ["5h", "3h", "4h", ]
-deltas = ["0h"]
-wins_of_interest = ["5h", "1h", "2h", "3h", "4h", "6h", "7h", "8h"]
-
-data = None
-
-params = []
-for winsize in winsizes:
-    for delta in deltas:
-        for win_of_interest in wins_of_interest:
-            params.append([winsize, delta, win_of_interest])
-
-    
-print("Macro F1: %.2f, Micro F1: %.2f, Prec: %.2f, Recall: %.2f, MCC: %.2f" % (f1_mac, f1_mic, prec, recall, mcc))
-
-
-# %%
-
-# %%
-
-# %%
-
-
-df_timeseries, df_labels, df_label_time, df_pids = generate_timeseries_df_from_block(df, signals, winsize="5h", delta="0h", win_of_interest="5h")
-
-for col in ["hyper", "hypo"]:
-    del df_timeseries[col]
-    
-features_filtered = extract_features_from_df(df_timeseries, df_labels["hyper"] > 0, winsize="5h", delta="0h", win_of_interest="5h")
-
-# %%
-data = pd.concat([df_pids, df_labels, df_label_time, features_filtered], axis=1)
-
-# Add Ramadan and time flags
-data["ramadan"] = data["gt_time"].apply(lambda x: ramadan_flag(x))
-data = pd.merge(data, df[["patientID", "time", "time_sin", "time_cos"]], left_on=["pid", "gt_time"], right_on=["patientID", "time"])
-
-# Add EMR data
-data = data.merge(df_emr, left_on="pid", right_index=True)
-
-print("Note that there were many NAN in the ERM files.")
-print("If we dropall NAN, we go from %d rows to %d (i.e., from %d to %d participants)" % (data.shape[0], 
-                                                                                          data.dropna().shape[0],
-                                                                                          data["pid"].unique().shape[0],
-                                                                                          data.dropna()["pid"].unique().shape[0]))
-
-print("So, lets dropping NAs...")
-
-data = data.dropna()
-save_data(data, winsize="5h", delta="0h", win_of_interest="5h")
-
-# %%
-
-# %% [markdown]
-# Next we map all features to a dictionary called feature_mapping. 
-# Later, this will help us to build models using different feature sets.
-# Example ``model(data[feature_mapping["Steps"]])`` would create a model only using "Steps".
-
-# %%
-df_emr.keys() # ["Cholesterol"]# astype(np.float)
-
-# %% pycharm={"name": "#%%\n"}
-data[["pid", "ground_truth"] + feature_mapping["Steps"]].head(5)
-
-# %%
-
-df_folds.head(10)
-
-# %%
-data = data.merge(df_folds)
-data.head()
-
-# %%
-
-# %%
-
-# 
-
-# %%
-feature_sets = [
-    ['time','mets', 'Calories', 'Steps', 'Distance', 'CGM', 'other'],
-    ['time', 'mets', 'Calories', 'Steps', 'Distance', 'CGM'],
-    ['time','mets', 'Calories', 'Steps', 'Distance', 'other'],                 
-    ['time','mets', 'Calories', 'Steps', 'Distance'], 
-    ]
-
-# %% [markdown]
-# This experiment takes only one participant as test:
-
-# %%
-#data["ground_truth"] = data["hyper"] > 0
-data["ground_truth"] = data["hypo"] > 0
-
-# %%
-featset = feature_sets[0]
-winsize = "5h"
-delta = "0h"
-win_of_interest = "5h"
-
-#data = load_data(winsize, delta)
-#feature_mapping = get_feature_mapping(signals, data)
-#df_folds = map_id_fold(data, -1)
-#data = data.merge(df_folds)
-        
-train_data = data[get_cols_by_featureset(data, featset, feature_mapping)]
-test_fold = train_data["fold"].max()
-test_data = train_data[train_data["fold"] == test_fold]
-train_data = train_data[train_data["fold"] != test_fold]
-
-cv = GroupKFold() #### <---- This is extremely important to avoid auto-correlation between the train/test
-
-experiment = setup(data = train_data, test_data = test_data,
-                   target='ground_truth', session_id=42, silent=True,
-                   fold_strategy = cv, fold_groups = 'fold',
-                   ignore_features = ["pid", "time", "fold", "Diabetes Medication"]
-                  )
-best_model = compare_models()
-
-#best_model = compare_models(include=['llar', 'lr', 'omp'], n_select=1)
-#create_model(best_model)
-#train_result = pull()
-
-#test_result = predict_model(best_model)
-#f1_mac, f1_mic, prec, recall, mcc, fig = get_classification_results_from_regression(test_result)
-
-#print("Macro F1: %.2f, Micro F1: %.2f, Prec: %.2f, Recall: %.2f, MCC: %.2f" % (f1_mac, f1_mic, prec, recall, mcc))
-#fig
-
-# %%
-feature_set = feature_sets[0]
-winsize = "3h"
-delta = "1h"
-
-data = load_data(winsize, delta)
-feature_mapping = get_feature_mapping(signals, data)
-df_folds = map_id_fold(data, -1)
-data = data.merge(df_folds)
-        
-train_data = data[get_cols_by_featureset(data, featset, feature_mapping)]
-test_fold = train_data["fold"].max()
-test_data = train_data[train_data["fold"] == test_fold]
-train_data = train_data[train_data["fold"] != test_fold]
-
-cv = GroupKFold() #### <---- This is extremely important to avoid auto-correlation between the train/test
-
-experiment = setup(data = train_data, test_data = test_data,
-                   target='ground_truth', session_id=42, silent=True,
-                   fold_strategy = cv, fold_groups = 'fold',
-                   ignore_features = ["pid", "time", "fold"]
-                  )
-
-best_model = compare_models(include=['llar', 'lr', 'omp'], n_select=1)
-create_model(best_model)
-train_result = pull()
-
-test_result = predict_model(best_model)
-f1_mac, f1_mic, prec, recall, mcc, fig = get_classification_results_from_regression(test_result)
-
-print("Macro F1: %.2f, Micro F1: %.2f, Prec: %.2f, Recall: %.2f, MCC: %.2f" % (f1_mac, f1_mic, prec, recall, mcc))
-fig
-
-# %%
-predict_model(best_model)
-
-# %%
-feature_set = feature_sets[0]
-winsize = "3h"
-delta = "1h"
-
-data = load_data(winsize, delta)
-feature_mapping = get_feature_mapping(signals, data)
-df_folds = map_id_fold(data, -1)
-data = data.merge(df_folds)
-        
-train_data = data[get_cols_by_featureset(data, featset, feature_mapping)]
-test_fold = train_data["fold"].max()
-test_data = train_data[train_data["fold"] == test_fold]
-train_data = train_data[train_data["fold"] != test_fold]
-
-cv = GroupKFold() #### <---- This is extremely important to avoid auto-correlation between the train/test
-
-experiment = setup(data = train_data, test_data = test_data,
-                   target='ground_truth', session_id=42, silent=True,
-                   # fold_strategy = cv, fold_groups = 'fold', <<<--- Not using it anymore
-                   ignore_features = ["pid", "time", "fold"]
-                  )
-
-best_model = compare_models(include=['llar', 'lr', 'omp'], n_select=1)
-create_model(best_model)
-train_result = pull()
-
-test_result = predict_model(best_model)
-f1_mac, f1_mic, prec, recall, mcc, fig = get_classification_results_from_regression(test_result)
-
-print("Macro F1: %.2f, Micro F1: %.2f, Prec: %.2f, Recall: %.2f, MCC: %.2f" % (f1_mac, f1_mic, prec, recall, mcc))
-fig
-
-# %% [markdown]
-# This next experiment does what needs to be done correctly:
-# It takes one participant at time as a test and accumulates the results
-
-# %%
-feature_set = feature_sets[0]
-winsize = "3h"
-delta = "1h"
-
-data = load_data(winsize, delta)
-feature_mapping = get_feature_mapping(signals, data)
-df_folds = map_id_fold(data, -1)
-data = data.merge(df_folds)
-
-test_results = []
-        
-for test_fold in data["fold"].unique():
-    
-    train_data = data[get_cols_by_featureset(data, featset, feature_mapping)]
-    test_data = train_data[train_data["fold"] == test_fold]
-    train_data = train_data[train_data["fold"] != test_fold]
-
-    cv = GroupKFold() #### <---- This is extremely important to avoid auto-correlation between the train/test
-
-    experiment = setup(data = train_data, test_data = test_data,
-                       target='ground_truth', session_id=42, silent=True,
-                       fold_strategy = cv, fold_groups = 'fold',
-                       ignore_features = ["pid", "time", "fold"]
-                      )
-    best_model = compare_models(include=['llar', 'lr', 'omp'], n_select=1)
-    create_model(best_model)
-    training_result = pull()
-
-    test_result = predict_model(best_model)
-    test_results.append(test_result[["ground_truth", "Label"]])
-    
-test_results = pd.concat(test_results)    
-f1_mac, f1_mic, prec, recall, mcc, fig = get_classification_results_from_regression(test_results)
-
-print("Macro F1: %.2f, Micro F1: %.2f, Prec: %.2f, Recall: %.2f, MCC: %.2f" % (f1_mac, f1_mic, prec, recall, mcc))
-fig
-
-# %%
-# Experiment with different data frames at the same time:
-feature_set = ['time','mets', 'Calories', 'Steps', 'Distance', 'CGM', 'other']  
-
-results = []
-
-for winsize in winsizes:
-    for delta in deltas:
-        data = load_data(winsize, delta)
-        feature_mapping = get_feature_mapping(signals, data)
-        df_folds = map_id_fold(data, -1)
-        data = data.merge(df_folds)
-        
-        for test_fold in range(train_data["fold"].unique()):
-        
-            train_data = data[get_cols_by_featureset(data, featset, feature_mapping)]
-            test_data = train_data[train_data["fold"] == test_fold]
-            train_data = train_data[train_data["fold"] != test_fold]
-
-            cv = GroupKFold()
-
-            experiment = setup(data = train_data, test_data = test_data,
-                               target='ground_truth', session_id=42, silent=True,
-                               fold_strategy = cv, fold_groups = 'fold',
-                               ignore_features = ["pid", "time", "fold"]
-                              )
-
-            best_model = compare_models(include=['llar', 'lr', 'omp'], n_select=1)
-            create_model(best_model)
-            training_result = pull()
-
-            row = {}
-            row["delta"] = delta
-            row["winsize"] = winsize
-            row["featset"] = featset
-            row["training_r2"] = training_result.loc["Mean"]["R2"]
-            row["training_rmse"] = training_result.loc["Mean"]["RMSE"]
-            row["name"] = best_model
-
-            predict_model(best_model)["r2"]
-            result = pull()
-            row["test_r2"] = training_result.loc["Mean"]["R2"]
-            row["test_rmse"] = training_result.loc["Mean"]["RMSE"]
-            row["test_fold"] = test_fold
-            
-            results.append(row)
-
-pd.DataFrame(results)
-
-# %%
-predictions = pd.DataFrame(results)
-predictions.pivot(index="winsize", values="r2", columns="delta").plot()
-
-# %%
-# Experiment with different data frames at the same time:
-feature_set = ['time','mets', 'Calories', 'Steps', 'Distance', 'CGM', 'other']  
-
-results = []
-
-for winsize in ["3h"]: # winsizes:
-    for delta in deltas:
-        data = load_data(winsize, delta)
-        feature_mapping = get_feature_mapping(signals, data)
-        df_folds = map_id_fold(data, -1)
-        data = data.merge(df_folds)
-        
-        for test_fold in train_data["fold"].unique():
-        
-            train_data = data[get_cols_by_featureset(data, featset, feature_mapping)]
-            test_data = train_data[train_data["fold"] == test_fold]
-            train_data = train_data[train_data["fold"] != test_fold]
-
-            cv = GroupKFold()
-
-            experiment = setup(data = train_data, test_data = test_data,
-                               target='ground_truth', session_id=42, silent=True,
-                               fold_strategy = cv, fold_groups = 'fold',
-                               ignore_features = ["pid", "time", "fold"]
-                              )
-
-            best_model = compare_models(include=['llar', 'lr', 'omp'], n_select=1)
-            create_model(best_model)
-            training_result = pull()
-
-            row = {}
-            row["delta"] = delta
-            row["winsize"] = winsize
-            row["featset"] = featset
-            row["training_r2"] = training_result.loc["Mean"]["R2"]
-            row["training_rmse"] = training_result.loc["Mean"]["RMSE"]
-            row["training_mae"] = training_result.loc["Mean"]["MAE"]
-            row["name"] = best_model
-
-            predictions = predict_model(best_model)
-            test_result = pull()
-            row["test_r2"] = test_result["R2"].values[0]
-            row["test_rmse"] = test_result["RMSE"].values[0]
-            row["test_mae"] = test_result["MAE"].values[0]
-            row["test_fold"] = test_fold
-            
-            f1_mac, f1_mic, prec, recall, mcc, fig = get_classification_results_from_regression(predictions)
-            row["test_f1_mac"] = f1_mac
-            row["test_f1_mic"] = f1_mic
-            row["test_prec"] = prec
-            row["test_recall"] = recall
-            row["test_mcc"] = mcc
-            
-            results.append(row)
-            
-pd.DataFrame(results)
