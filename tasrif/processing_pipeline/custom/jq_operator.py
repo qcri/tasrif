@@ -1,9 +1,8 @@
 """
 Operator to resample a timeseries based dataframe
 """
-import pyjq
-
 from tasrif.processing_pipeline import ProcessingOperator
+import pyjq
 
 class JqOperator(ProcessingOperator):
     """
@@ -12,7 +11,7 @@ class JqOperator(ProcessingOperator):
 
     Examples
     --------
-    >>>
+>>>
     >>> import pandas as pd
     >>> from tasrif.processing_pipeline.custom import JqOperator
     >>> df = [

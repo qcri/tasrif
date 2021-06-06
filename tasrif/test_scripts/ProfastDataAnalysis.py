@@ -123,7 +123,7 @@ def drop_days_below_min_steps(df, min_steps=1000, time_col="time", pid_col="pati
     return df_tmp.reset_index(level=0).reset_index(drop=True)
 
 
-def agg_per_day(df, metric, operation, outputcol_name=None, pid_col="patientID", time_col="time", 
+def agg_per_day(df, metric, operation, outputcol_name=None, pid_col="patientID", time_col="time",
                 remove_zero_steps=False):
 
     if remove_zero_steps:
@@ -131,7 +131,7 @@ def agg_per_day(df, metric, operation, outputcol_name=None, pid_col="patientID",
     else:
         df_tmp = df.copy()
 
-    # Get aggregated number of [steps, calories, ...] in a day 
+    # Get aggregated number of [steps, calories, ...] in a day
     metric_per_day = df_tmp.groupby([pid_col, pd.Grouper(key=time_col,freq='D')])[metric].agg(operation)
     if outputcol_name is not None:
         metric_per_day.name = outputcol_name
@@ -144,17 +144,17 @@ def mean_per_day(df, metric, outputcol_name=None, pid_col="patientID", time_col=
     return agg_per_day(df, metric, "mean", outputcol_name, pid_col, time_col, remove_zero_steps)
 
 def is_mild_hypo(cgm_value):
-    if cgm_value <= 70: 
+    if cgm_value <= 70:
         return 1
     return 0
 
 def is_severe_hypo(cgm_value):
-    if cgm_value <= 54: 
+    if cgm_value <= 54:
         return 1
     return 0
 
 def is_hyper(cgm_value):
-    if cgm_value >= 180: 
+    if cgm_value >= 180:
         return 1
     return 0
 
@@ -203,7 +203,7 @@ df_intra.head(10)
 df_cgm = read_data(SihaCgmDataset, class_name_mapping)
 
 # %%
-# Let's have a look at the data for a given patient 
+# Let's have a look at the data for a given patient
 df_sample = df_cgm[df_cgm["patientID"] == 27]
 df_sample.sort_values(by=["time"]).head(20)
 # note how there is a big jump from 12:17 to 15:19 for pid 27
@@ -301,7 +301,7 @@ print(r)
 r.plot(x="#Days")
 
 # %%
-amount_of_days = 0
+amount_of_days = 0 # Please Change this parameter if you want to control a quality
 good_avail = data_availability[(data_availability["before"] >= amount_of_days) & (data_availability["during"] >= amount_of_days)]
 good_avail
 
@@ -368,23 +368,23 @@ def boxplot_distribution(df, main_col="CGM", operator="mean", pid_col="patientID
     # Get day correlation
     df_tmp["Date"] = df_tmp[time_col].dt.date
     df_tmp = df_tmp.groupby([pid_col, "Date"])[main_col].agg(operator).reset_index()
-    
+
     sns.set_theme(style="ticks")
-    
+
     # Plot the orbital period with horizontal boxes
     df_tmp["Ramadan"] = df_tmp["Date"].apply(lambda x: ramadan_flag(x))
 
     g = sns.boxplot(x=pid_col, y=main_col, hue="Ramadan", data=df_tmp)
     sns.stripplot(x=pid_col, y=main_col, data=df_tmp,
                   size=4, color=".3", linewidth=0)
-    
+
     #g.set(ylabel='Pearson Correlation\n%s-%s' % (main_col, secondary_col))
-    
+
     sns.despine(offset=10, trim=True)
-    
+
     # Move the legend to the right side
     g.legend(title="Ramadan?", bbox_to_anchor=(1.3, 0.5), ncol=1)
-    
+
     return g
 
 
@@ -424,7 +424,7 @@ boxplot_distribution(df_cleaned, "CGM", operator="mean", remove_zero_steps=False
 # %%
 def boxplot_delayed_correlation_with_filter(df, secondary_col, main_col="CGM",
                                             pid_col="patientID", time_col="time", time_delay="0h15t",
-                                            remove_zero_steps=True, 
+                                            remove_zero_steps=True,
                                             # Optional data
                                             agg_operator="mean", main_min_filter=0, secondary_min_filter=0):
 
@@ -434,52 +434,52 @@ def boxplot_delayed_correlation_with_filter(df, secondary_col, main_col="CGM",
         df_tmp = df.copy()
 
     shifted_col_name = "Shifted_" + time_delay + "_" + secondary_col
-        
-    # Group data by patient, select a column and shift dataset 
+
+    # Group data by patient, select a column and shift dataset
     df_shifted = df_tmp.set_index(time_col).groupby(pid_col)[[secondary_col]].shift(freq=time_delay).reset_index()
     df_shifted = df_shifted.rename(columns={secondary_col: shifted_col_name})
     # Merge back the shifted dataset
     df_tmp = pd.merge(df_tmp, df_shifted, on=["patientID", "time"])
-    
+
     # Get day correlation and apply operator
     df_tmp["Date"] = df_tmp[time_col].dt.date
-    
+
     df_corr = df_tmp.groupby([pid_col, "Date"])[[main_col, shifted_col_name]].corr().reset_index()
     df_corr = df_corr[df_corr["level_2"] == main_col]
-    
+
     df_mean = df_tmp.groupby([pid_col, "Date"])[[main_col, shifted_col_name]].agg(agg_operator).reset_index()
-    
+
     # merge temporary dataframes
     df_tmp = pd.merge(df_corr, df_mean, on=[pid_col, "Date"], suffixes=("", "_" + agg_operator))
-    
+
     # optionally filters rows that are below the minimal defined by `main_min_filter` and `secondary_min_filter`
     df_tmp = df_tmp[df_tmp[main_col + "_" + agg_operator] >= main_min_filter]
     df_tmp = df_tmp[df_tmp[shifted_col_name + "_" + agg_operator] >= secondary_min_filter]
-    
+
     # After all data modifications, we add the Ramadan flag
     df_tmp["Ramadan"] = df_tmp["Date"].apply(lambda x: ramadan_flag(x))
-    
-    # Plot the results    
+
+    # Plot the results
     sns.set_theme(style="ticks")
-    
+
     # Plot the orbital period with horizontal boxes
     g = sns.boxplot(x=pid_col, y=shifted_col_name, hue="Ramadan", data=df_tmp)
     sns.stripplot(x=pid_col, y=shifted_col_name, data=df_tmp,
                   size=4, color=".3", linewidth=0)
-    
+
     g.set(ylabel='Pearson Correlation\n%s-%s' % (main_col, shifted_col_name))
-    
+
     sns.despine(offset=10, trim=True)
-    
+
     # Move the legend to the right side
     g.legend(title="Ramadan?", bbox_to_anchor=(1.3, 0.5), ncol=1)
-    
+
     # Remove useless cols that were added by the correlation operator
     del df_tmp["level_2"]
     del df_tmp[main_col]
-    
+
     return df_tmp, g
-    
+
 
 
 # %%
@@ -492,7 +492,7 @@ def boxplot_delayed_correlation_with_filter(df, secondary_col, main_col="CGM",
 
 # %%
 boxplot_delayed_correlation_with_filter(df_cleaned, main_col="CGM", secondary_col="CGM",
-                                        remove_zero_steps=False, time_delay="4h00t", 
+                                        remove_zero_steps=False, time_delay="4h00t",
                                         agg_operator="mean", main_min_filter=0, secondary_min_filter=0)
 
 # %%
@@ -646,7 +646,7 @@ for d in drugs:
 
 # %% [markdown]
 # We are now able to compare the correlation between any number of groups.
-# For example, below we verify that the correlation between average CGM and HeartRate was strong for participants taking the combo of Metformin and Sitagliptin, while it was the opposite for participants not taking these drugs. 
+# For example, below we verify that the correlation between average CGM and HeartRate was strong for participants taking the combo of Metformin and Sitagliptin, while it was the opposite for participants not taking these drugs.
 #
 # ⭐️⭐️⭐️ <b> TODO: we need to know what kind of medicament combination is important! </b> ⭐️⭐️⭐️
 
