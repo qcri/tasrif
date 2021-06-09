@@ -7,11 +7,11 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.7.1
+#       jupytext_version: 1.11.2
 #   kernelspec:
-#     display_name: PyCharm (tasrif)
+#     display_name: Python 3
 #     language: python
-#     name: pycharm-5bd30262
+#     name: python3
 # ---
 
 # %% [markdown]
@@ -33,7 +33,9 @@ from tqdm import tqdm
 from dataprep.eda import create_report
 import seaborn as sns
 import matplotlib.pyplot as plt
+import matplotlib.dates as dates
 from sklearn import metrics
+from datetime import timedelta
 
 from tasrif.data_readers.siha_dataset import \
     SihaSleepDataset, \
@@ -59,6 +61,7 @@ from tasrif.data_readers.siha_dataset import \
 
 # %% pycharm={"name": "#%%\n"}
 profast_datapath='../../data/profast2020/'
+profast_datapath='/mnt/c/Development/projects/siha/'
 
 
 # %% [markdown]
@@ -604,12 +607,32 @@ med_grp[7] = ['Pioglitazone']
 
 # %%
 for idx, medlist in med_grp.items():
-    df_emr["medlist%d" % idx] = df_emr[medlist].all(axis=1)
+    df_emr["medlist%d" % idx] = df_emr[medlist].any(axis=1)
     print("Using medlist %d (%s): %d" % (idx, medlist, df_emr["medlist%d" % idx].sum()))
+    
+medicines = [x for l in list(med_grp.values()) for x in l]
+df_emr['medications'] = df_emr[medicines].sum(axis=1)
+
+all_medlists_except_4_and_0 = ['medlist1', 'medlist2', 'medlist3', 'medlist5', 'medlist6', 'medlist7']
+
+
 
 
 # %%
-df_emr.head()
+medlist
+
+# %%
+medlists = ['medlist0', 'medlist1', 'medlist2', 'medlist3', 'medlist4', 'medlist5', 'medlist6', 'medlist7']
+fig, ax = plt.subplots(figsize=(8, 8))
+sns.heatmap(df_emr[medlists], ax=ax)
+
+# Compare medlists
+
+# %%
+# Is there any patient who's using medlist4 exclusively?
+# First condition: using medlist4
+# Second condition: every other medlist is false (except medlist0)
+df_emr[(df_emr['medlist4'] == True) & (~df_emr[all_medlists_except_4_and_0]).all(axis=1)]
 
 # %%
 df_agg = pd.concat([mean_per_day(df_cleaned, "Steps", "MeanSteps", remove_zero_steps=True),
@@ -643,6 +666,392 @@ print("Total number of participants at this analysis: %d" % (total_participants)
 for d in drugs:
     df_drug = df_merged[df_merged[d] == True]
     print("Participants in the final dataset that took drug %s: %d (%.2f%%)" % (d, df_drug.shape[0], 100.*df_drug.shape[0]/total_participants))
+
+# %%
+df_emr.loc[32]
+
+# %%
+# Sample patient
+df_patient = df_cleaned.set_index('patientID')
+df_patient = df_patient.loc[32]
+
+# Add day for patient
+unique_dates = df_patient['time'].dt.date.unique()
+days = list(range(len(unique_dates)))
+mapping = dict(zip(unique_dates, days))
+df_patient['patient_day'] = df_patient['time'].dt.date.map(mapping)
+# df_patient['Day'] = df_patient.index.day
+df_patient['Hour'] = df_patient.index.hour
+
+# Sample day
+day_zero = df_patient[df_patient['patient_day'] == 0]
+day_zero = day_zero.set_index('time')
+
+# Set time as index
+df_patient = df_patient.set_index('time')
+
+# %%
+df_patient[['HeartRate', 'CGM']].describe()
+
+# %%
+df_patient['HeartRate']
+
+
+# %% [markdown]
+# # Does the patient have missing data?
+
+# %%
+
+def plot_patient_days(df, features='CGM'):
+    df = df.copy()
+    days = df['patient_day'].unique()
+    
+    # Start plot
+    fig, axs = plt.subplots(len(days), 1, figsize=(21, len(days)*2))   
+    
+    # Normalize features
+    if(type(features) == list):
+        df[features] = (df[features] - df[features].min()) / (df[features].max() - df[features].min())
+        max_y = 1
+        min_y = 0
+    else:
+        describe_y = df[features].describe()
+        max_y = describe_y['max']
+        min_y = describe_y['min']
+    
+    for day in days:
+        
+        df_plot = df[df['patient_day'] == day]
+        # Generate index to find missing data
+        new_index = pd.date_range(start=df_plot.index.date[0], 
+                                  end=df_plot.index.date[0] + timedelta(days=1), 
+                                  freq='15T')
+
+        # remove last 15 minutes to avoid moving into a new day
+        new_index = new_index[:-1]
+        df_plot = df_plot.reindex(new_index)    
+        
+        # plot multiple lines if list of features
+        if(type(features) == list):
+            for f in features:
+                axs[day].plot(df_plot.index, df_plot[f], linewidth=2)
+        else:
+            axs[day].plot(df_plot.index, df_plot[features], linewidth=2)
+
+        axs[day].tick_params(axis='x', which='both', bottom=False, top=False, labelbottom=True, rotation=0)
+        axs[day].tick_params(axis='x', which='major', labelsize='small')
+        axs[day].set_facecolor('snow')
+
+        start_datetime = df_plot.index[0]
+        end_datetime = df_plot.index[-1]
+
+        axs[day].set_xlim(start_datetime, end_datetime)
+        axs[day].set_ylim(min_y, max_y)
+
+        y_label = df_plot.index[0].strftime('%Y-%m-%d')
+        axs[day].set_ylabel("%s" % (y_label,), rotation=0, horizontalalignment="right", verticalalignment="center")
+
+        axs[day].xaxis.set_major_locator(dates.HourLocator(interval=1))
+        axs[day].xaxis.set_major_formatter(dates.DateFormatter('%H:%M'))
+
+    # add a legend  
+    if(type(features) == list):
+        axs[-1].legend(features, loc="lower left")
+    else:
+        axs[-1].legend([features], loc="lower left")
+        
+    return fig, axs
+        
+    
+fig, axs = plot_patient_days(df_patient, 'CGM')
+
+# %% [markdown]
+# # Visual correlation of features
+
+# %%
+fig, axs = plot_patient_days(df_patient, ['mets', 'Steps', 'CGM'])
+
+
+# %%
+# look at peaks, check CGM at t+x
+# variability in ts
+
+# %% [markdown]
+# # Missing data for patient
+
+# %%
+def reindex_df(df):
+    new_index = pd.date_range(start=df.index.date[0], 
+                              end=df.index.date[0] + timedelta(days=1), 
+                              freq='15T')
+
+    # remove last 15 minutes to avoid moving into a new day
+    new_index = new_index[:-1]
+    df_reindexed = df.reindex(new_index)
+    return df_reindexed
+        
+    
+reindexed = df_patient.groupby(df_patient.index.date).apply(reindex_df)
+missing_data = reindexed.groupby(level=0)['HeartRate'].apply(lambda x: pd.isnull(x).sum())
+print(missing_data)
+print('Total missing minutes', missing_data.sum() * 15)
+
+# %%
+df_patient.index[0]
+
+# %%
+reindexed
+
+
+# %%
+def plot_patient_day(df):
+    df = df.copy()
+    # Generate index to find missing data
+    new_index = pd.date_range(start=df.index.date[0], 
+                              end=df.index.date[0] + timedelta(days=1), 
+                              freq='15T')
+    # remove last 15 minutes of day
+    new_index = new_index[:-1]
+    
+    
+    df[['CGM', 'HeartRate']] = (df[['CGM', 'HeartRate']] - df[['CGM', 'HeartRate']].min()) \
+        / (df[['CGM', 'HeartRate']].max() - df[['CGM', 'HeartRate']].min())
+    
+    df_plot = df.reindex(new_index)
+    # Normalize features
+    
+    
+    fig, ax = plt.subplots(1, 1, figsize=(21, 8))
+    ax.plot(df_plot.index, df_plot['CGM'], linewidth=2)
+    ax.plot(df_plot.index, df_plot['mets'], linewidth=2)
+
+
+    ax.tick_params(axis='x', which='both', bottom=False, top=False, labelbottom=True, rotation=0)
+    ax.tick_params(axis='x', which='major', labelsize='small')
+    ax.set_facecolor('snow')
+
+    start_datetime = df_plot.index[0]
+    end_datetime = df_plot.index[-1]
+
+    ax.set_xlim(start_datetime, end_datetime)
+
+    y_label = df_plot.index[0].strftime('%Y-%m-%d')
+    ax.set_ylabel("%s CGM" % y_label, rotation=0, horizontalalignment="right", verticalalignment="center")
+
+    ax.xaxis.set_major_locator(dates.HourLocator(interval=1))
+    ax.xaxis.set_major_formatter(dates.DateFormatter('%H:%M'))
+
+    # ax.xaxis.set_minor_locator(dates.MinuteLocator(interval=30))
+    # ax.xaxis.set_minor_formatter(dates.DateFormatter('%M'))
+    # ax.set_yticks([])
+
+    # plt.tick_params(
+    #     axis='x',          # changes apply to the x-axis
+    #     which='major',      # both major and minor ticks are affected
+    #     bottom=False,      # ticks along the bottom edge are off
+    #     top=False,         # ticks along the top edge are off
+    #     labelbottom=False) # labels along the bottom edge are off
+    
+    return ax
+
+plot_patient_day(df_patient[df_patient['patient_day'] == 1])
+
+
+
+
+# %% [markdown]
+# # Which group have a higher heartrate?
+
+# %%
+medlist4_patients = df_emr[df_emr['medlist4']].index.values
+
+# Patient 73 is missing
+medlist4_patients
+df_cleaned['medlist4_group'] = df_cleaned['patientID'].isin([37, 55, 74, 79])
+df_cleaned['Hour'] = df_cleaned['time'].dt.hour
+# Plot the results
+sns_df = df_cleaned.groupby(['medlist4_group', 'patientID'])['HeartRate'].mean().reset_index()
+sns.set_theme(style="ticks")
+g = sns.boxplot(y='HeartRate', x='medlist4_group', data=sns_df)
+
+# %% [markdown]
+# # During Ramadan?
+
+# %%
+sns_df = df_cleaned.groupby(['medlist4_group', 'patientID', 'Ramadan'])['HeartRate'].mean().reset_index()
+g = sns.boxplot(y='HeartRate', x='Ramadan', hue='medlist4_group', data=sns_df)
+
+# %% [markdown]
+# # Does the patient have more CGM before 6pm or after? (in Ramadan)
+
+# %%
+# CGM before VS. after fasting in Ramadan
+
+df_patient_ramadan = df_patient[df_patient['Ramadan'] == 1].copy()
+df_patient_ramadan['fasting'] = df_patient_ramadan.index.hour < 18
+df_patient_ramadan = df_patient_ramadan.reset_index()
+df_patient_ramadan['Day'] = df_patient_ramadan['time'].dt.strftime('%Y-%m-%d')
+df_patient_ramadan['Hour'] = df_patient_ramadan['time'].dt.hour
+
+
+fig, ax = plt.subplots(figsize=(12, 4))
+sns.boxplot(y='CGM', x='Day', hue='fasting', data=df_patient_ramadan, ax=ax)
+ax.tick_params(axis='x', which='both', bottom=False, top=False, labelbottom=True, rotation=0)
+
+
+
+
+
+# %% [markdown]
+# # Does the patient walk more before or after 6pm?
+
+# %%
+fig, ax = plt.subplots(figsize=(12, 4))
+sns.boxplot(y='Steps', x='Day', hue='fasting', data=df_patient_ramadan, ax=ax)
+# ax.set_yscale('log')
+
+# %% [markdown]
+# # Which hour does the patient walk more (before VS. during Ramadan)
+# The patient seems to walk more afternoon during Ramadan
+
+# %%
+fig, ax = plt.subplots(figsize=(12, 4))
+sns.boxplot(y='Steps', x='Hour', hue='Ramadan', data=df_patient, ax=ax)
+
+# %%
+fig, ax = plt.subplots(figsize=(12, 4))
+sns.boxplot(y='CGM', x='Hour', hue='Ramadan', data=df_patient, ax=ax)
+
+# %% [markdown]
+# ## For all patients
+
+# %%
+fig, ax = plt.subplots(figsize=(12, 4))
+sns.boxplot(y='Steps', x='Hour', hue='Ramadan', data=df_cleaned, ax=ax)
+ax.set_yscale('log')
+
+# %%
+fig, ax = plt.subplots(figsize=(12, 4))
+sns.boxplot(y='CGM', x='Hour', hue='Ramadan', data=df_cleaned, ax=ax)
+# ax.set_yscale('log')
+
+# %% [markdown]
+# # Steps of patients before and after fasting
+
+# %%
+df_cleaned_ramadan = df_cleaned[df_cleaned['Ramadan'] == True].copy()
+df_cleaned_ramadan['fasting'] = df_cleaned_ramadan['time'].dt.hour < 18
+df_cleaned_ramadan = df_cleaned_ramadan.reset_index()
+df_cleaned_ramadan['Day'] = df_cleaned_ramadan['time'].dt.strftime('%Y-%m-%d')
+
+# 34 patients
+g = sns.catplot(y='Steps', 
+                x='Day', 
+                hue='fasting', 
+                row='patientID', 
+                data=df_cleaned_ramadan, 
+                kind='box',
+                height=3, 
+                sharex=False,
+                sharey=False,
+                aspect=3,
+                whis=2.5)
+
+g.set_xticklabels(rotation=35)
+g.fig.tight_layout()
+
+for ax in g.axes:
+    ax[0].set_yscale('log')
+
+# %%
+# group people by medlist
+# plot steps
+
+# %%
+spacing = np.linspace(-9 * np.pi, 9 * np.pi, num=1000)
+
+s = pd.Series(0.7 * np.random.rand(1000) + 0.3 * np.sin(spacing))
+
+# %% [markdown]
+# # DTW - Correlation between Steps and CGM
+
+# %%
+from dtw import *
+
+
+sample_day = df_patient[df_patient['patient_day'] == 1]
+alignment = dtw(sample_day['Steps'], sample_day['CGM'], keep_internals=True)
+
+
+
+## Display the warping curve, i.e. the alignment curve
+alignment.plot(type="threeway")
+
+## Align and plot with the Rabiner-Juang type VI-c unsmoothed recursion
+dtw(sample_day['Steps'], sample_day['CGM'], keep_internals=True, 
+    step_pattern=rabinerJuangStepPattern(6, "c"))\
+    .plot(type="twoway",offset=-2)
+
+## See the recursion relation, as formula and diagram
+# print(rabinerJuangStepPattern(6,"c"))
+# rabinerJuangStepPattern(6,"c").plot()
+
+
+# %%
+# rolling window -> smoothing steps
+
+# %% [markdown]
+# # TLCC - Correlation between Steps and CGM
+
+# %%
+def crosscorr(datax, datay, lag=0, wrap=False):
+    """ Lag-N cross correlation. 
+    Shifted data filled with NaNs 
+    
+    Parameters
+    ----------
+    lag : int, default 0
+    datax, datay : pandas.Series objects of equal length
+    Returns
+    ----------
+    crosscorr : float
+    """
+    if wrap:
+        shiftedy = datay.shift(lag)
+        shiftedy.iloc[:lag] = datay.iloc[-lag:].values
+        return datax.corr(shiftedy)
+    else: 
+        return datax.corr(datay.shift(lag))
+
+d1 = sample_day['Steps']
+d2 = sample_day['CGM']
+seconds = 5
+fps = 30
+rs = [crosscorr(d1,d2, lag) for lag in range(-int(seconds*fps),int(seconds*fps+1))]
+offset = np.floor(len(rs)/2)-np.argmax(rs)
+f,ax=plt.subplots(figsize=(14,3))
+ax.plot(rs)
+ax.axvline(np.ceil(len(rs)/2),color='k',linestyle='--',label='Center')
+ax.axvline(np.argmax(rs),color='r',linestyle='--',label='Peak synchrony')
+ax.set(title=f'Offset = {offset} frames\nS1 leads <> S2 leads',ylim=[.1,.31],xlim=[0,301], xlabel='Offset',ylabel='Pearson r')
+ax.set_xticks([0, 50, 100, 151, 201, 251, 301])
+ax.set_xticklabels([-150, -100, -50, 0, 50, 100, 150]);
+plt.legend()
+
+# %%
+plt.imshow(acc_cost_matrix.T, origin='lower', cmap='gray', interpolation='nearest')
+plt.plot(path[0], path[1], 'w')
+plt.xlabel('Subject1')
+plt.ylabel('Subject2')
+plt.title(f'DTW Minimum Path with minimum distance: {np.round(d,2)}')
+plt.show()
+
+# %%
+# TODO: medlist 4 VS all in heartrate DONE
+# TODO: CGM before iftar VS after DONE
+# TODO: for every day, if it has more than 16 hours of data -> consider good
+# TODO: Time Lagged Cross Correlation, DTW
+# TODO: https://towardsdatascience.com/four-ways-to-quantify-synchrony-between-time-series-data-b99136c4a9c9
 
 # %% [markdown]
 # We are now able to compare the correlation between any number of groups.
