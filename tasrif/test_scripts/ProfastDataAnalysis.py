@@ -671,6 +671,9 @@ for d in drugs:
 df_emr.loc[32]
 
 # %%
+df_patient
+
+# %%
 # Sample patient
 df_patient = df_cleaned.set_index('patientID')
 df_patient = df_patient.loc[32]
@@ -680,8 +683,8 @@ unique_dates = df_patient['time'].dt.date.unique()
 days = list(range(len(unique_dates)))
 mapping = dict(zip(unique_dates, days))
 df_patient['patient_day'] = df_patient['time'].dt.date.map(mapping)
-# df_patient['Day'] = df_patient.index.day
-df_patient['Hour'] = df_patient.index.hour
+df_patient['Day'] = df_patient['time'].dt.date
+df_patient['Hour'] = df_patient['time'].dt.hour
 
 # Sample day
 day_zero = df_patient[df_patient['patient_day'] == 0]
@@ -695,6 +698,24 @@ df_patient[['HeartRate', 'CGM']].describe()
 
 # %%
 df_patient['HeartRate']
+
+# %% [markdown]
+# # Smooth Steps
+
+# %%
+import datetime
+
+from tsmoothie.smoother import *
+from tsmoothie.utils_func import create_windows
+
+def smooth_ts(df, feature='Steps'):
+    smoother = KalmanSmoother(component='level_trend', 
+                              component_noise={'level': 0.1, 'trend': 0.1})
+
+    smoother.smooth(df[feature])
+    return pd.Series(smoother.smooth_data[0])
+
+df_cleaned['Steps_smoothed'] = df_cleaned.groupby(['patientID', pd.Grouper(key='time', freq='D')]).apply(smooth_ts, 'Steps').values
 
 
 # %% [markdown]
@@ -769,7 +790,7 @@ fig, axs = plot_patient_days(df_patient, 'CGM')
 # # Visual correlation of features
 
 # %%
-fig, axs = plot_patient_days(df_patient, ['mets', 'Steps', 'CGM'])
+fig, axs = plot_patient_days(df_patient, ['CGM', 'Steps_smoothed'])
 
 
 # %%
@@ -796,15 +817,12 @@ missing_data = reindexed.groupby(level=0)['HeartRate'].apply(lambda x: pd.isnull
 print(missing_data)
 print('Total missing minutes', missing_data.sum() * 15)
 
-# %%
-df_patient.index[0]
+
+# %% [markdown]
+# # Plot smoothed data
 
 # %%
-reindexed
-
-
-# %%
-def plot_patient_day(df):
+def plot_patient_day(df, f1='Steps', f2='Steps_smoothed'):
     df = df.copy()
     # Generate index to find missing data
     new_index = pd.date_range(start=df.index.date[0], 
@@ -813,17 +831,11 @@ def plot_patient_day(df):
     # remove last 15 minutes of day
     new_index = new_index[:-1]
     
-    
-    df[['CGM', 'HeartRate']] = (df[['CGM', 'HeartRate']] - df[['CGM', 'HeartRate']].min()) \
-        / (df[['CGM', 'HeartRate']].max() - df[['CGM', 'HeartRate']].min())
-    
     df_plot = df.reindex(new_index)
-    # Normalize features
-    
     
     fig, ax = plt.subplots(1, 1, figsize=(21, 8))
-    ax.plot(df_plot.index, df_plot['CGM'], linewidth=2)
-    ax.plot(df_plot.index, df_plot['mets'], linewidth=2)
+    ax.plot(df_plot.index, df_plot[f1], linewidth=2)
+    ax.plot(df_plot.index, df_plot[f2], linewidth=2)
 
 
     ax.tick_params(axis='x', which='both', bottom=False, top=False, labelbottom=True, rotation=0)
@@ -840,27 +852,22 @@ def plot_patient_day(df):
 
     ax.xaxis.set_major_locator(dates.HourLocator(interval=1))
     ax.xaxis.set_major_formatter(dates.DateFormatter('%H:%M'))
-
-    # ax.xaxis.set_minor_locator(dates.MinuteLocator(interval=30))
-    # ax.xaxis.set_minor_formatter(dates.DateFormatter('%M'))
-    # ax.set_yticks([])
-
-    # plt.tick_params(
-    #     axis='x',          # changes apply to the x-axis
-    #     which='major',      # both major and minor ticks are affected
-    #     bottom=False,      # ticks along the bottom edge are off
-    #     top=False,         # ticks along the top edge are off
-    #     labelbottom=False) # labels along the bottom edge are off
     
+    ax.legend(['Steps', 'Steps_smoothed'])
     return ax
 
-plot_patient_day(df_patient[df_patient['patient_day'] == 1])
+plot_patient_day(df_patient[df_patient['patient_day'] == 1], 
+                 f1='Steps', 
+                 f2='Steps_smoothed')
 
 
 
 
 # %% [markdown]
 # # Which group have a higher heartrate?
+
+# %%
+df_cleaned
 
 # %%
 medlist4_patients = df_emr[df_emr['medlist4']].index.values
@@ -973,14 +980,51 @@ spacing = np.linspace(-9 * np.pi, 9 * np.pi, num=1000)
 s = pd.Series(0.7 * np.random.rand(1000) + 0.3 * np.sin(spacing))
 
 # %% [markdown]
+# # Medlist plots
+
+# %%
+# Some patientIDs don't exist in df_emr from df_cleaned and vice versa
+inner_df = df_cleaned.merge(df_emr[medlists], left_on='patientID', right_index=True, how='inner')
+
+def plot_medlists_avg_day(df, y='CGM', ylog=False):
+    for m in medlists:
+        patients = inner_df[inner_df[m]].patientID.unique()
+        fig, ax = plt.subplots(figsize=(12, 4))
+        sns.boxplot(y=y, x='Hour', hue='Ramadan', data=inner_df[inner_df[m]], ax=ax)
+
+        title = str(len(patients)) + ' patients in ' + m + str(patients)
+        ax.set_title(title, fontsize='small')
+        if ylog:
+            ax.set_yscale('log')
+    
+plot_medlists_avg_day(inner_df, y='CGM')
+
+# %%
+plot_medlists_avg_day(inner_df, y='Steps', ylog=True)
+
+# %%
+plot_medlists_avg_day(inner_df, y='HeartRate')
+
+# %% [markdown]
 # # DTW - Correlation between Steps and CGM
+
+# %% [markdown]
+# ## Let's look at the two timeseries first
+
+# %%
+plot_patient_day(df_patient[df_patient['patient_day'] == 1], 
+                 f1='CGM', 
+                 f2='Steps_smoothed')
+
+# %% [markdown]
+# ## Now let's use DTW
 
 # %%
 from dtw import *
 
 
 sample_day = df_patient[df_patient['patient_day'] == 1]
-alignment = dtw(sample_day['Steps'], sample_day['CGM'], keep_internals=True)
+alignment = dtw(sample_day['Steps_smoothed'], sample_day['CGM'], keep_internals=True)
 
 
 
@@ -988,17 +1032,11 @@ alignment = dtw(sample_day['Steps'], sample_day['CGM'], keep_internals=True)
 alignment.plot(type="threeway")
 
 ## Align and plot with the Rabiner-Juang type VI-c unsmoothed recursion
-dtw(sample_day['Steps'], sample_day['CGM'], keep_internals=True, 
+dtw(sample_day['Steps_smoothed'], sample_day['CGM'], keep_internals=True, 
     step_pattern=rabinerJuangStepPattern(6, "c"))\
     .plot(type="twoway",offset=-2)
 
-## See the recursion relation, as formula and diagram
-# print(rabinerJuangStepPattern(6,"c"))
-# rabinerJuangStepPattern(6,"c").plot()
 
-
-# %%
-# rolling window -> smoothing steps
 
 # %% [markdown]
 # # TLCC - Correlation between Steps and CGM
@@ -1023,34 +1061,136 @@ def crosscorr(datax, datay, lag=0, wrap=False):
     else: 
         return datax.corr(datay.shift(lag))
 
-d1 = sample_day['Steps']
+d1 = sample_day['Steps_smoothed']
 d2 = sample_day['CGM']
 seconds = 5
 fps = 30
 rs = [crosscorr(d1,d2, lag) for lag in range(-int(seconds*fps),int(seconds*fps+1))]
 offset = np.floor(len(rs)/2)-np.argmax(rs)
-f,ax=plt.subplots(figsize=(14,3))
+f,ax = plt.subplots(figsize=(14,3))
 ax.plot(rs)
 ax.axvline(np.ceil(len(rs)/2),color='k',linestyle='--',label='Center')
 ax.axvline(np.argmax(rs),color='r',linestyle='--',label='Peak synchrony')
-ax.set(title=f'Offset = {offset} frames\nS1 leads <> S2 leads',ylim=[.1,.31],xlim=[0,301], xlabel='Offset',ylabel='Pearson r')
+# ax.set(title=f'Offset = {offset} frames\nS1 leads <> S2 leads',ylim=[-0.5,.50],xlim=[0,301], xlabel='Offset',ylabel='Pearson r')
+ax.set(title=f'Offset = {offset} frames\nS1 leads <> S2 leads',xlim=[0,301], xlabel='Offset',ylabel='Pearson r')
 ax.set_xticks([0, 50, 100, 151, 201, 251, 301])
 ax.set_xticklabels([-150, -100, -50, 0, 50, 100, 150]);
 plt.legend()
 
+# %% [markdown]
+# # Use DTW on Ramadan days since they are continious..
+
 # %%
-plt.imshow(acc_cost_matrix.T, origin='lower', cmap='gray', interpolation='nearest')
-plt.plot(path[0], path[1], 'w')
-plt.xlabel('Subject1')
-plt.ylabel('Subject2')
-plt.title(f'DTW Minimum Path with minimum distance: {np.round(d,2)}')
-plt.show()
+df_patient_ramadan = df_patient[df_patient['Ramadan'] == 1].copy()
+df_patient_ramadan['fasting'] = df_patient_ramadan.index.hour < 18
+df_patient_ramadan = df_patient_ramadan.reset_index()
+df_patient_ramadan['Day'] = df_patient_ramadan['time'].dt.strftime('%Y-%m-%d')
+df_patient_ramadan['Hour'] = df_patient_ramadan['time'].dt.hour
+
+df_patient_ramadan
+
+smoother = KalmanSmoother(component='level_season', 
+                          component_noise={'level': 0.1, 'season': 0.1},
+                          n_seasons=24*4)
+
+smoother.smooth(df_patient_ramadan['Steps'])
+df_patient_ramadan['Steps_smoothed'] = smoother.smooth_data[0]
+
+
+smoother.smooth(df_patient_ramadan['CGM'])
+df_patient_ramadan['CGM_smoothed'] = smoother.smooth_data[0]
+
+# %%
+
+# %%
+fig, ax = plt.subplots(1, 1, figsize=(21, 8))
+ax.plot(df_patient_ramadan['time'], df_patient_ramadan['CGM'], linewidth=2)
+ax.plot(df_patient_ramadan['time'], df_patient_ramadan['CGM_smoothed'], linewidth=2)
+
+# %%
+fig, ax = plt.subplots(1, 1, figsize=(21, 8))
+ax.plot(df_patient_ramadan['time'], df_patient_ramadan['Steps'], linewidth=2)
+ax.plot(df_patient_ramadan['time'], df_patient_ramadan['Steps_smoothed'], linewidth=2)
+
+# %%
+alignment = dtw(df_patient_ramadan['Steps_smoothed'], 
+                df_patient_ramadan['CGM_smoothed'], 
+                keep_internals=True)
+
+## Display the warping curve, i.e. the alignment curve
+alignment.plot(type="threeway")
+
+## Align and plot with the Rabiner-Juang type VI-c unsmoothed recursion
+dtw(df_patient_ramadan['Steps_smoothed'], 
+    df_patient_ramadan['CGM_smoothed'], 
+    keep_internals=True, 
+    step_pattern=rabinerJuangStepPattern(6, "c")).plot(type="twoway",offset=-2)
+
+# %%
+pd.plotting.autocorrelation_plot(df_patient_ramadan['CGM_smoothed'])
+
+# %%
+pd.plotting.autocorrelation_plot(df_patient_ramadan['Steps_smoothed'])
+
+# %% [markdown]
+# # Patient mean in Ramadan
+
+# %%
+ramadan_mean = df_patient_ramadan.groupby(['Hour']).mean()
+
+fig, ax = plt.subplots(1, 1, figsize=(21, 8))
+ax.plot(ramadan_mean.index, ramadan_mean['Steps'], linewidth=2)
+ax.plot(ramadan_mean.index, ramadan_mean['CGM'], linewidth=2)
+
+# %%
+alignment = dtw(ramadan_mean['Steps'], 
+                ramadan_mean['CGM'], 
+                keep_internals=True)
+
+## Display the warping curve, i.e. the alignment curve
+alignment.plot(type="threeway")
+
+## Align and plot with the Rabiner-Juang type VI-c unsmoothed recursion
+dtw(ramadan_mean['Steps'], 
+    ramadan_mean['CGM'], 
+    keep_internals=True, 
+    step_pattern=rabinerJuangStepPattern(6, "c")).plot(type="twoway",offset=-2)
+
+# %%
+from statsmodels.tsa.seasonal import seasonal_decompose
+
+
+def decompose_ts(df):
+    df = df.set_index('time')['Steps'].resample('15min').mean().fillna(0)
+
+    decompose_result = seasonal_decompose(df, model="additive", period=24*4)
+
+    trend = decompose_result.trend
+    seasonal = decompose_result.seasonal
+    residual = decompose_result.resid
+
+    fig, axs = plt.subplots(3, 1, figsize=(12, 4))
+    axs[0].plot(df.index, decompose_result.trend)
+    axs[0].set(ylabel='trend')
+
+    axs[1].plot(df.index, decompose_result.seasonal)
+    axs[1].set(ylabel='seasonal')
+
+    axs[2].plot(df.index, decompose_result.resid)
+    axs[2].set(ylabel='resid')
+
+    fig.tight_layout()
+    
+decompose_ts(df_patient_ramadan)
+
+# %%
+decompose_result.plot()
 
 # %%
 # TODO: medlist 4 VS all in heartrate DONE
 # TODO: CGM before iftar VS after DONE
 # TODO: for every day, if it has more than 16 hours of data -> consider good
-# TODO: Time Lagged Cross Correlation, DTW
+# TODO: Time Lagged Cross Correlation, DTW DONE
 # TODO: https://towardsdatascience.com/four-ways-to-quantify-synchrony-between-time-series-data-b99136c4a9c9
 
 # %% [markdown]
