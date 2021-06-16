@@ -622,11 +622,48 @@ all_medlists_except_4_and_0 = ['medlist1', 'medlist2', 'medlist3', 'medlist5', '
 medlist
 
 # %%
+ax.get_legend_handles_labels()
+
+# %%
+sns.color_palette('crest')[-1]
+
+# %%
+df_emr[medlists].T
+
+# %% [markdown]
+# # Who's using what medicine plot
+
+# %%
+import matplotlib.patches as mpatches
+
 medlists = ['medlist0', 'medlist1', 'medlist2', 'medlist3', 'medlist4', 'medlist5', 'medlist6', 'medlist7']
-fig, ax = plt.subplots(figsize=(8, 8))
-sns.heatmap(df_emr[medlists], ax=ax)
+# medlists = ['medlist0', 'medlist5']
+fig, ax = plt.subplots(figsize=(14, 8))
+sns.heatmap(df_emr[medlists].T, 
+            ax=ax, 
+            # cmap="crest",
+            cmap=['lightcyan', 'darkcyan'],
+            square=True, 
+            cbar=False,
+            linewidths=.5)
+
+ax.set_yticklabels(ax.get_yticklabels(), rotation=0, ha='right')
+
+handles, labels = plt.gca().get_legend_handles_labels()
+patch = mpatches.Patch(color='darkcyan', label='True')   
+patch2 = mpatches.Patch(color='lightcyan', label='False')   
+
+handles.append(patch)
+handles.append(patch2)
+
+ax.legend(handles=handles, loc='best', bbox_to_anchor=(1.11, 1))
 
 # Compare medlists
+
+# %%
+
+# %%
+df_cleaned
 
 # %%
 # Is there any patient who's using medlist4 exclusively?
@@ -671,7 +708,25 @@ for d in drugs:
 df_emr.loc[32]
 
 # %%
-df_patient
+df_patient['HeartRate']
+
+# %% [markdown]
+# # Smooth Steps
+
+# %%
+import datetime
+
+from tsmoothie.smoother import *
+from tsmoothie.utils_func import create_windows
+
+def smooth_ts(df, feature='Steps'):
+    smoother = KalmanSmoother(component='level_trend', 
+                              component_noise={'level': 0.1, 'trend': 0.1})
+
+    smoother.smooth(df[feature])
+    return pd.Series(smoother.smooth_data[0])
+
+df_cleaned['Steps_smoothed'] = df_cleaned.groupby(['patientID', pd.Grouper(key='time', freq='D')]).apply(smooth_ts, 'Steps').values
 
 # %%
 # Sample patient
@@ -692,30 +747,6 @@ day_zero = day_zero.set_index('time')
 
 # Set time as index
 df_patient = df_patient.set_index('time')
-
-# %%
-df_patient[['HeartRate', 'CGM']].describe()
-
-# %%
-df_patient['HeartRate']
-
-# %% [markdown]
-# # Smooth Steps
-
-# %%
-import datetime
-
-from tsmoothie.smoother import *
-from tsmoothie.utils_func import create_windows
-
-def smooth_ts(df, feature='Steps'):
-    smoother = KalmanSmoother(component='level_trend', 
-                              component_noise={'level': 0.1, 'trend': 0.1})
-
-    smoother.smooth(df[feature])
-    return pd.Series(smoother.smooth_data[0])
-
-df_cleaned['Steps_smoothed'] = df_cleaned.groupby(['patientID', pd.Grouper(key='time', freq='D')]).apply(smooth_ts, 'Steps').values
 
 
 # %% [markdown]
@@ -983,14 +1014,19 @@ s = pd.Series(0.7 * np.random.rand(1000) + 0.3 * np.sin(spacing))
 # # Medlist plots
 
 # %%
+inner_df
+
+# %%
+
+# %%
 # Some patientIDs don't exist in df_emr from df_cleaned and vice versa
 inner_df = df_cleaned.merge(df_emr[medlists], left_on='patientID', right_index=True, how='inner')
 
 def plot_medlists_avg_day(df, y='CGM', ylog=False):
     for m in medlists:
-        patients = inner_df[inner_df[m]].patientID.unique()
+        patients = df[df[m]].patientID.unique()
         fig, ax = plt.subplots(figsize=(12, 4))
-        sns.boxplot(y=y, x='Hour', hue='Ramadan', data=inner_df[inner_df[m]], ax=ax)
+        sns.boxplot(y=y, x='Hour', hue='Ramadan', data=df[df[m]], ax=ax)
 
         title = str(len(patients)) + ' patients in ' + m + str(patients)
         ax.set_title(title, fontsize='small')
@@ -1004,6 +1040,39 @@ plot_medlists_avg_day(inner_df, y='Steps', ylog=True)
 
 # %%
 plot_medlists_avg_day(inner_df, y='HeartRate')
+
+# %% [markdown]
+# # Plot medlists boxes next to each other
+
+# %%
+df_sns
+
+
+# %%
+
+def plot_medlists_next_to_each_other(df, medlists, y='CGM', ylog=False):
+
+    df_sns = inner_df.melt(id_vars=df_cleaned.columns, 
+                           value_vars=medlists, 
+                           var_name='medlist_group', 
+                           value_name='value')
+
+    df_sns = df_sns[df_sns['value']]
+
+    g = sns.catplot(x="Hour", y=y,
+                    hue="medlist_group", 
+                    row="Ramadan",
+                    data=df_sns, kind="box",
+                    height=7, aspect=3);
+    
+            
+plot_medlists_next_to_each_other(df_sns, medlists=['medlist3', 'medlist4', ], y='CGM', ylog=False)
+
+# %%
+plot_medlists_next_to_each_other(df_sns, medlists=['medlist3', 'medlist4'], y='HeartRate', ylog=False)
+
+# %%
+plot_medlists_next_to_each_other(df_sns, medlists=['medlist3', 'medlist4'], y='mets', ylog=False)
 
 # %% [markdown]
 # # DTW - Correlation between Steps and CGM
@@ -1126,6 +1195,9 @@ dtw(df_patient_ramadan['Steps_smoothed'],
     keep_internals=True, 
     step_pattern=rabinerJuangStepPattern(6, "c")).plot(type="twoway",offset=-2)
 
+print(alignment.distance)
+print(alignment.normalizedDistance)
+
 # %%
 pd.plotting.autocorrelation_plot(df_patient_ramadan['CGM_smoothed'])
 
@@ -1155,6 +1227,9 @@ dtw(ramadan_mean['Steps'],
     ramadan_mean['CGM'], 
     keep_internals=True, 
     step_pattern=rabinerJuangStepPattern(6, "c")).plot(type="twoway",offset=-2)
+
+print(alignment.distance)
+print(alignment.normalizedDistance)
 
 # %%
 from statsmodels.tsa.seasonal import seasonal_decompose
@@ -1186,12 +1261,119 @@ decompose_ts(df_patient_ramadan)
 # %%
 decompose_result.plot()
 
+# %% [markdown]
+# # Rolling windowed time lagged cross correlation
+
+# %%
+test = df_patient_ramadan[df_patient_ramadan['patient_day'] > 13]
+test
+
+
+# %%
+def crosscorr(datax, datay, lag=0, wrap=False):
+    if wrap:
+        shiftedy = datay.shift(lag)
+        shiftedy.iloc[:lag] = datay.iloc[-lag:].values
+        return datax.corr(shiftedy)
+    else: 
+        return datax.corr(datay.shift(lag))
+
+def rolling_time_lagged_cross_correlation(df, x, y):
+    lag_range = 4*4 # look at the past and next 4 hours
+    window_size = int(4*24/2) # half a day window size
+    t_start = 0
+    t_end = t_start + window_size
+    step_size = 4 # Move one hour per step
+    rss=[]
+    
+    while t_end < df.shape[0]:
+        d1 = df[x].iloc[t_start:t_end]
+        d2 = df[y].iloc[t_start:t_end]
+        rs = [crosscorr(d1,d2, lag, wrap=False) for lag in range(-lag_range, lag_range)]
+        # print(t_start, t_end, rs[3+16])
+        rss.append(rs)
+        t_start = t_start + step_size
+        t_end = t_end + step_size
+        
+    rss = pd.DataFrame(rss)
+    rss.columns = list(range(-lag_range, lag_range))
+    f, ax = plt.subplots(figsize=(10,10))
+    sns.heatmap(rss, cmap='RdBu_r', ax=ax, vmin=-1, vmax=1)
+    ax.set(title=f'Rolling Windowed Time Lagged Cross Correlation', xlabel='Offset',ylabel='Epochs')
+    return rss, ax
+
+rss, ax = rolling_time_lagged_cross_correlation(df_patient_ramadan[df_patient_ramadan['patient_day'] > 13], 
+                                      x='Steps_smoothed', 
+                                      y='CGM_smoothed')
+
+# Y-axis -> step_size: each 4 rows is an hour
+# X-axis -> lag_range: each 4 columns is an hour
+
+# %%
+
+index_of_max = np.unravel_index(np.argmax(rss), rss.shape)
+index_of_max = list(index_of_max)
+index_of_max[1] = index_of_max[1] - 16 # Move from (0, 32) to (-16, 16)
+
+def draw_ts_partial(df, x, y, point_of_interest, align=False):
+    
+    window_size = int(4*24/2) # half a day window size
+    t_start = int(point_of_interest[0] * 4)
+    t_end = t_start + window_size
+    shift = point_of_interest[1]*4
+
+    d1 = df.iloc[t_start:t_end]
+    d2 = df.iloc[t_start+shift:t_end+shift]
+    
+    fig, ax = plt.subplots(figsize=(14, 8))
+    ax.plot(d1['time'], d1[x], linewidth=2)
+    
+    if align:
+        ax.plot(d1['time'], d2[y], linewidth=2) # Align d1, with d2
+    else:
+        ax.plot(d2['time'], d2[y], linewidth=2)
+        
+    ax.tick_params(axis='x', which='both', bottom=False, top=False, labelbottom=True, rotation=0)
+    ax.tick_params(axis='x', which='major', labelsize='small')
+    ax.set_facecolor('snow')
+
+    start_datetime = d1['time'].iloc[0]
+    end_datetime = d2['time'].iloc[-1]
+    
+    print("Pearson\'s R:", d1[x].corr(d2[y]))
+    print("Pearson\'s R:", crosscorr(d1[x], d2[y], lag=0))
+    crosscorr
+
+    ax.set_xlim(start_datetime, end_datetime)
+
+    y_label = d1['Day'].iloc[0]
+    ax.set_ylabel(y_label, rotation=0, horizontalalignment="right", verticalalignment="center")
+
+    ax.xaxis.set_major_locator(dates.HourLocator(interval=1))
+    ax.xaxis.set_major_formatter(dates.DateFormatter('%H:%M'))    
+    
+    return d1, d2, ax
+
+d1, d2, ax = draw_ts_partial(df_patient_ramadan[df_patient_ramadan['patient_day'] > 13], 
+                x='Steps_smoothed', 
+                y='CGM_smoothed', 
+                point_of_interest=index_of_max)
+
+
+
 # %%
 # TODO: medlist 4 VS all in heartrate DONE
 # TODO: CGM before iftar VS after DONE
 # TODO: for every day, if it has more than 16 hours of data -> consider good
 # TODO: Time Lagged Cross Correlation, DTW DONE
 # TODO: https://towardsdatascience.com/four-ways-to-quantify-synchrony-between-time-series-data-b99136c4a9c9
+
+# understanding metric for DTW (print it out)
+# reason behind kalman smoother (good for long ts or short? what is long or short)
+# Seasonality decomposition (Extract the trend, compare the trends correlation value)
+# Graph for medlists
+
+# https://towardsdatascience.com/what-is-time-series-decomposition-and-how-does-it-work-9b67e007ae90
 
 # %% [markdown]
 # We are now able to compare the correlation between any number of groups.
