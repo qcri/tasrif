@@ -15,3 +15,4 @@ from tasrif.processing_pipeline.custom.iterate_csv_operator import IterateCsvOpe
 from tasrif.processing_pipeline.custom.iterate_json_operator import IterateJsonOperator
 from tasrif.processing_pipeline.custom.drop_index_duplicates_operator import DropIndexDuplicatesOperator
 from tasrif.processing_pipeline.custom.categorize_time_operator import CategorizeTimeOperator
+from tasrif.processing_pipeline.custom.filter_operator import FilterOperator
