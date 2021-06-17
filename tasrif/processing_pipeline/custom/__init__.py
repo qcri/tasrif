@@ -16,3 +16,4 @@ from tasrif.processing_pipeline.custom.iterate_json_operator import IterateJsonO
 from tasrif.processing_pipeline.custom.drop_index_duplicates_operator import DropIndexDuplicatesOperator
 from tasrif.processing_pipeline.custom.categorize_time_operator import CategorizeTimeOperator
 from tasrif.processing_pipeline.custom.filter_operator import FilterOperator
+from tasrif.processing_pipeline.custom.encode_cyclical_features_operator import EncodeCyclicalFeaturesOperator
