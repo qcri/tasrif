@@ -661,9 +661,7 @@ ax.legend(handles=handles, loc='best', bbox_to_anchor=(1.11, 1))
 # Compare medlists
 
 # %%
-
-# %%
-df_cleaned
+df_cleaned.patientID.unique()
 
 # %%
 # Is there any patient who's using medlist4 exclusively?
@@ -884,7 +882,7 @@ def plot_patient_day(df, f1='Steps', f2='Steps_smoothed'):
     ax.xaxis.set_major_locator(dates.HourLocator(interval=1))
     ax.xaxis.set_major_formatter(dates.DateFormatter('%H:%M'))
     
-    ax.legend(['Steps', 'Steps_smoothed'])
+    ax.legend([f1, f2])
     return ax
 
 plot_patient_day(df_patient[df_patient['patient_day'] == 1], 
@@ -895,45 +893,20 @@ plot_patient_day(df_patient[df_patient['patient_day'] == 1],
 
 
 # %% [markdown]
-# # Which group have a higher heartrate?
-
-# %%
-df_cleaned
-
-# %%
-medlist4_patients = df_emr[df_emr['medlist4']].index.values
-
-# Patient 73 is missing
-medlist4_patients
-df_cleaned['medlist4_group'] = df_cleaned['patientID'].isin([37, 55, 74, 79])
-df_cleaned['Hour'] = df_cleaned['time'].dt.hour
-# Plot the results
-sns_df = df_cleaned.groupby(['medlist4_group', 'patientID'])['HeartRate'].mean().reset_index()
-sns.set_theme(style="ticks")
-g = sns.boxplot(y='HeartRate', x='medlist4_group', data=sns_df)
-
-# %% [markdown]
-# # During Ramadan?
-
-# %%
-sns_df = df_cleaned.groupby(['medlist4_group', 'patientID', 'Ramadan'])['HeartRate'].mean().reset_index()
-g = sns.boxplot(y='HeartRate', x='Ramadan', hue='medlist4_group', data=sns_df)
-
-# %% [markdown]
 # # Does the patient have more CGM before 6pm or after? (in Ramadan)
 
 # %%
 # CGM before VS. after fasting in Ramadan
 
 df_patient_ramadan = df_patient[df_patient['Ramadan'] == 1].copy()
-df_patient_ramadan['fasting'] = df_patient_ramadan.index.hour < 18
+df_patient_ramadan['Before6pm'] = df_patient_ramadan.index.hour < 18
 df_patient_ramadan = df_patient_ramadan.reset_index()
 df_patient_ramadan['Day'] = df_patient_ramadan['time'].dt.strftime('%Y-%m-%d')
 df_patient_ramadan['Hour'] = df_patient_ramadan['time'].dt.hour
 
 
 fig, ax = plt.subplots(figsize=(12, 4))
-sns.boxplot(y='CGM', x='Day', hue='fasting', data=df_patient_ramadan, ax=ax)
+sns.boxplot(y='CGM', x='Day', hue='Before6pm', data=df_patient_ramadan, ax=ax)
 ax.tick_params(axis='x', which='both', bottom=False, top=False, labelbottom=True, rotation=0)
 
 
@@ -945,7 +918,7 @@ ax.tick_params(axis='x', which='both', bottom=False, top=False, labelbottom=True
 
 # %%
 fig, ax = plt.subplots(figsize=(12, 4))
-sns.boxplot(y='Steps', x='Day', hue='fasting', data=df_patient_ramadan, ax=ax)
+sns.boxplot(y='Steps_smoothed', x='Day', hue='Before6pm', data=df_patient_ramadan, ax=ax)
 # ax.set_yscale('log')
 
 # %% [markdown]
@@ -1013,6 +986,31 @@ s = pd.Series(0.7 * np.random.rand(1000) + 0.3 * np.sin(spacing))
 # %% [markdown]
 # # Medlist plots
 
+# %% [markdown]
+# # Which group have a higher heartrate?
+
+# %%
+df_cleaned
+
+# %%
+medlist4_patients = df_emr[df_emr['medlist4']].index.values
+
+# Patient 73 is missing
+medlist4_patients
+df_cleaned['medlist4_group'] = df_cleaned['patientID'].isin([37, 55, 74, 79])
+df_cleaned['Hour'] = df_cleaned['time'].dt.hour
+# Plot the results
+sns_df = df_cleaned.groupby(['medlist4_group', 'patientID'])['HeartRate'].mean().reset_index()
+sns.set_theme(style="ticks")
+g = sns.boxplot(y='HeartRate', x='medlist4_group', data=sns_df)
+
+# %% [markdown]
+# # During Ramadan?
+
+# %%
+sns_df = df_cleaned.groupby(['medlist4_group', 'patientID', 'Ramadan'])['HeartRate'].mean().reset_index()
+g = sns.boxplot(y='HeartRate', x='Ramadan', hue='medlist4_group', data=sns_df)
+
 # %%
 inner_df
 
@@ -1069,10 +1067,10 @@ def plot_medlists_next_to_each_other(df, medlists, y='CGM', ylog=False):
 plot_medlists_next_to_each_other(df_sns, medlists=['medlist3', 'medlist4', ], y='CGM', ylog=False)
 
 # %%
-plot_medlists_next_to_each_other(df_sns, medlists=['medlist3', 'medlist4'], y='HeartRate', ylog=False)
+plot_medlists_next_to_each_other(df_sns, medlists=['medlist0', 'medlist4'], y='HeartRate', ylog=False)
 
 # %%
-plot_medlists_next_to_each_other(df_sns, medlists=['medlist3', 'medlist4'], y='mets', ylog=False)
+plot_medlists_next_to_each_other(df_sns, medlists=['medlist0', 'medlist4'], y='CGM', ylog=False)
 
 # %% [markdown]
 # # DTW - Correlation between Steps and CGM
@@ -1310,6 +1308,12 @@ rss, ax = rolling_time_lagged_cross_correlation(df_patient_ramadan[df_patient_ra
 # X-axis -> lag_range: each 4 columns is an hour
 
 # %%
+54*4
+
+# %%
+rss.shape
+
+# %%
 
 index_of_max = np.unravel_index(np.argmax(rss), rss.shape)
 index_of_max = list(index_of_max)
@@ -1358,6 +1362,24 @@ d1, d2, ax = draw_ts_partial(df_patient_ramadan[df_patient_ramadan['patient_day'
                 x='Steps_smoothed', 
                 y='CGM_smoothed', 
                 point_of_interest=index_of_max)
+
+
+
+# %%
+from dtw import *
+
+
+alignment = dtw(d1['Steps_smoothed'], d2['CGM_smoothed'], keep_internals=True)
+
+
+
+## Display the warping curve, i.e. the alignment curve
+alignment.plot(type="threeway")
+
+## Align and plot with the Rabiner-Juang type VI-c unsmoothed recursion
+dtw(d1['Steps_smoothed'], d2['CGM'], keep_internals=True, 
+    step_pattern=rabinerJuangStepPattern(7, "c"))\
+    .plot(type="twoway",offset=100)
 
 
 
