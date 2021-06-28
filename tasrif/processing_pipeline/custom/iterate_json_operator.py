@@ -56,11 +56,15 @@ class IterateJsonOperator(ProcessingOperator):
 
     def _create_json_generator(self, data_frame):
         for row in data_frame.itertuples():
-            with open(self.folder_path.joinpath(getattr(row, self.field))) as json_file:
-                json_data = json.load(json_file)
-                if self.pipeline:
-                    json_data = self.pipeline.process(json_data)[0]
-                yield (row, json_data)
+            try:
+                json_file_name = getattr(row, self.field)
+                with open(self.folder_path.joinpath(json_file_name)) as json_file:
+                    json_data = json.load(json_file)
+                    if self.pipeline:
+                        json_data = self.pipeline.process(json_data)[0]
+                    yield (row, json_data)
+            except FileNotFoundError:
+                yield (row, None)
 
     def process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.

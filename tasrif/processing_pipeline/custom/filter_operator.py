@@ -102,7 +102,7 @@ class FilterOperator(ProcessingOperator):
         for data_frame in data_frames:
             processed_df = None
             processed_df = self.process_epoch(data_frame)
-            processed_df = self.process_day(data_frame)
+            processed_df = self.process_day(processed_df)
             processed.append(processed_df)
 
         return processed

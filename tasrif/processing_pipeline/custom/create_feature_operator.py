@@ -53,7 +53,8 @@ class CreateFeatureOperator(ProcessingOperator):
         """
         processed = []
         for data_frame in data_frames:
-            data_frame[self.feature_name] = data_frame.apply(self.feature_creator, axis=1)
+            # result_type is set to 'reduce' so that a Series is always returned.
+            data_frame[self.feature_name] = data_frame.apply(self.feature_creator, axis=1, result_type='reduce')
             processed.append(data_frame)
 
         return processed

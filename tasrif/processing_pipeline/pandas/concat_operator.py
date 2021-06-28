@@ -62,4 +62,4 @@ class ConcatOperator(ProcessingOperator):
             Concatenated dataframe based on the input data_frames.
         """
         data_frame = pd.concat(list(data_frames), **self.kwargs)
-        return data_frame
+        return [data_frame]
