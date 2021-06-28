@@ -11,6 +11,7 @@
         QualityOfLifeSurveyDataset
         DemographicsSurveyDataset
 """
+import os
 import pandas as pd
 
 from tasrif.processing_pipeline import ProcessingPipeline
@@ -897,11 +898,22 @@ class HealthKitDataDataset:
             PivotResetColumnsOperator(level=1, columns='type')
         ])
 
+        CSV_FOLDER_PATH = os.environ.get('MYHEARTCOUNTS_HEALTHKITDATA_CSV_FOLDER_PATH')
+
+        PIPELINE = ProcessingPipeline([
+            CreateFeatureOperator(
+                feature_name='file_name',
+                feature_creator=lambda df: str(df['data.csv'])),
+            IterateCsvOperator(
+                folder_path=CSV_FOLDER_PATH,
+                field='file_name',
+                pipeline=CSV_PIPELINE),
+        ])
+
     def __init__(
             self,
             hkd_file_path,
-            csv_folder_path,
-            processing_pipeline_constructor = None,
+            processing_pipeline = Defaults.PIPELINE
         ):
         """
         Constructs a new data reader for reading HealthKit data
@@ -911,34 +923,13 @@ class HealthKitDataDataset:
         hkd_file_path: str
             Path to the HealthKit data csv file
 
-        csv_folder_path: str
-            Path to the folder containing the csv files for each row
-
-        processing_pipeline_constructor: function
-            Function that takes a path to the csv folder for HealthKit data and returns a processing pipeline
+        processing_pipeline: ProcessingPipeline
+            ProcessingPipeline used to process HealthKit data
         """
-
         self.processed_df = pd.read_csv(hkd_file_path)
         self.raw_df = self.processed_df.copy()
-        if processing_pipeline_constructor:
-            self.processing_pipeline = processing_pipeline_constructor(csv_folder_path)
-        else:
-            self.processing_pipeline = self.make_default_processing_pipeline(csv_folder_path)
+        self.processing_pipeline = processing_pipeline
         self._process()
-
-    def make_default_processing_pipeline(self, csv_folder_path):
-        """
-        Creates the default processing pipeline for HealthKit data
-        """
-        return ProcessingPipeline([
-            CreateFeatureOperator(
-                feature_name='file_name',
-                feature_creator=lambda df: str(df['data.csv'])),
-            IterateCsvOperator(
-                folder_path=csv_folder_path,
-                field='file_name',
-                pipeline=self.Defaults.CSV_PIPELINE),
-        ])
 
     def participant_count(self):
         """Get the number of participants
@@ -998,11 +989,23 @@ class SixMinuteWalkActivityDataset:
             JsonNormalizeOperator()
         ])
 
+        JSON_FOLDER_PATH = os.environ.get('MYHEARTCOUNTS_SIXMINUTEWALKACTIVITY_JSON_FOLDER_PATH')
+
+        PIPELINE = ProcessingPipeline([
+            CreateFeatureOperator(
+                feature_name='file_name',
+                # The json filename has an extra '.0' appended to it.
+                feature_creator=lambda df: str(df['pedometer_fitness.walk.items'])[:-2]),
+            IterateJsonOperator(
+                folder_path=JSON_FOLDER_PATH,
+                field='file_name',
+                pipeline=JSON_PIPELINE),
+        ])
+
     def __init__(
             self,
             smwa_file_path,
-            json_folder_path,
-            processing_pipeline_constructor = None,
+            processing_pipeline = Defaults.PIPELINE
         ):
         """
         Constructs a new data reader for reading SixMinuteWalkActivity data
@@ -1012,34 +1015,13 @@ class SixMinuteWalkActivityDataset:
         smwa_file_path: str
             Path to SixMinuteWalkActivity data csv file
 
-        json_folder_path: str
-            Path to the folder containing the json files for each row
-
-        processing_pipeline_constructor: function
-            Function that takes path to the json folder for SixMinuteWalkActivity data and returns a processing pipeline
+        processing_pipeline: ProcessingPipeline
+            ProcessingPipeline used to process SixMinuteWalkActivity data
         """
         self.processed_df = pd.read_csv(smwa_file_path)
         self.raw_df = self.processed_df.copy()
-        if processing_pipeline_constructor:
-            self.processsing_pipeline = processing_pipeline_constructor(json_folder_path)
-        else:
-            self.processing_pipeline = self.make_default_processing_pipeline(json_folder_path)
+        self.processing_pipeline = processing_pipeline
         self._process()
-
-    def make_default_processing_pipeline(self, json_folder_path):
-        """
-        Creates the default processing pipeline for HealthKit data. By default, it returns the pedometer json data.
-        """
-        return ProcessingPipeline([
-            CreateFeatureOperator(
-                feature_name='file_name',
-                # The json filename has an extra '.0' appended to it.
-                feature_creator=lambda df: str(df['pedometer_fitness.walk.items'])[:-2]),
-            IterateJsonOperator(
-                folder_path=json_folder_path,
-                field='file_name',
-                pipeline=self.Defaults.JSON_PIPELINE),
-        ])
 
     def participant_count(self):
         """Get the number of participants

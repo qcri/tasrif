@@ -20,16 +20,15 @@ from tasrif.processing_pipeline import ProcessingPipeline
 from tasrif.processing_pipeline.pandas import DropNAOperator, ConvertToDatetimeOperator, DropFeaturesOperator, \
                                               SetIndexOperator, PivotResetColumnsOperator, ConcatOperator, \
                                               MergeOperator, AsTypeOperator
-from tasrif.processing_pipeline.custom import CreateFeatureOperator, AggregateOperator, FilterOperator
+from tasrif.processing_pipeline.custom import CreateFeatureOperator, AggregateOperator, FilterOperator, IterateCsvOperator
 import warnings
 warnings.filterwarnings("ignore")
 
 # %%
 # Extract SixMinuteWalkActivity step count for each participant.
 smwa_file_path = os.environ['MYHEARTCOUNTS_SIXMINUTEWALKACTIVITY_PATH']
-json_folder_path = os.environ['MYHEARTCOUNTS_SIXMINUTEWALKACTIVITY_JSON_FOLDER_PATH']
 
-smwa = SixMinuteWalkActivityDataset(smwa_file_path, json_folder_path)
+smwa = SixMinuteWalkActivityDataset(smwa_file_path)
 participant_smwa_steps = { 'healthCode': [], 'smwaSteps': [] }
 
 for row, smwa_data in smwa.processed_dataframe()[0]:
@@ -50,7 +49,7 @@ hkd_file_path = os.environ['MYHEARTCOUNTS_HEALTHKITDATA_PATH']
 csv_folder_path = os.environ['MYHEARTCOUNTS_HEALTHKITDATA_CSV_FOLDER_PATH']
 
 # Modify the CSV pipeline to filter step counts from a singular source.
-HealthKitDataDataset.Defaults.CSV_PIPELINE = ProcessingPipeline([
+csv_pipeline = ProcessingPipeline([
             ConvertToDatetimeOperator(
                 feature_names=["endTime"],
                 errors='coerce'),
@@ -73,8 +72,18 @@ HealthKitDataDataset.Defaults.CSV_PIPELINE = ProcessingPipeline([
             PivotResetColumnsOperator(level=1, columns='type')
         ])
 
+pipeline = ProcessingPipeline([
+            CreateFeatureOperator(
+                feature_name='file_name',
+                feature_creator=lambda df: str(df['data.csv'])),
+            IterateCsvOperator(
+                folder_path=csv_folder_path,
+                field='file_name',
+                pipeline=csv_pipeline),
+        ])
+
 # Append healthCode to each processed dataframe
-hkd = HealthKitDataDataset(hkd_file_path, csv_folder_path)
+hkd = HealthKitDataDataset(hkd_file_path, pipeline)
 participant_daily_steps = []
 for row, hkd_data in hkd.processed_dataframe()[0]:
     if hkd_data is None:
