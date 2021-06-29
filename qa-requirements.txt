@@ -1,3 +1,4 @@
 # Specify dependencies needed for running the QA pipelines here.
 pylint-plugin-utils==0.4
 pylint-junit==0.3.2
+seaborn>=0.11.1 
