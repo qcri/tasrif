@@ -1374,12 +1374,13 @@ class WithingsActivitiesDataset:
             data_frame = pd.read_csv(file_object)
 
         self.raw_df = data_frame
+        self.processed_df = self.raw_df.copy()
 
         self._process()
 
     def _process(self):
 
-        df_temp = self.raw_df
+        df_temp = self.processed_df
 
         # Converting String to JSON before normalizing the JSON Data and GPS columns
 
