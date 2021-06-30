@@ -1371,7 +1371,7 @@ class WithingsActivitiesDataset:
 
         with open(pathlib.Path(folder+'activities.csv'), "r") as file_object:
             file_object.seek(0)
-            data_frame = pd.read_csv(folder+'activities.csv')
+            data_frame = pd.read_csv(file_object)
 
         self.raw_df = data_frame
         self.processed_df = self.raw_df.copy()
