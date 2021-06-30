@@ -1,3 +1,5 @@
+# Specify dependencies needed for setting up a local development environment here.
 pytest==6.2.3
 pylint==2.8.2
 jupytext==1.11.1
+matplotlib==3.0.0

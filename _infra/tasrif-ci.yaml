@@ -32,7 +32,7 @@ stages:
   - stage: Test
     jobs:
     - job: RunPylint
-      displayName: Run Pylint
+      displayName: Run pylint
       steps:
       - checkout: none # No need, docker run will pull the image
       - task: Docker@2
@@ -45,11 +45,34 @@ stages:
             qcriswtasrif.azurecr.io/$(Build.Repository.Name):$(Build.BuildId)
             /home/run-pylint.sh
       - task: PublishTestResults@2
-        displayName: 'Publish pylint Results'
+        displayName: 'Publish pylint results'
         inputs:
           testResultsFormat: 'Junit'
           testResultsFiles: '**/*.xml'
           searchFolder: '$(System.DefaultWorkingDirectory)/pylint'
           publishRunAttachments: true
           testRunTitle: 'Pylint'
+        condition: succeededOrFailed()
+    - job: RunNotebookTests
+      displayName: Run notebook tests
+      steps:
+      - checkout: self
+      - task: Docker@2
+        displayName: Use Docker to run notebook tests
+        inputs:
+          command: run
+          containerRegistry: tasrif-acr
+          arguments: >-
+            --env PYTHONPATH=/home/ --entrypoint "/bin/bash"
+            -v $(System.DefaultWorkingDirectory):/home/
+            qcriswtasrif.azurecr.io/$(Build.Repository.Name):$(Build.BuildId)
+            -c "pytest -v /home/tasrif/test_scripts/entrypoint.py --junitxml=/home/notebook-tests.xml"
+      - task: PublishTestResults@2
+        displayName: 'Publish notebook tests results'
+        inputs:
+          testResultsFormat: 'Junit'
+          testResultsFiles: '**/*.xml'
+          searchFolder: '$(System.DefaultWorkingDirectory)'
+          publishRunAttachments: true
+          testRunTitle: 'Notebook tests'
         condition: succeededOrFailed()
