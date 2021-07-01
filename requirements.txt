@@ -2,3 +2,5 @@ pytest==6.2.3
 pylint==2.8.2
 jupytext==1.11.1
 kats==0.1.0
+ephem==3.7.5.3
+isort==4.2.5
