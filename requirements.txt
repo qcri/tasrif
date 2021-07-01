@@ -4,3 +4,5 @@ jupytext==1.11.1
 kats==0.1.0
 ephem==3.7.5.3
 isort==4.2.5
+importlib-metadata==0.12
+Cython==0.29.23
