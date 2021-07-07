@@ -19,3 +19,4 @@ from tasrif.processing_pipeline.pandas.pivot_operator import PivotOperator
 from tasrif.processing_pipeline.pandas.pivot_reset_columns_operator import PivotResetColumnsOperator
 from tasrif.processing_pipeline.pandas.cut_operator import CutOperator
 from tasrif.processing_pipeline.pandas.qcut_operator import QCutOperator
+from tasrif.processing_pipeline.pandas.read_csv_operator import ReadCsvOperator
