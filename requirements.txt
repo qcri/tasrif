@@ -12,3 +12,5 @@ ephem==3.7.5.3
 isort==4.2.5
 importlib-metadata==0.12
 Cython==0.29.23
+--find-links https://download.pytorch.org/whl/torch_stable.html
+torch==1.9.0+cpu
