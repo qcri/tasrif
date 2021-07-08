@@ -40,7 +40,9 @@ from tasrif.processing_pipeline.custom import (
     CreateFeatureOperator,
     AggregateOperator,
     OneHotEncoderOperator,
+    EncodeCyclicalFeaturesOperator,
 )
+
 
 class AboutMeDataset:
     """Provides access to the AboutMe dataset
@@ -54,30 +56,30 @@ class AboutMeDataset:
     raw_df = None
 
     def __init__(
-            self,
-            amd_file_path,
-            pipeline: ProcessingPipeline = ProcessingPipeline([
-                DropNAOperator(subset=[
-                    "alcohol",
-                    "basic_expenses",
-                    "caffeine",
-                    "daily_activities",
-                    "daily_smoking",
-                    "education",
-                    "flexible_work_hours",
-                    "gender",
-                    "good_life",
-                    "hispanic",
-                    "income",
-                    "race",
-                    "work_schedule",
-                    "weight",
-                    "smoking_status",
-                    "marital",
-                ]),
-                DropDuplicatesOperator(subset="participantId", keep="last"),
+        self,
+        amd_file_path,
+        pipeline: ProcessingPipeline = ProcessingPipeline([
+            DropNAOperator(subset=[
+                "alcohol",
+                "basic_expenses",
+                "caffeine",
+                "daily_activities",
+                "daily_smoking",
+                "education",
+                "flexible_work_hours",
+                "gender",
+                "good_life",
+                "hispanic",
+                "income",
+                "race",
+                "work_schedule",
+                "weight",
+                "smoking_status",
+                "marital",
             ]),
-        ):
+            DropDuplicatesOperator(subset="participantId", keep="last"),
+        ]),
+    ):
         """
         AboutMe Dataset details can be found online at ``https://www.synapse.org/#!Synapse:syn18492837/wiki/592581``.
 
@@ -158,37 +160,37 @@ class SleepQualityCheckerDataset:
     Instance of SleepQualityCheckerDataset
     """
     def __init__(
-            self,
-            sqc_file_path,
-            pipeline: ProcessingPipeline = ProcessingPipeline([
-                SortOperator(by=["participantId", "timestamp"]),
-                AggregateOperator(
-                    groupby_feature_names="participantId",
-                    aggregation_definition={
-                        "sq_score": [
-                            "count",
-                            "mean",
-                            "std",
-                            "min",
-                            "max",
-                            "first",
-                            "last",
-                        ],
-                        "timestamp": ["first", "last"],
-                    },
-                ),
-                ConvertToDatetimeOperator(
-                    feature_names=["timestamp_last", "timestamp_first"],
-                    format="%Y-%m-%dT%H:%M:%S%z",
-                    utc=True,
-                ),
-                CreateFeatureOperator(
-                    feature_name="delta_first_last_timestamp",
-                    feature_creator=lambda row: row["timestamp_last"] - row[
-                        "timestamp_first"],
-                ),
-            ]),
-        ):
+        self,
+        sqc_file_path,
+        pipeline: ProcessingPipeline = ProcessingPipeline([
+            SortOperator(by=["participantId", "timestamp"]),
+            AggregateOperator(
+                groupby_feature_names="participantId",
+                aggregation_definition={
+                    "sq_score": [
+                        "count",
+                        "mean",
+                        "std",
+                        "min",
+                        "max",
+                        "first",
+                        "last",
+                    ],
+                    "timestamp": ["first", "last"],
+                },
+            ),
+            ConvertToDatetimeOperator(
+                feature_names=["timestamp_last", "timestamp_first"],
+                format="%Y-%m-%dT%H:%M:%S%z",
+                utc=True,
+            ),
+            CreateFeatureOperator(
+                feature_name="delta_first_last_timestamp",
+                feature_creator=lambda row: row["timestamp_last"] - row[
+                    "timestamp_first"],
+            ),
+        ]),
+    ):
         """
         Sleep Quality Checker Dataset details can be found online at
         ``https://www.synapse.org/#!Synapse:syn18492837/wiki/593719``.
@@ -249,13 +251,13 @@ class OnboardingDemographicsDataset:
     Instance of OnboardingDemographicsDataset
     """
     def __init__(
-            self,
-            obd_file_path,
-            pipeline: ProcessingPipeline = ProcessingPipeline([
-                ReplaceOperator(to_replace="CENSORED", value=np.nan),
-                DropNAOperator()
-            ]),
-        ):
+        self,
+        obd_file_path,
+        pipeline: ProcessingPipeline = ProcessingPipeline([
+            ReplaceOperator(to_replace="CENSORED", value=np.nan),
+            DropNAOperator()
+        ]),
+    ):
         """
         Sleep Quality Checker Dataset details can be found online at
         ``https://www.synapse.org/#!Synapse:syn18492837/wiki/590798``.
@@ -319,51 +321,51 @@ class SleepHabitDataset:
     Instance of SleepHabitDataset
     """
     def __init__(
-            self,
-            shd_file_path,
-            pipeline: ProcessingPipeline = ProcessingPipeline([
-                ConvertToDatetimeOperator(feature_names=["timestamp"],
-                                          format="%Y-%m-%dT%H:%M:%S",
-                                          utc=True),
-                ReplaceOperator(
-                    to_replace={
-                        "driving_sleepy": {
-                            6: np.nan
-                        },
-                        "morning_person": {
-                            3: np.nan
-                        },
-                        "nap_duration": {
-                            6: np.nan
-                        },
-                        "what_wakes_you": {
-                            13: np.nan
-                        },
-                    }),
-                DropNAOperator(subset=[
-                    "alarm_dependency",
-                    "driving_sleepy",
-                    "falling_asleep",
-                    "sleep_needed",
-                    "sleep_partner",
-                    "sleep_time_workday",
-                    "wake_up_choices",
-                    "wake_ups",
-                    "what_wakes_you",
-                ]),
-                OneHotEncoderOperator(feature_names=[
-                    "alarm_dependency",
-                    "driving_sleepy",
-                    "falling_asleep",
-                    "morning_person",
-                    "nap_duration",
-                    "sleep_partner",
-                    "wake_up_choices",
-                    "weekly_naps",
-                    "what_wakes_you",
-                ]),
+        self,
+        shd_file_path,
+        pipeline: ProcessingPipeline = ProcessingPipeline([
+            ConvertToDatetimeOperator(feature_names=["timestamp"],
+                                      format="%Y-%m-%dT%H:%M:%S",
+                                      utc=True),
+            ReplaceOperator(
+                to_replace={
+                    "driving_sleepy": {
+                        6: np.nan
+                    },
+                    "morning_person": {
+                        3: np.nan
+                    },
+                    "nap_duration": {
+                        6: np.nan
+                    },
+                    "what_wakes_you": {
+                        13: np.nan
+                    },
+                }),
+            DropNAOperator(subset=[
+                "alarm_dependency",
+                "driving_sleepy",
+                "falling_asleep",
+                "sleep_needed",
+                "sleep_partner",
+                "sleep_time_workday",
+                "wake_up_choices",
+                "wake_ups",
+                "what_wakes_you",
             ]),
-        ):
+            OneHotEncoderOperator(feature_names=[
+                "alarm_dependency",
+                "driving_sleepy",
+                "falling_asleep",
+                "morning_person",
+                "nap_duration",
+                "sleep_partner",
+                "wake_up_choices",
+                "weekly_naps",
+                "what_wakes_you",
+            ]),
+        ]),
+    ):
         """
         Sleep Habit Dataset details can be found online at
         ``https://www.synapse.org/#!Synapse:syn18492837/wiki/593720``.
@@ -445,44 +447,44 @@ class MyFamilyDataset:
     Instance of MyFamilyDataset
     """
     def __init__(
-            self,
-            mf_file_path,
-            pipeline: ProcessingPipeline = ProcessingPipeline([
-                ConvertToDatetimeOperator(feature_names="timestamp",
-                                          format="%Y-%m-%dT%H:%M:%S%z",
-                                          utc=True),
-                SortOperator(by=["participantId", "timestamp"]),
-                DropDuplicatesOperator(subset="participantId", keep="last"),
-                ReplaceOperator(
-                    to_replace={
-                        "fam_history": {
-                            "200": np.nan
-                        },
-                        "family_size": {
-                            6: np.nan
-                        },
-                        "language": {
-                            5: np.nan
-                        },
-                        "underage_family": {
-                            6: np.nan
-                        },
-                    }),
-                DropNAOperator(subset=[
-                    "fam_history", "family_size", "language", "underage_family"
-                ]),
-                OneHotEncoderOperator(
-                    feature_names=[
-                        "fam_history",
-                        "family_size",
-                        "language",
-                        "underage_family",
-                    ],
-                    drop_first=False,
-                ),
-                DropFeaturesOperator(["fam_history=200"]),
+        self,
+        mf_file_path,
+        pipeline: ProcessingPipeline = ProcessingPipeline([
+            ConvertToDatetimeOperator(feature_names="timestamp",
+                                      format="%Y-%m-%dT%H:%M:%S%z",
+                                      utc=True),
+            SortOperator(by=["participantId", "timestamp"]),
+            DropDuplicatesOperator(subset="participantId", keep="last"),
+            ReplaceOperator(
+                to_replace={
+                    "fam_history": {
+                        "200": np.nan
+                    },
+                    "family_size": {
+                        6: np.nan
+                    },
+                    "language": {
+                        5: np.nan
+                    },
+                    "underage_family": {
+                        6: np.nan
+                    },
+                }),
+            DropNAOperator(subset=[
+                "fam_history", "family_size", "language", "underage_family"
             ]),
-        ):
+            OneHotEncoderOperator(
+                feature_names=[
+                    "fam_history",
+                    "family_size",
+                    "language",
+                    "underage_family",
+                ],
+                drop_first=False,
+            ),
+            DropFeaturesOperator(["fam_history=200"]),
+        ]),
+    ):
         """
         My Family Dataset details can be found online at ``https://www.synapse.org/#!Synapse:syn18492837/wiki/593712``.
 
@@ -555,75 +557,93 @@ class MyHealthDataset:
     Instance of MyHealthDataset
     """
     def __init__(
-            self,
-            mh_file_path,
-            pipeline: ProcessingPipeline = ProcessingPipeline([
-                ConvertToDatetimeOperator(feature_names="timestamp",
-                                          format="%Y-%m-%dT%H:%M:%S%z",
-                                          utc=True),
-                SortOperator(by=["participantId", "timestamp"]),
-                DropDuplicatesOperator(subset="participantId", keep="last"),
-                ReplaceOperator(
-                    to_replace={
-                        "allergies": {
-                            3: np.nan
-                        },
-                        "anxiety": {
-                            3: np.nan
-                        },
-                        "apnea": {
-                            3: np.nan
-                        },
-                        "asthma": {
-                            3: np.nan
-                        },
-                        "atrial": {
-                            3: np.nan
-                        },
-                        "hi_blood_pressure": {
-                            3: np.nan
-                        },
-                        "cancer": {
-                            3: np.nan
-                        },
-                        "depression": {
-                            3: np.nan
-                        },
-                        "diabetes": {
-                            3: np.nan
-                        },
-                        "erectile": {
-                            3: np.nan
-                        },
-                        "gastroesophageal": {
-                            3: np.nan
-                        },
-                        "heart_disease": {
-                            3: np.nan
-                        },
-                        "insomnia": {
-                            3: np.nan
-                        },
-                        "lung": {
-                            3: np.nan
-                        },
-                        "narcolepsy": {
-                            3: np.nan
-                        },
-                        "nocturia": {
-                            3: np.nan
-                        },
-                        "restless_legs_syndrome": {
-                            3: np.nan
-                        },
-                        "stroke": {
-                            3: np.nan
-                        },
-                        "uars": {
-                            3: np.nan
-                        },
-                    }),
-                DropNAOperator(subset=[
+        self,
+        mh_file_path,
+        pipeline: ProcessingPipeline = ProcessingPipeline([
+            ConvertToDatetimeOperator(feature_names="timestamp",
+                                      format="%Y-%m-%dT%H:%M:%S%z",
+                                      utc=True),
+            SortOperator(by=["participantId", "timestamp"]),
+            DropDuplicatesOperator(subset="participantId", keep="last"),
+            ReplaceOperator(
+                to_replace={
+                    "allergies": {
+                        3: np.nan
+                    },
+                    "anxiety": {
+                        3: np.nan
+                    },
+                    "apnea": {
+                        3: np.nan
+                    },
+                    "asthma": {
+                        3: np.nan
+                    },
+                    "atrial": {
+                        3: np.nan
+                    },
+                    "hi_blood_pressure": {
+                        3: np.nan
+                    },
+                    "cancer": {
+                        3: np.nan
+                    },
+                    "depression": {
+                        3: np.nan
+                    },
+                    "diabetes": {
+                        3: np.nan
+                    },
+                    "erectile": {
+                        3: np.nan
+                    },
+                    "gastroesophageal": {
+                        3: np.nan
+                    },
+                    "heart_disease": {
+                        3: np.nan
+                    },
+                    "insomnia": {
+                        3: np.nan
+                    },
+                    "lung": {
+                        3: np.nan
+                    },
+                    "narcolepsy": {
+                        3: np.nan
+                    },
+                    "nocturia": {
+                        3: np.nan
+                    },
+                    "restless_legs_syndrome": {
+                        3: np.nan
+                    },
+                    "stroke": {
+                        3: np.nan
+                    },
+                    "uars": {
+                        3: np.nan
+                    },
+                }),
+            DropNAOperator(subset=[
+                "anxious",
+                "cardiovascular",
+                "compare_one_year",
+                "day_to_day",
+                "depressed",
+                "emotional",
+                "fatigued",
+                "general_health",
+                "mental_health",
+                "physical_activities",
+                "physical_health",
+                "risk",
+                "sleep_trouble",
+                "social_activities",
+                "stressed",
+            ]),
+            OneHotEncoderOperator(
+                feature_names=[
                     "anxious",
                     "cardiovascular",
                     "compare_one_year",
@@ -639,29 +659,11 @@ class MyHealthDataset:
                     "sleep_trouble",
                     "social_activities",
                     "stressed",
-                ]),
-                OneHotEncoderOperator(
-                    feature_names=[
-                        "anxious",
-                        "cardiovascular",
-                        "compare_one_year",
-                        "day_to_day",
-                        "depressed",
-                        "emotional",
-                        "fatigued",
-                        "general_health",
-                        "mental_health",
-                        "physical_activities",
-                        "physical_health",
-                        "risk",
-                        "sleep_trouble",
-                        "social_activities",
-                        "stressed",
-                    ],
-                    drop_first=True,
-                ),
-            ]),
-        ):
+                ],
+                drop_first=True,
+            ),
+        ]),
+    ):
         """
         My Health Dataset details can be found online at ``https://www.synapse.org/#!Synapse:syn18492837/wiki/593707``.
         It contains a set of questions about many diseases.
@@ -852,18 +854,28 @@ class ResearchInterestDataset:
     Instance of ResearchInterestDataset
     """
     def __init__(
-            self,
-            ri_file_path,
-            pipeline: ProcessingPipeline = ProcessingPipeline([
-                ConvertToDatetimeOperator(feature_names="timestamp",
-                                          format="%Y-%m-%dT%H:%M:%S%z",
-                                          utc=True),
-                SortOperator(by=["participantId", "timestamp"]),
-                DropDuplicatesOperator(subset="participantId", keep="last"),
-                ReplaceOperator(to_replace={"research_experience": {
-                    3: np.nan
-                }}),
-                DropNAOperator(subset=[
+        self,
+        ri_file_path,
+        pipeline: ProcessingPipeline = ProcessingPipeline([
+            ConvertToDatetimeOperator(feature_names="timestamp",
+                                      format="%Y-%m-%dT%H:%M:%S%z",
+                                      utc=True),
+            SortOperator(by=["participantId", "timestamp"]),
+            DropDuplicatesOperator(subset="participantId", keep="last"),
+            ReplaceOperator(to_replace={"research_experience": {
+                3: np.nan
+            }}),
+            DropNAOperator(subset=[
+                "contact_method",
+                "research_experience",
+                "two_surveys_perday",
+                "blood_sample",
+                "taking_medication",
+                "family_survey",
+                "hospital_stay",
+            ]),
+            OneHotEncoderOperator(
+                feature_names=[
                     "contact_method",
                     "research_experience",
                     "two_surveys_perday",
@@ -871,21 +883,11 @@ class ResearchInterestDataset:
                     "taking_medication",
                     "family_survey",
                     "hospital_stay",
-                ]),
-                OneHotEncoderOperator(
-                    feature_names=[
-                        "contact_method",
-                        "research_experience",
-                        "two_surveys_perday",
-                        "blood_sample",
-                        "taking_medication",
-                        "family_survey",
-                        "hospital_stay",
-                    ],
-                    drop_first=True,
-                ),
-            ]),
-        ):
+                ],
+                drop_first=True,
+            ),
+        ]),
+    ):
         """
         Research Interest details can be found online at ``https://www.synapse.org/#!Synapse:syn18492837/wiki/593711``.
 
@@ -960,39 +962,61 @@ class SleepAssessmentDataset:
     Instance of SleepAssessmentDataset
     """
     def __init__(
-            self,
-            sa_file_path,
-            pipeline: ProcessingPipeline = ProcessingPipeline([
-                ConvertToDatetimeOperator(feature_names="timestamp",
-                                          format="%Y-%m-%dT%H:%M:%S%z",
-                                          utc=True),
-                SortOperator(by=["participantId", "timestamp"]),
-                DropDuplicatesOperator(subset="participantId", keep="last"),
-                ReplaceOperator(
-                    to_replace={
-                        "alcohol": {
-                            7: np.nan
-                        },
-                        "medication_by_doctor": {
-                            7: np.nan
-                        },
-                        "sleep_aids": {
-                            7: np.nan
-                        },
-                        "told_by_doctor": {
-                            3: np.nan
-                        },
-                        "told_to_doctor": {
-                            3: np.nan
-                        },
-                        "told_by_doctor_specify": {
-                            np.nan: "8"
-                        },
-                        "other_selected": {
-                            np.nan: ""
-                        },
-                    }),
-                DropNAOperator(subset=[
+        self,
+        sa_file_path,
+        pipeline: ProcessingPipeline = ProcessingPipeline([
+            ConvertToDatetimeOperator(feature_names="timestamp",
+                                      format="%Y-%m-%dT%H:%M:%S%z",
+                                      utc=True),
+            SortOperator(by=["participantId", "timestamp"]),
+            DropDuplicatesOperator(subset="participantId", keep="last"),
+            ReplaceOperator(
+                to_replace={
+                    "alcohol": {
+                        7: np.nan
+                    },
+                    "medication_by_doctor": {
+                        7: np.nan
+                    },
+                    "sleep_aids": {
+                        7: np.nan
+                    },
+                    "told_by_doctor": {
+                        3: np.nan
+                    },
+                    "told_to_doctor": {
+                        3: np.nan
+                    },
+                    "told_by_doctor_specify": {
+                        np.nan: "8"
+                    },
+                    "other_selected": {
+                        np.nan: ""
+                    },
+                }),
+            DropNAOperator(subset=[
+                "alcohol",
+                "concentrating_problem_one",
+                "concentrating_problem_two",
+                "discomfort_in_sleep",
+                "exercise",
+                "fatigue_limit",
+                "feel_tired_frequency",
+                "felt_alert",
+                "had_problem",
+                "hard_times",
+                "medication_by_doctor",
+                "poor_sleep_problems",
+                "sleep_aids",
+                "sleep_problem",
+                "think_clearly",
+                "tired_easily",
+                "told_by_doctor",
+                "told_to_doctor",
+                "trouble_staying_awake",
+            ]),
+            OneHotEncoderOperator(
+                feature_names=[
                     "alcohol",
                     "concentrating_problem_one",
                     "concentrating_problem_two",
@@ -1012,34 +1036,12 @@ class SleepAssessmentDataset:
                     "told_by_doctor",
                     "told_to_doctor",
                     "trouble_staying_awake",
-                ]),
-                OneHotEncoderOperator(
-                    feature_names=[
-                        "alcohol",
-                        "concentrating_problem_one",
-                        "concentrating_problem_two",
-                        "discomfort_in_sleep",
-                        "exercise",
-                        "fatigue_limit",
-                        "feel_tired_frequency",
-                        "felt_alert",
-                        "had_problem",
-                        "hard_times",
-                        "medication_by_doctor",
-                        "poor_sleep_problems",
-                        "sleep_aids",
-                        "sleep_problem",
-                        "think_clearly",
-                        "tired_easily",
-                        "told_by_doctor",
-                        "told_to_doctor",
-                        "trouble_staying_awake",
-                        "told_by_doctor_specify",
-                    ],
-                    drop_first=True,
-                ),
-            ]),
-        ):
+                    "told_by_doctor_specify",
+                ],
+                drop_first=True,
+            ),
+        ]),
+    ):
         """
         Sleep Assessment Dataset details can be found online at
         ``https://www.synapse.org/#!Synapse:syn18492837/wiki/593721``.
@@ -1131,30 +1133,60 @@ class AMCheckinDataset:
         DROP_FEATURES = []
 
     def __init__(
-            self,
-            amc_file_path,
-            pipeline: ProcessingPipeline = ProcessingPipeline([
-                ConvertToDatetimeOperator(feature_names=["timestamp"],
-                                          format="%Y-%m-%dT%H:%M:%S%z",
-                                          utc=True),
-                SortOperator(by=["participantId", "timestamp"]),
-                ReplaceOperator(
-                    to_replace={
-                        "AMCH2A": {
-                            np.nan: 0
-                        },
-                        "AMCH3A": {
-                            np.nan: 0
-                        },
-                        "AMCH5": {
-                            np.nan: 0
-                        },
-                    }),
-                DropNAOperator(
-                    subset=["participantId", "AMCH1", "AMCH2", "AMCH3", "AMCH4"]),
-            ], ),
-        ):
+        self,
+        amc_file_path,
+        pipeline: ProcessingPipeline = ProcessingPipeline([
+            ConvertToDatetimeOperator(feature_names=["AMCH1", "AMCH4"],
+                                      format="%Y-%m-%dT%H:%M:%S%z",
+                                      utc=True),
+            SortOperator(by=["participantId"]),
+            ReplaceOperator(
+                to_replace={
+                    "AMCH2A": {
+                        np.nan: 0
+                    },
+                    "AMCH3A": {
+                        np.nan: 0
+                    },
+                    "AMCH5": {
+                        np.nan: 0
+                    },
+                }),
+            DropNAOperator(
+                subset=["participantId", "AMCH1", "AMCH2", "AMCH3", "AMCH4"]),
+            DropFeaturesOperator(['participantId', 'timestamp']),
+            EncodeCyclicalFeaturesOperator(date_feature_name='AMCH4',
+                                           category_definition=[
+                                               "month", "day_in_month", "day",
+                                               "hour", "minute"
+                                           ])
+        ], ),
+    ):
         """
+        Column description:
+        participant_id  string
+            Unique participant identification   n/a
+        AMCH1   datetime
+            Response to 'What time did you try to go to sleep?'
+            (local time with timezone information)  n/a
+        AMCH2     boolean
+            Response to 'Did you have trouble falling asleep?'  TRUE/FALSE
+        AMCH2A*   numeric
+            Response to 'How long would you say it took you to fall asleep in minutes?' n/a
+        AMCH3*    numeric
+            Response to 'How many times did you wake up while sleeping
+            (Do not include final awakening)'
+        AMCH3A*   numeric
+            Response to 'How long in total were you awake overnight?
+            Enter total time you believe you were awake in minutes.' n/a
+        AMCH4     datetime
+            Response to 'What time did you wake up today?' (local time with timezone information)
+        AMCH-5*   numeric
+            Response to 'About how many minutes did you sleep last night?'  n/a
+        timestamp datetime
+            Date & time of survey completion (local time with timezone information)
+
+
         Some important stats:
         - This dataset contains unique data for  49480 participants.
          - `` participantId `` has 0 NAs ( 49480 / 49480 ) = 0.00 %
@@ -1227,30 +1259,56 @@ class PMCheckinDataset:
         DROP_FEATURES = []
 
     def __init__(
-            self,
-            pmc_file_path,
-            pipeline: ProcessingPipeline = ProcessingPipeline([
-                ConvertToDatetimeOperator(feature_names=["timestamp"],
-                                          format="%Y-%m-%dT%H:%M:%S%z",
-                                          utc=True),
-                SortOperator(by=["participantId", "timestamp"]),
-                ReplaceOperator(
-                    to_replace={
-                        "AMCH2A": {
-                            np.nan: 0
-                        },
-                        "AMCH3A": {
-                            np.nan: 0
-                        },
-                        "AMCH5": {
-                            np.nan: 0
-                        },
-                    }),
-                DropNAOperator(
-                    subset=["participantId", "AMCH1", "AMCH2", "AMCH3", "AMCH4"]),
-            ], ),
-        ):
+        self,
+        pmc_file_path,
+        pipeline: ProcessingPipeline = ProcessingPipeline([
+            ConvertToDatetimeOperator(feature_names=["timestamp"],
+                                      format="%Y-%m-%dT%H:%M:%S%z",
+                                      utc=True),
+            SortOperator(by=["participantId", "timestamp"]),
+            ReplaceOperator(to_replace={
+                "PMCH2A": {
+                    np.nan: 0
+                },
+                "PMCH3": {
+                    np.nan: 0
+                },
+                "PMCH1": {
+                    np.nan: 3
+                },
+                "NapCount": {
+                    np.nan: 0
+                },
+            }),
+            DropFeaturesOperator(['participantId', 'timestamp']),
+            OneHotEncoderOperator(feature_names=['NapCount', 'PMCH1', 'PMCH3'],
+                                  drop_first=False)
+        ], ),
+    ):
         """
+        Column description:
+        participant_id  string
+            Unique participant identification   n/a
+        alcohol*   numeric
+            Response to 'How many alcoholic beverages did you consume today?'
+        caffeine*     numeric
+            Response to 'How many caffeinated beverages did you consume today?'
+        NapCount   categorical
+            Response to 'How many times did you nap or doze today?'
+            0=None,1=Once,2=Twice,3=Three times of more
+        PMCH1    categorical
+            Response to 'How difficult was it for you to stay awake today?'
+            1=Very difficult,2=Somewhat difficult,3=Not difficult
+        PMCH2A*   numeric
+                Response to 'In total, how long did you nap or doze today?
+                (Enter estimated time in minutes)'
+        PMCH3     categorical
+            Response to 'Did you consume any of the folowing today?'
+            0=None of the above,1=Caffeine,10=Alcohol,100=Medication
+        timestamp datetime
+            Date & time of survey completion (local time with timezone information)
+
+
         Some important stats:
             - This dataset contains unique data for  27380 participants.
              - `` participantId `` has 0 NAs ( 27380 / 27380 ) = 0.00 %
