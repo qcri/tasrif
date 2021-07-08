@@ -5,6 +5,15 @@ trigger:
     - master
 resources:
   - repo: self
+# Builds can fail on self-hosted agents if they are not cleaned occasionally.
+parameters:
+- name: clean
+  displayName: Checkout clean
+  type: boolean
+  default: false
+  values:
+  - false
+  - true
 
 pool: tasrif-pool
 
@@ -15,6 +24,7 @@ stages:
       displayName: Build Tasrif
       steps:
       - checkout: self
+        clean: ${{ parameters.clean }}
       - task: Docker@2
         displayName: 'Build and push image'
         inputs:
@@ -53,10 +63,48 @@ stages:
           publishRunAttachments: true
           testRunTitle: 'Pylint'
         condition: succeededOrFailed()
+    - job: RunUnitTests
+      displayName: Run unit tests
+      steps:
+        # Checkout the repo here so that references to the source files in
+        # the coverage results are correctly linked.
+      - checkout: self
+      - task: Docker@2
+        displayName: Use Docker to run unit tests
+        inputs:
+          command: run
+          containerRegistry: tasrif-acr
+          arguments: >-
+            --env PYTHONPATH=/home/ --entrypoint "/bin/bash"
+            -v $(System.DefaultWorkingDirectory):/home/
+            qcriswtasrif.azurecr.io/$(Build.Repository.Name):$(Build.BuildId)
+            -c "pytest -v --ignore=/home/tasrif/test_scripts
+            --cov=tasrif --cov-report=xml --junitxml=/home/unit-tests.xml
+      - task: PublishTestResults@2
+        displayName: 'Publish unit tests results'
+        inputs:
+          testResultsFormat: 'Junit'
+          testResultsFiles: '**/unit-tests.xml'
+          searchFolder: '$(System.DefaultWorkingDirectory)'
+          publishRunAttachments: true
+          testRunTitle: 'Unit tests'
+        condition: succeededOrFailed()
+      - task: UseDotNet@2
+        displayName: 'Use .NET Core sdk'
+        inputs:
+          packageType: sdk
+          version: 2.2.203
+          installationPath: $(Agent.ToolsDirectory)/dotnet
+      - task: PublishCodeCoverageResults@1
+        displayName: 'Publish coverage report'
+        inputs:
+          codeCoverageTool: Cobertura
+          summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.xml'
+          pathToSources: $(Build.SourcesDirectory)
     - job: RunNotebookTests
       displayName: Run notebook tests
       steps:
-      - checkout: self
+      - checkout: none
       - task: Docker@2
         displayName: Use Docker to run notebook tests
         inputs:
@@ -66,13 +114,15 @@ stages:
             --env PYTHONPATH=/home/ --entrypoint "/bin/bash"
             -v $(System.DefaultWorkingDirectory):/home/
             qcriswtasrif.azurecr.io/$(Build.Repository.Name):$(Build.BuildId)
-            -c "pytest -v /home/tasrif/test_scripts/entrypoint.py --junitxml=/home/notebook-tests.xml"
+            -c "pytest -v /home/tasrif/test_scripts/entrypoint.py
+            --junitxml=/home/notebook-tests.xml"
       - task: PublishTestResults@2
         displayName: 'Publish notebook tests results'
         inputs:
           testResultsFormat: 'Junit'
-          testResultsFiles: '**/*.xml'
+          testResultsFiles: '**/notebook-tests.xml'
           searchFolder: '$(System.DefaultWorkingDirectory)'
           publishRunAttachments: true
           testRunTitle: 'Notebook tests'
         condition: succeededOrFailed()
+

@@ -1,3 +1,5 @@
 # Specify dependencies needed only for running the QA pipelines here.
 pylint-plugin-utils==0.4
 pylint-junit==0.3.2
+pytest-cov==2.12.1
+
