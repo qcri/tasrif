@@ -5,7 +5,7 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.7.1
+#       jupytext_version: 1.11.1
 #   kernelspec:
 #     display_name: Python 3
 #     language: python
@@ -28,7 +28,8 @@ from tasrif.data_readers.zenodo_fitbit_dataset import (
     ZenodoFitbitActivityDataset,
     ZenodoFitbitWeightDataset,
     ZenodoFitbitSleepDataset,
-    ZenodoCompositeFitbitDataset)
+    ZenodoCompositeFitbitDataset,
+    ZenodoFitbitIntradayStepsDataset)
 
 nan = np.nan
 zenodo_folder = os.environ['ZENODOFITBIT_PATH']
@@ -48,7 +49,9 @@ df = zsd.processed_dataframe()
 sdf = zsd.grouped_dataframe()
 #[pd.DataFrame(y) for x, y in df.groupby('logId', as_index=False)]
 
-
+steps_df_init = ZenodoFitbitIntradayStepsDataset(zenodo_folder=zenodo_folder)
+steps_df = steps_df_init.processed_dataframe()
+steps_df_grouped = steps_df_init.grouped_dataframe()
 
 # %%
 adf
@@ -60,13 +63,16 @@ zfd.participant_count()
 sdf
 
 # %%
-cds = ZenodoCompositeFitbitDataset([zfd, zwd, zsd])
-df = cds.grouped_dataframe()
-df
+zfd.processed_dataframe()
 
 # %%
 df = df.dropna(axis=1)
 df = df.drop(['sleep_episodes_count', 'Id'], axis=1)
+df
+
+# %%
+cds = ZenodoCompositeFitbitDataset([zfd, zwd, zsd])
+df = cds.grouped_dataframe()
 df
 
 # %%
@@ -85,3 +91,7 @@ corr_df = df.corr()
 corr_df
 
 # %%
+zsd
+
+# %%
+steps_df

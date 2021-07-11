@@ -17,4 +17,5 @@ from tasrif.processing_pipeline.custom.drop_index_duplicates_operator import Dro
 from tasrif.processing_pipeline.custom.categorize_time_operator import CategorizeTimeOperator
 from tasrif.processing_pipeline.custom.filter_operator import FilterOperator
 from tasrif.processing_pipeline.custom.encode_cyclical_features_operator import EncodeCyclicalFeaturesOperator
+from tasrif.processing_pipeline.custom.normalize_operator import NormalizeOperator
 from tasrif.processing_pipeline.custom.categorize_duration_operator import CategorizeDurationOperator

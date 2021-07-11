@@ -5,7 +5,7 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.7.1
+#       jupytext_version: 1.11.1
 #   kernelspec:
 #     display_name: Python 3
 #     language: python
@@ -30,6 +30,7 @@ from tasrif.data_readers.zenodo_fitbit_dataset import (
     ZenodoCompositeFitbitDataset)
 
 nan = np.nan
+
 zenodo_folder = os.environ['ZENODOFITBIT_PATH']
 
 zfd = ZenodoFitbitActivityDataset(zenodo_folder=zenodo_folder)
@@ -103,3 +104,5 @@ df['date'] = df['Date'].dt.strftime('%m-%d')
 ax = df2[0].plot.bar(x="date-short", y="Id_count")
 ax.set_xticklabels(labels=df2[0]['date-short'], rotation=70, rotation_mode="anchor", ha="right")
 plt.tight_layout()
+
+# %%
