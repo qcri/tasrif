@@ -27,24 +27,25 @@ class OneHotEncoderOperator(ProcessingOperator):
         0	1	red	    Doha	        1,2
         1	2	white	Vienna	        1
         2	3	blue	Belo Horizonte	1,3
-      >>>
+
       >>> OneHotEncoderOperator(feature_names=["colors"], drop_first=False).process(df)[0]
 	        id	cities	        multiple	colors=red	colors=white
         0	1	Doha	        1,2	        1	        0
         1	2	Vienna	        1	        0	        1
         2	3	Belo Horizonte	1,3	        0	        0
-      >>>
+
       >>> OneHotEncoderOperator(feature_names=["colors"], drop_last_expansion=True).process(df)[0]
             id	cities	        multiple	colors=blue	colors=red	colors=white
         0	1	Doha	        1,2	        0	        1	        0
         1	2	Vienna	        1  	        0	        0	        1
         2	3	Belo Horizonte	1,3	        1	        0	        0
-      >>>
+
       >>> OneHotEncoderOperator(feature_names=["colors", "multiple"], drop_first=False).process(df)[0]
             id	cities	        colors=blue	colors=red	colors=white	multiple=1	multiple=2	multiple=3
         0	1	Doha	        0	        1	        0	            1	        1	        0
         1	2	Vienna	        0	        0	        1	            1	        0	        0
         2	3	Belo Horizonte	1	        0  	        0	            1	        0	        1
+
     """
 
     def __init__(self, feature_names: list, drop_first: bool = True, separator: str = ","):

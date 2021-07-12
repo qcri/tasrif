@@ -17,35 +17,57 @@ class SetFeaturesValueOperator(ProcessingOperator):
 
     >>> import pandas as pd
     >>> import numpy as np
-    >>>
     >>> from tasrif.processing_pipeline.custom import SetFeaturesValueOperator
     >>>
     >>> df0 = pd.DataFrame([['tom', 10], ['nick', 15], ['juli', 14]])
     >>> df0.columns = ['name', 'age']
     >>> df1 = pd.DataFrame({"name": ['Alfred', 'Batman', 'Catwoman'],
-    >>>                    "toy": [np.nan, 'Batmobile', 'Bullwhip'],
-    >>>                    "age": [11, 14, 17]})
+    ...                    "toy": [np.nan, 'Batmobile', 'Bullwhip'],
+    ...                    "age": [11, 14, 17]})
     >>>
     >>> print(df0)
     >>> print(df1)
-    >>>
+    .  name  age
+    0   tom   10
+    1  nick   15
+    2  juli   14
+    .      name        toy  age
+    0    Alfred        NaN   11
+    1    Batman  Batmobile   14
+    2  Catwoman   Bullwhip   17
+
     >>> print()
     >>> print('=================================================')
     >>> print('select rows where age >= 13')
     >>> operator = SetFeaturesValueOperator(selector=lambda df: df.age >= 13)
     >>> print(operator.process(df0, df1))
-    >>>
+    =================================================
+    select rows where age >= 13
+    [   name  age
+    1  nick   15
+    2  juli   14,        name        toy  age
+    1    Batman  Batmobile   14
+    2  Catwoman   Bullwhip   17]
+
     >>> print()
     >>> print('=================================================')
     >>> print('select rows where age >= 13 and set their ages to 15')
     >>> operator = SetFeaturesValueOperator(selector=lambda df: df.age >= 13,
-    >>>                                     features=['age'],
-    >>>                                     value=15)
+    ...                                     features=['age'],
+    ...                                     value=15)
     >>> df0, df1 = operator.process(df0, df1)
     >>> print(df0)
     >>> print(df1)
-
-
+    =================================================
+    select rows where age >= 13 and set their ages to 15
+    .  name  age
+    0   tom   10
+    1  nick   15
+    2  juli   15
+    .      name        toy  age
+    0    Alfred        NaN   11
+    1    Batman  Batmobile   15
+    2  Catwoman   Bullwhip   15
 
     """
 

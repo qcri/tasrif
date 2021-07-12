@@ -59,16 +59,15 @@ class JqOperator(ProcessingOperator):
     >>>     ]
     >>> }
     >>> ]
-
+    >>>
     >>> op = JqOperator("map({date, sleep: .sleep[].sleep_data})")
     >>> op.process(df)
-
     [[{'date': '2020-01-01',
-   'sleep': [{'level': 'rem', 'minutes': 180},
+    \'sleep': [{'level': 'rem', 'minutes': 180},
     {'level': 'deep', 'minutes': 80},
     {'level': 'light', 'minutes': 300}]},
     {'date': '2020-01-02',
-   'sleep': [{'level': 'rem', 'minutes': 280},
+    \'sleep': [{'level': 'rem', 'minutes': 280},
     {'level': 'deep', 'minutes': 60},
     {'level': 'light', 'minutes': 200}]}]]
 

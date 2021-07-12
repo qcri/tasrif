@@ -15,30 +15,32 @@ class DropNAOperator(ProcessingOperator):
     Examples
     --------
 
-    >>>import pandas as pd
-    >>>import numpy as np
+    >>> import pandas as pd
+    >>> import numpy as np
+    >>> from tasrif.processing_pipeline import DropNAOperator
     >>>
-    >>>from tasrif.processing_pipeline import DropNAOperator
-    >>>
-    >>>df0 = pd.DataFrame([['tom', 10], ['nick', 15], ['juli', 14]])
-    >>>df1 = pd.DataFrame({"name": ['Alfred', 'Batman', 'Catwoman'],
-    >>>                  "toy": [np.nan, 'Batmobile', 'Bullwhip'],
-    >>>                  "born": [pd.NaT, pd.Timestamp("1940-04-25"),
-    >>>                           pd.NaT]})
-
+    >>> df0 = pd.DataFrame([['tom', 10], ['nick', 15], ['juli', 14]])
+    >>> df1 = pd.DataFrame({"name": ['Alfred', 'Batman', 'Catwoman'],
+    ...                   "toy": [np.nan, 'Batmobile', 'Bullwhip'],
+    ...                   "born": [pd.NaT, pd.Timestamp("1940-04-25"),
+    ...                            pd.NaT]})
     >>>operator = DropNAOperator(axis=0)
     >>>df0, df1 = operator.process(df0, df1)
-
     >>>print(df0)
     >>>print(df1)
-
+    .     0   1
+    0   tom  10
+    1  nick  15
+    2  juli  14
+    .    name        toy       born
+    1  Batman  Batmobile 1940-04-25
     """
 
     def __init__(self, **kwargs):
         """
         Initializes the operator
 
-        **kwargs:
+        \\*\\*kwargs:
           key word arguments passed to pandas DataFrame.dropna method
         """
         self.kwargs = kwargs

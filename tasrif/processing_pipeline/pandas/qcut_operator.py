@@ -21,19 +21,17 @@ class QCutOperator(ProcessingOperator):
         >>>
         >>>
         >>> df = pd.DataFrame({
-        >>>         'Time': pd.date_range('2018-01-01', '2018-01-10', freq='1H', closed='left'),
-        >>>         'Steps': np.random.randint(100,5000, size=9*24),
-        >>>         }
-        >>>      )
+        ...         'Time': pd.date_range('2018-01-01', '2018-01-10', freq='1H', closed='left'),
+        ...         'Steps': np.random.randint(100,5000, size=9*24),
+        ...         }
+        ...      )
         >>>
         >>> ids = []
         >>> for i in range(1, 217):
-        >>>     ids.append(i%10 + 1)
+        ...     ids.append(i%10 + 1)
         >>>
         >>> df["Id"] = ids
-
         ### Input ###
-
         Time    Steps   Id
         0   2018-01-01 00:00:00     4974    2
         1   2018-01-01 01:00:00     3377    3
@@ -47,18 +45,15 @@ class QCutOperator(ProcessingOperator):
         214     2018-01-09 22:00:00     2701    6
         215     2018-01-09 23:00:00     3444    7
 
-        >>>
         >>> # 4 Equally distributed bins
         >>> df1 = df.copy()
         >>> operator = QCutOperator(cut_column_name='Steps',
-        >>>                         bin_column_name='Bin',
-        >>>                         quantile=4,
-        >>>                         retbins=True)
-        >>>
+        ...                         bin_column_name='Bin',
+        ...                         quantile=4,
+        ...                         retbins=True)
         >>> df1, bins = operator.process(df1)[0]
         >>> print('Bins:', bins)
         >>> df1
-
         ### Output 1 ###
         Bins: [ 100.   1341.5  2437.5  3502.25 4987.  ]
         (99.999, 1341.5]     54
@@ -66,7 +61,6 @@ class QCutOperator(ProcessingOperator):
         (2437.5, 3502.25]    54
         (3502.25, 4987.0]    54
         Name: Bin, dtype: int64
-
             Time    Steps   Id  Bin
         0   2018-01-01 00:00:00     1414    2   (1341.5, 2437.5]
         1   2018-01-01 01:00:00     1513    3   (1341.5, 2437.5]
@@ -80,29 +74,25 @@ class QCutOperator(ProcessingOperator):
         214     2018-01-09 22:00:00     1533    6   (1341.5, 2437.5]
         215     2018-01-09 23:00:00     3018    7   (2437.5, 3502.25]
 
-
-        >>>
         >>> # Custom bins
         >>> cut_labels = ['Sedentary', "Light", 'Moderate', 'Vigorous']
         >>> quantiles = [0, 0.2, 0.5, 0.80, 1]
         >>>
         >>> df2 = df.copy()
         >>> operator = QCutOperator(cut_column_name='Steps',
-        >>>                         bin_column_name='Bin',
-        >>>                         quantile=quantiles,
-        >>>                         labels=cut_labels)
-        >>>
+        ...                         bin_column_name='Bin',
+        ...                         quantile=quantiles,
+        ...                         labels=cut_labels)
         >>> df2 = operator.process(df1)[0]
         >>> print(df2['Bin'].value_counts())
         >>> df2
-
         ### Output 2 ###
         Moderate     65
         Light        64
         Sedentary    44
         Vigorous     43
         Name: Bin, dtype: int64
-
+        ...
             Time    Steps   Id  Bin
         0   2018-01-01 00:00:00     1414    2   Light
         1   2018-01-01 01:00:00     1513    3   Light
@@ -133,7 +123,7 @@ class QCutOperator(ProcessingOperator):
             Number of quantiles. 10 for deciles, 4 for quartiles, etc.
             Alternately array of quantiles, e.g. [0, .25, .5, .75, 1.] for quartiles.
 
-        **kwargs:
+        \\*\\*kwargs:
           key word arguments passed to pandas ``cut`` method
 
         """

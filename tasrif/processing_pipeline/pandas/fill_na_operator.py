@@ -21,14 +21,13 @@ class FillNAOperator(ProcessingOperator):
     >>> from tasrif.processing_pipeline.pandas import FillNAOperator
     >>>
     >>> df = pd.DataFrame({"name": ['Alfred', 'Batman', 'Catwoman'],
-    >>>                    "toy": [np.nan, 'Batmobile', 'Bullwhip'],
-    >>>                    "born": [pd.Timestamp("1940-04-25"), pd.Timestamp("1940-04-25"),
-    >>>                             pd.Timestamp("1940-04-25")]})
+    ...                    "toy": [np.nan, 'Batmobile', 'Bullwhip'],
+    ...                    "born": [pd.Timestamp("1940-04-25"), pd.Timestamp("1940-04-25"),
+    ...                             pd.Timestamp("1940-04-25")]})
     >>>
     >>> operator = FillNAOperator(axis=0, value='laptop')
     >>> df = operator.process(df)[0]
     >>> df
-
         name    toy     born
     0   Alfred  laptop  1940-04-25
     1   Batman  Batmobile   1940-04-25
@@ -40,7 +39,7 @@ class FillNAOperator(ProcessingOperator):
         """
         Initializes the operator
 
-        **kwargs:
+        \\*\\*kwargs:
           key word arguments passed to pandas DataFrame.dropna method
         """
         self.kwargs = kwargs

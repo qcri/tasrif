@@ -16,26 +16,23 @@ class CutOperator(ProcessingOperator):
         >>> import pandas as pd
         >>> import numpy as np
         >>> import datetime
-        >>>
         >>> from tasrif.processing_pipeline.pandas import CutOperator
         >>>
         >>>
         >>> df = pd.DataFrame({
-        >>>         'Time': pd.date_range('2018-01-01', '2018-01-10', freq='1H', closed='left'),
-        >>>         'Steps': np.random.randint(100,5000, size=9*24),
-        >>>         }
-        >>>      )
+        ...         'Time': pd.date_range('2018-01-01', '2018-01-10', freq='1H', closed='left'),
+        ...         'Steps': np.random.randint(100,5000, size=9*24),
+        ...         }
+        ...      )
         >>>
         >>> ids = []
         >>> for i in range(1, 217):
-        >>>     ids.append(i%10 + 1)
+        ...     ids.append(i%10 + 1)
         >>>
         >>> df["Id"] = ids
         >>> df
-
         ### input ###
-
-               Time    Steps   Id
+        Time    Steps   Id
         0   2018-01-01 00:00:00     1554    2
         1   2018-01-01 01:00:00     1583    3
         2   2018-01-01 02:00:00     1540    4
@@ -51,18 +48,15 @@ class CutOperator(ProcessingOperator):
         >>> # 4 Equal width bins
         >>> df1 = df.copy()
         >>> operator = CutOperator(cut_column_name='Steps',
-        >>>                        bin_column_name='Bin',
-        >>>                        bins=4,
-        >>>                        retbins=True)
+        ...                        bin_column_name='Bin',
+        ...                        bins=4,
+        ...                        retbins=True)
         >>>
         >>> df1, bins = operator.process(df1)[0]
         >>> print('Bins:', bins)
         >>> df1
-
         ### output 1 ###
-
         Bins: [ 147.178 1357.5   2563.    3768.5   4974.   ]
-
             Time    Steps   Id  Bin
         0   2018-01-01 00:00:00     3911    2   (3768.5, 4974.0]
         1   2018-01-01 01:00:00     360     3   (147.178, 1357.5]
@@ -89,14 +83,12 @@ class CutOperator(ProcessingOperator):
         >>> df2 = operator.process(df1)[0]
         >>> print(df2['Bin'].value_counts())
         >>> df2
-
         ### Output 2 ###
         Moderate     135
         Light         64
         Sedentary     17
         Vigorous       0
         Name: Bin, dtype: int64
-
             Time    Steps   Id  Bin
         0   2018-01-01 00:00:00     3911    2   Moderate
         1   2018-01-01 01:00:00     360     3   Sedentary
@@ -123,22 +115,18 @@ class CutOperator(ProcessingOperator):
         bin_column_name : str
             Name of the column representing the bins
 
-        bins: int, sequence of scalars, or IntervalIndex
+        bins: int, sequence of scalars, or IntervalIndex.
+            - **int** : Defines the number of equal-width bins in the range of x.
+              The range of x is extended by .1% on each side to
+              include the minimum and maximum values of x.
 
-            The criteria to bin by.
-            int : Defines the number of equal-width bins in the range of x.
-            The range of x is extended by .1% on each side to
-            include the minimum and maximum values of x.
+            - **sequence of scalars** : Defines the bin edges allowing for non-uniform width.
+              No extension of the range of x is done.
 
-            sequence of scalars : Defines the bin edges allowing for non-uniform width.
-            No extension of the range of x is done.
+            - **IntervalIndex** : Defines the exact bins to be used.
+              Note that IntervalIndex for bins must be non-overlapping.
 
-            IntervalIndex : Defines the exact bins to be used.
-            Note that IntervalIndex for bins must be non-overlapping.
-
-
-
-        **kwargs:
+        \\*\\*kwargs:
           key word arguments passed to pandas ``cut`` method
 
         """

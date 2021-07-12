@@ -29,6 +29,10 @@ class AggregateOperator(ProcessingOperator):
       >>> df0 = operator.process(df0)
       >>>
       >>> print(df0)
+      [    city  min_temp_mean  min_temp_std
+      0   Doha           21.0      5.656854
+      1  Dubai           20.5      0.707107]
+
     """
     def __init__(self, groupby_feature_names, aggregation_definition):
         """Creates a new instance of AggregateOperator

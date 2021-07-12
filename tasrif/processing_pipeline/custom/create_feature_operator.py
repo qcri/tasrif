@@ -27,6 +27,11 @@ class CreateFeatureOperator(ProcessingOperator):
       >>> df0 = operator.process(df0)
       >>>
       >>> print(df0)
+      [   name  work_hours  off_hours  total_hours
+      0   tom          10          2           12
+      1  nick          15          2           17
+      2  juli          14         12           26]
+
     """
 
     def __init__(self, feature_name, feature_creator):

@@ -22,7 +22,6 @@ class PivotOperator(ProcessingOperator):
     >>> df['timestamp'] = pd.to_datetime(df['timestamp'])
     >>> op = PivotOperator(index='timestamp', columns='logId', values='sleep_level')
     >>> op.process(df)[0]
-
     logId   1   2
     timestamp
     2020-05-01 00:00:00   1.0   NaN
@@ -38,7 +37,7 @@ class PivotOperator(ProcessingOperator):
 
         Parameters
         ----------
-        kwargs: Arguments to pandas pivot function
+        \\*\\*kwargs: Arguments to pandas pivot function
 
         """
         self.kwargs = kwargs

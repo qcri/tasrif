@@ -20,8 +20,8 @@ class AddDurationOperator(ProcessingOperator):
       >>> from tasrif.processing_pipeline.custom import AddDurationOperator
       >>>
       >>> df0 = pd.DataFrame([[1, "2020-05-01 00:00:00", 1], [1, "2020-05-01 01:00:00", 1],
-      >>> [1, "2020-05-01 03:00:00", 2], [2, "2020-05-02 00:00:00", 1],[2, "2020-05-02 01:00:00", 1]
-      >>>                     columns=['logId', 'timestamp', 'sleep_level'])
+      >>> [1, "2020-05-01 03:00:00", 2], [2, "2020-05-02 00:00:00", 1],[2, "2020-05-02 01:00:00", 1]],
+      >>>               columns=['logId', 'timestamp', 'sleep_level'])
       >>> df0['timestamp'] = pd.to_datetime(df0['timestamp'])
       >>>
       >>> operator = AddDurationOperator(
@@ -31,6 +31,13 @@ class AddDurationOperator(ProcessingOperator):
       >>> df0 = operator.process(df0)
       >>>
       >>> print(df0)
+      [   logId           timestamp  sleep_level        duration
+      0      1 2020-05-01 00:00:00            1 0 days 00:00:00
+      1      1 2020-05-01 01:00:00            1 0 days 01:00:00
+      2      1 2020-05-01 03:00:00            2 0 days 02:00:00
+      3      2 2020-05-02 00:00:00            1 0 days 00:00:00
+      4      2 2020-05-02 01:00:00            1 0 days 01:00:00]
+
     """
     def __init__(self,
                  groupby_feature_names,

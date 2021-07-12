@@ -20,16 +20,13 @@ class SetIndexOperator(ProcessingOperator):
     >>> import pandas as pd
     >>> from tasrif.processing_pipeline.pandas import SetIndexOperator
     >>> df = pd.DataFrame([
-    >>>     [1, "2020-05-01 00:00:00", 1],
-    >>>     [1, "2020-05-01 01:00:00", 1],
-    >>>     [1, "2020-05-01 03:00:00", 2],
-    >>>     [2, "2020-05-02 00:00:00", 1],
-    >>>     [2, "2020-05-02 01:00:00", 1]],
-    >>>     columns=['logId', 'timestamp', 'sleep_level'])
-    >>>
+    ...     [1, "2020-05-01 00:00:00", 1],
+    ...     [1, "2020-05-01 01:00:00", 1],
+    ...     [1, "2020-05-01 03:00:00", 2],
+    ...     [2, "2020-05-02 00:00:00", 1],
+    ...     [2, "2020-05-02 01:00:00", 1]],
+    ...     columns=['logId', 'timestamp', 'sleep_level'])
     >>> df
-
-
     logId	timestamp	sleep_level
     0	1	2020-05-01 00:00:00	1
     1	1	2020-05-01 01:00:00	1
@@ -56,7 +53,7 @@ class SetIndexOperator(ProcessingOperator):
         a single array of the same length as the calling DataFrame,
         or a list containing an arbitrary combination of column keys and arrays
 
-        **kwargs:
+        \\*\\*kwargs:
           key word arguments passed to pandas DataFrame.dropna method
         """
         self.keys = keys

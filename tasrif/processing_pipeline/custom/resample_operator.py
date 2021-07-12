@@ -29,7 +29,6 @@ class ResampleOperator(ProcessingOperator):
     >>> df = df.set_index('timestamp')
     >>> op = ResampleOperator('D', {'sleep_level': 'mean'})
     >>> op.process(df)
-
     [            sleep_level
     timestamp
     2020-05-01     1.333333
@@ -45,7 +44,6 @@ class ResampleOperator(ProcessingOperator):
             The offset string or object representing target conversion.
         aggregation_definition : dict or str
             - Dictionary containing feature to aggregation functions mapping.
-            -or-
             - function defining the aggregation behavior ('sum', 'mean', 'ffill', etc.)
         """
         self.rule = rule

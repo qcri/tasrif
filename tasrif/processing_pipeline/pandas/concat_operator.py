@@ -14,8 +14,9 @@ class ConcatOperator(ProcessingOperator):
     Returns
     -------
 
-    Examples:
-    ---------
+    Examples
+    --------
+
     >>> import pandas as pd
     >>>
     >>> from tasrif.processing_pipeline.pandas import ConcatOperator
@@ -26,7 +27,6 @@ class ConcatOperator(ProcessingOperator):
     >>>
     >>> concat = ConcatOperator().process(df1, df2)
     >>> concat
-
         id  cities
     0   1   Rome
     1   2   Barcelona
@@ -45,7 +45,7 @@ class ConcatOperator(ProcessingOperator):
         data_frames:
           Variable number of pandas dataframes to be processed
 
-        **kwargs:
+        \\*\\*kwargs:
           key word arguments passed to pandas concat method
 
 

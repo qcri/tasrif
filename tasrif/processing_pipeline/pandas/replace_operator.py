@@ -13,15 +13,15 @@ class ReplaceOperator(ProcessingOperator):
     Returns
     -------
 
-    Examples:
-    ---------
-      >>> df = pd.DataFrame({'id': [1, 2, 3], 'colors': ['red', 'white', 'blue'], "importance": [1, 3, 2]})
-      >>> df = ReplaceOperator(to_replace="red", value="green").process(df)[0]
-      >>> df
-      id	colors	    importance
-      1	    green	    1
-      3	    blue	    2
-      2	    white	    3
+    Examples
+    --------
+    >>> df = pd.DataFrame({'id': [1, 2, 3], 'colors': ['red', 'white', 'blue'], "importance": [1, 3, 2]})
+    >>> df = ReplaceOperator(to_replace="red", value="green").process(df)[0]
+    >>> df
+    id	colors	    importance
+    1    green	    1
+    3    blue	    2
+    2    white	    3
     """
 
     def __init__(self, **kwargs):
@@ -32,7 +32,7 @@ class ReplaceOperator(ProcessingOperator):
         data_frames:
           Variable number of pandas dataframes to be processed
 
-        **kwargs:
+        \\*\\*kwargs:
           key word arguments passed to pandas `DataFrame.replace` method
 
 

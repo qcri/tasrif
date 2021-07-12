@@ -25,13 +25,22 @@ class ComposeOperator(ProcessingOperator):
         Examples
         --------
 
-        >>> from tasrif.processing_pipeline import ComposeOperator, DropDuplicatesOperator, DropNAOperator
+        >>> import numpy as np
+        >>> import pandas as pd
+        >>> from tasrif.processing_pipeline.pandas import DropDuplicatesOperator, DropNAOperator
+        >>> from tasrif.processing_pipeline import ComposeOperator
         >>> pipeline = ComposeOperator([DropDuplicatesOperator(), DropNAOperator()])
         >>> df = pd.DataFrame({"name": ['Alfred', 'Batman', 'Catwoman'],
         >>>                  "toy": [np.nan, 'Batmobile', 'Bullwhip'],
         >>>                  "born": [pd.NaT, pd.Timestamp("1940-04-25"),
         >>>                           pd.NaT]})
         >>> pipeline.process(df)
+        [(       name        toy       born
+          0    Alfred        NaN        NaT
+          1    Batman  Batmobile 1940-04-25
+          2  Catwoman   Bullwhip        NaT,),
+         (     name        toy       born
+          1  Batman  Batmobile 1940-04-25,)]
 
         """
         for operator in processing_operators:

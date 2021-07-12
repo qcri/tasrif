@@ -7,27 +7,22 @@ from tasrif.processing_pipeline import ProcessingOperator
 class SortOperator(ProcessingOperator):
     """Sort datasets based on Pandas `sort_values` method.
 
-    Parameters
-    ----------
+    Examples
+    ========
+    >>> df1 = pd.DataFrame({'id': [1, 2, 3], 'colors': ['red', 'white', 'blue'], "importance": [1, 3, 2]})
+    >>> df2 = pd.DataFrame({'id': [1, 2, 3], 'cities': ['Doha', 'Vienna', 'Belo Horizonte'], "importance": [3, 2, 1]})
+    >>> sorted_dfs = SortOperator().process(df1, df2)
+    >>> sorted_dfs[0]
+    id	colors	importance
+    1	    red	    1
+    3	    blue	2
+    2	    white	3
 
-    Returns
-    -------
-
-    Examples:
-    ---------
-      >>> df1 = pd.DataFrame({'id': [1, 2, 3], 'colors': ['red', 'white', 'blue'], "importance": [1, 3, 2]})
-      >>> df2 = pd.DataFrame({'id': [1, 2, 3], 'cities': ['Doha', 'Vienna', 'Belo Horizonte'], "importance": [3, 2, 1]})
-      >>> sorted_dfs = SortOperator().process(df1, df2)
-      >>> sorted_dfs[0]
-      id	colors	importance
-      1	    red	    1
-      3	    blue	2
-      2	    white	3
-      >>> sorted_dfs[1]
-	  id	cities	        importance
-      3	    Belo Horizonte	1
-      2	    Vienna	        2
-      1	    Doha	        3
+    >>> sorted_dfs[1]
+    id	cities	        importance
+    3	    Belo Horizonte	1
+    2	    Vienna	        2
+    1	    Doha	        3
     """
 
     def __init__(self, **kwargs):
@@ -38,7 +33,7 @@ class SortOperator(ProcessingOperator):
         data_frames:
           Variable number of pandas dataframes to be processed
 
-        **kwargs:
+        \\*\\*kwargs:
           key word arguments passed to pandas DataFrame.sort_values method
 
 

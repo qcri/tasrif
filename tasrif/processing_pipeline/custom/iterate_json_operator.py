@@ -19,34 +19,39 @@ class IterateJsonOperator(ProcessingOperator):
     -------
     >>> import json
     >>> import pandas as pd
-
     >>> from tasrif.processing_pipeline.custom import IterateJsonOperator
-
     >>> df = pd.DataFrame({"name": ['Alfred', 'Roy'],
-    >>>                    "age": [43, 32],
-    >>>                    "file_details": ['details1.json', 'details2.json']})
-
+    ...                    "age": [43, 32],
+    ...                    "file_details": ['details1.json', 'details2.json']})
     >>> details1 = [{'calories': [360, 540],
-    >>>              'time': "2015-04-25"}]
-
+    ...              'time': "2015-04-25"}]
     >>> details2 = [{'calories': [420, 250],
-    >>>              'time': "2015-05-16"}]
-
+    ...              'time': "2015-05-16"}]
     >>> # Save File 1 and File 2
     >>> json.dump(details1, open('details1.json', 'w+'))
     >>> json.dump(details2, open('details2.json', 'w+'))
-
     >>> operator = IterateJsonOperator(folder_path='./', field='file_details', pipeline=None)
     >>> generator = operator.process(df)[0]
-
     >>> # Iterates twice
     >>> for record, details in generator:
-    >>>     print('Subject information:')
-    >>>     print(record)
-    >>>     print('')
-    >>>     print('Subject details:')
-    >>>     print(details)
-    >>>     print('============================')
+    ...     print('Subject information:')
+    ...     print(record)
+    ...     print('')
+    ...     print('Subject details:')
+    ...     print(details)
+    ...     print('============================')
+    Subject information:
+    Pandas(Index=0, name='Alfred', age=43, file_details='details1.json')
+    ...
+    Subject details:
+    [{'calories': [360, 540], 'time': '2015-04-25'}]
+    \\============================
+    Subject information:
+    Pandas(Index=1, name='Roy', age=32, file_details='details2.json')
+    ...
+    Subject details:
+    [{'calories': [420, 250], 'time': '2015-05-16'}]
+    \\============================
 
     """
     def __init__(self, folder_path, field, pipeline: ProcessingPipeline):

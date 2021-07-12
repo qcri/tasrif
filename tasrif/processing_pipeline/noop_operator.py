@@ -17,6 +17,10 @@ class NoopOperator(ProcessingOperator):
         >>> df = pd.DataFrame([['tom', 10], ['nick', 15], ['juli', 14]])
         >>> operator = NoopOperator()
         >>> operator.process(df)
+        (      0   1
+         0   tom  10
+         1  nick  15
+         2  juli  14,)
 
         """
 

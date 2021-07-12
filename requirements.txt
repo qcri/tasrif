@@ -5,3 +5,5 @@ jupytext==1.11.1
 matplotlib==3.0.0
 seaborn==0.11.1
 pytest-mock==3.6.1
+Sphinx==3.2.1
+sphinx-autopackagesummary==1.3

@@ -1,9 +1,12 @@
-"""Module that provides classes to work with a exported fitbit dataset at intraday resolution
-   Available datasets:
-        Nutrition (food and water logs)
-        Weight
-        Physical Activity (distance, calories, heart-rate, active and sedentary minutes)
-        Sleep
+"""
+Module that provides classes to work with a exported fitbit dataset at intraday resolution
+
+Available datasets
+------------------
+    - Nutrition (food and water logs)
+    - Weight
+    - Physical Activity (distance, calories, heart-rate, active and sedentary minutes)
+    - Sleep
 """
 
 import pathlib

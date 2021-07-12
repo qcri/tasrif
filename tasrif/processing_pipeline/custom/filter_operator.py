@@ -25,14 +25,14 @@ class FilterOperator(ProcessingOperator):
     >>> from tasrif.processing_pipeline.custom import FilterOperator
     >>>
     >>> df = pd.DataFrame({
-    >>>         'Hours': pd.date_range('2018-01-01', '2018-01-10', freq='1H', closed='left'),
-    >>>         'Steps': np.random.randint(100,10000, size=9*24),
-    >>>         }
-    >>>      )
+    ...         'Hours': pd.date_range('2018-01-01', '2018-01-10', freq='1H', closed='left'),
+    ...         'Steps': np.random.randint(100,10000, size=9*24),
+    ...         }
+    ...      )
     >>>
     >>> ids = []
     >>> for i in range(1, 217):
-    >>>     ids.append(i%10 + 1)
+    ...     ids.append(i%10 + 1)
     >>>
     >>> df["Id"] = ids
     >>>
@@ -45,15 +45,27 @@ class FilterOperator(ProcessingOperator):
     >>> df = df[~df.index.isin(id_10_indices)]
     >>>
     >>> operator = FilterOperator(participant_id_column="Id",
-    >>>                           ts_column="Hours",
-    >>>                           epoch_filter=lambda df: df['Steps'] > 10,
-    >>>                           day_filter={
-    >>>                               "column": "Hours",
-    >>>                               "filter": lambda x: x.count() < 10,
-    >>>                               "consecutive_days": (7, 12) # 7 minimum consecutive days, and 12 max
-    >>>                           },
-    >>>                           filter_type="include")
+    ...                           ts_column="Hours",
+    ...                           epoch_filter=lambda df: df['Steps'] > 10,
+    ...                           day_filter={
+    ...                               "column": "Hours",
+    ...                               "filter": lambda x: x.count() < 10,
+    ...                               "consecutive_days": (7, 12) # 7 minimum consecutive days, and 12 max
+    ...                           },
+    ...                           filter_type="include")
     >>> operator.process(df)[0]
+    Hours   Steps   Id
+    0   2018-01-01 09:00:00     6232    1
+    1   2018-01-01 19:00:00     4623    1
+    2   2018-01-02 05:00:00     4094    1
+    3   2018-01-02 15:00:00     1800    1
+    4   2018-01-03 01:00:00     1861    1
+    ...     ...     ...     ...
+    190     2018-01-07 23:00:00     9116    9
+    191     2018-01-08 09:00:00     7265    9
+    192     2018-01-08 19:00:00     4608    9
+    193     2018-01-09 05:00:00     8709    9
+    194     2018-01-09 15:00:00     8970    9
 
     """
     def __init__(  #pylint: disable=too-many-arguments

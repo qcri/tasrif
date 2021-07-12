@@ -13,16 +13,16 @@ class MergeOperator(ProcessingOperator):
     Returns
     -------
 
-    Examples:
+    Examples
     ---------
-      >>> df1 = pd.DataFrame({'id': [1, 2, 3], 'colors': ['red', 'white', 'blue']})
-      >>> df2 = pd.DataFrame({'id': [1, 2, 3], 'cities': ['Doha', 'Vienna', 'Belo Horizonte']})
-      >>> merged = MergeOperator().process(df1, df2)
-      >>> merged
-      id    colors  cities
-      1     red     Doha
-      2	    white   Vienna
-      3	    blue    Belo Horizonte
+    >>> df1 = pd.DataFrame({'id': [1, 2, 3], 'colors': ['red', 'white', 'blue']})
+    >>> df2 = pd.DataFrame({'id': [1, 2, 3], 'cities': ['Doha', 'Vienna', 'Belo Horizonte']})
+    >>> merged = MergeOperator().process(df1, df2)
+    >>> merged
+    id    colors  cities
+    1     red     Doha
+    2     white   Vienna
+    3     blue    Belo Horizonte
     """
 
     def __init__(self, **kwargs):
@@ -33,7 +33,7 @@ class MergeOperator(ProcessingOperator):
         data_frames:
           Variable number of pandas dataframes to be processed
 
-        **kwargs:
+        \\*\\*kwargs:
           key word arguments passed to pandas DataFrame.merge method
 
 

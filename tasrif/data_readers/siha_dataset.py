@@ -1,8 +1,10 @@
-"""Module that provides classes to work with a fitbit dataset dumped from SIHA
-   Available datasets:
-        Weight
-        Physical Activity (distance, calories, heart-rate, active and sedentary minutes)
-        Sleep
+"""
+Module that provides classes to work with a fitbit dataset dumped from SIHA
+    **Available datasets**:
+        - Weight
+        - Physical Activity (distance, calories, heart-rate, active and sedentary minutes)
+        - Sleep
+
 """
 
 import pathlib

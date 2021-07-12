@@ -14,7 +14,7 @@ class DropFeaturesOperator(ProcessingOperator):
       ------
       ValueError
           Occurs when one of the objects in drop_features is not a column within
-          *data_frames
+          \\*data_frames
 
 
       Examples
@@ -37,6 +37,15 @@ class DropFeaturesOperator(ProcessingOperator):
       >>>
       >>> print(df0)
       >>> print(df1)
+      .  name  age
+      0   tom   10
+      1  nick   15
+      2  juli   14
+      .      name        toy       born
+      0    Alfred        NaN        NaT
+      1    Batman  Batmobile 1940-04-25
+      2  Catwoman   Bullwhip        NaT
+
     """
 
     def __init__(self, drop_features: list):

@@ -30,7 +30,6 @@ class EncodeCyclicalFeaturesOperator(ProcessingOperator):
     >>> operator = EncodeCyclicalFeaturesOperator(date_feature_name="Date",
     >>>                                           category_definition=["day", "day_in_month"])
     >>> df3 = operator.process(df3)[0]
-
     Date    Steps   Calories    day_sin     day_cos     day_in_month_sin    day_in_month_cos
     2016-12-31  2016-12-31  3906    1910    -0.974928   -0.222521   -2.449294e-16   1.000000
     2017-01-01  2017-01-01  7079    2909    -0.781831   0.623490    2.012985e-01    0.979530
@@ -51,17 +50,20 @@ class EncodeCyclicalFeaturesOperator(ProcessingOperator):
         date_feature_name : str
             Name of the feature to identify related timestamp series
         category_definition : str or array of str or dict
-            * Value is one of "day", "month" to categorize based on
-                day of the week, month of the year or hijri month
-            * Array of these values if multiple categorizations are desired.
-            [
-                "days", "month"
-            ]
-            * Array of dictionary customized column names are desired
-            [
-                {"days": "day_of_week"},
-                {"month", "calendar_month}
-            ]
+            Value is one of "day", "month" to categorize based on
+            day of the week, month of the year or hijri month
+            Array of these values if multiple categorizations are desired.::
+
+                [
+                    "days", "month"
+                ]
+
+            Array of dictionary customized column names are desired::
+
+                [
+                    {"days": "day_of_week"},
+                    {"month", "calendar_month}
+                ]
         """
 
         self.date_feature_name = date_feature_name

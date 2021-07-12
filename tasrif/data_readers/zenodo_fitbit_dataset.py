@@ -2,15 +2,15 @@
 collected by crowd sourcing.
 
     Available Interday datasets:
-        ZenodoFitbitActivityDataset
-        ZenodoFitbitWeightDataset
-        ZenodoFitbitSleepDataset
+        - ZenodoFitbitActivityDataset
+        - ZenodoFitbitWeightDataset
+        - ZenodoFitbitSleepDataset
 
     Available Intraday datasets:
-        ZenodoFitbitIntradayCaloriesDataset
-        ZenodoFitbitIntradayIntensitiesDataset
-        ZenodoFitbitIntradayMETsDataset
-        ZenodoFitbitIntradayStepsDataset
+        - ZenodoFitbitIntradayCaloriesDataset
+        - ZenodoFitbitIntradayIntensitiesDataset
+        - ZenodoFitbitIntradayMETsDataset
+        - ZenodoFitbitIntradayStepsDataset
 
 
 """
@@ -65,10 +65,14 @@ class ZenodoCompositeFitbitDataset:
 
 
 class ZenodoFitbitActivityDataset:
-    """Class that represents the activity related CSV files of the fitbit dataset published on Zenodo"""
+    """Class that represents the activity related CSV files of the fitbit dataset published on Zenodo
+    """
     class Default:  # pylint: disable=too-few-public-methods
-        """Default parameters used by the class."""
+        """
+        Default parameters used by the class.
+        """
 
+        #: :meta hide-value:
         DROP_FEATURES = [
             "TrackerDistance",
             "LoggedActivitiesDistance",
@@ -79,7 +83,10 @@ class ZenodoFitbitActivityDataset:
             "ActivityDate",
         ]
 
+        #: :meta hide-value:
         AGGREGATION_FUNCS = ["mean", "std"]
+
+        #: :meta hide-value:
         AGGREGATION_DEFINITION = {
             "TotalSteps": AGGREGATION_FUNCS,
             "TotalDistance": AGGREGATION_FUNCS,
@@ -88,6 +95,7 @@ class ZenodoFitbitActivityDataset:
             "ActiveMinutes": AGGREGATION_FUNCS,
         }
 
+        #: :meta hide-value:
         PIPELINE = SequenceOperator([
             DropNAOperator(),
             CreateFeatureOperator(

@@ -21,22 +21,22 @@ class IterateCsvOperator(ProcessingOperator):
     Example
     --------
 
-    >>> import pandas as pd
+	>>> import pandas as pd
 	>>> import numpy as np
 	>>>
 	>>> from tasrif.processing_pipeline.custom import IterateCsvOperator
 	>>>
 	>>> df = pd.DataFrame({"name": ['Alfred', 'Roy'],
-	>>>                    "age": [43, 32],
-	>>>                    "file_details": ['details1', 'details2']})
+	...                    "age": [43, 32],
+	...                    "file_details": ['details1', 'details2']})
 	>>>
 	>>> details1 = pd.DataFrame({'calories': [360, 540],
-	>>>                          'time': [pd.Timestamp("2015-04-25"), pd.Timestamp("2015-04-26")]
-	>>>                         })
+	...                          'time': [pd.Timestamp("2015-04-25"), pd.Timestamp("2015-04-26")]
+	...                         })
 	>>>
 	>>> details2 = pd.DataFrame({'calories': [420, 250],
-	>>>                          'time': [pd.Timestamp("2015-05-16"), pd.Timestamp("2015-05-17")]
-	>>>                         })
+	...                          'time': [pd.Timestamp("2015-05-16"), pd.Timestamp("2015-05-17")]
+	...                         })
 	>>>
 	>>>
 	>>> # Save File 1 and File 2
@@ -48,20 +48,18 @@ class IterateCsvOperator(ProcessingOperator):
 	>>>
 	>>> # Iterates twice
 	>>> for record, details in generator:
-	>>>     print('Subject information:')
-	>>>     print(record)
-	>>>     print('')
-	>>>     print('Subject details:')
-	>>>     print(details)
-	>>>     print('============================')
-
-
+	...     print('Subject information:')
+	...     print(record)
+	...     print('')
+	...     print('Subject details:')
+	...     print(details)
+	...     print('============================')
 	Subject information:
 	name              Alfred
 	age                   43
 	file_details    details1
 	Name: 0, dtype: object
-
+	...
 	Subject details:
 	   calories        time
 	0       360  2015-04-25
@@ -72,7 +70,7 @@ class IterateCsvOperator(ProcessingOperator):
 	age                   32
 	file_details    details2
 	Name: 1, dtype: object
-
+	...
 	Subject details:
 	   calories        time
 	0       420  2015-05-16

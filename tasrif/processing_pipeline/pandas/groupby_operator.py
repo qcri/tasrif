@@ -9,25 +9,24 @@ class GroupbyOperator(ProcessingOperator):
 
     Examples
     --------
-    >>>> import pandas as pd
+    >>> import pandas as pd
     >>> import numpy as np
-    >>>
     >>> from tasrif.processing_pipeline.pandas import GroupbyOperator
     >>>
     >>>
     >>>
     >>> df = pd.DataFrame([
-    >>>     [1,'2016-03-12 01:00:00',10],
-    >>>     [1,'2016-03-12 04:00:00',250],
-    >>>     [1,'2016-03-12 06:00:00',30],
-    >>>     [1,'2016-03-12 20:00:00',10],
-    >>>     [1,'2016-03-12 23:00:00',23],
-    >>>     [2,'2016-03-12 00:05:00',20],
-    >>>     [2,'2016-03-12 19:06:00',120],
-    >>>     [2,'2016-03-12 21:07:00',100],
-    >>>     [2,'2016-03-12 23:08:00',50],
-    >>>     [3,'2016-03-12 10:00:00',300]
-    >>> ], columns=['Id', 'ActivityTime', 'Calories'])
+    ...     [1,'2016-03-12 01:00:00',10],
+    ...     [1,'2016-03-12 04:00:00',250],
+    ...     [1,'2016-03-12 06:00:00',30],
+    ...     [1,'2016-03-12 20:00:00',10],
+    ...     [1,'2016-03-12 23:00:00',23],
+    ...     [2,'2016-03-12 00:05:00',20],
+    ...     [2,'2016-03-12 19:06:00',120],
+    ...     [2,'2016-03-12 21:07:00',100],
+    ...     [2,'2016-03-12 23:08:00',50],
+    ...     [3,'2016-03-12 10:00:00',300]
+    ... ], columns=['Id', 'ActivityTime', 'Calories'])
     >>>
     >>> df['ActivityTime'] = pd.to_datetime(df['ActivityTime'])
     >>>
@@ -37,19 +36,19 @@ class GroupbyOperator(ProcessingOperator):
     >>> print(df.get_group(1))
     >>> print(df.get_group(2))
     >>> print(df.get_group(3))
-
-       Id        ActivityTime  Calories
+    Id        ActivityTime  Calories
     0   1 2016-03-12 01:00:00        10
     1   1 2016-03-12 04:00:00       250
     2   1 2016-03-12 06:00:00        30
     3   1 2016-03-12 20:00:00        10
     4   1 2016-03-12 23:00:00        23
-       Id        ActivityTime  Calories
+    ...
+    Id        ActivityTime  Calories
     5   2 2016-03-12 00:05:00        20
     6   2 2016-03-12 19:06:00       120
     7   2 2016-03-12 21:07:00       100
     8   2 2016-03-12 23:08:00        50
-       Id        ActivityTime  Calories
+    Id        ActivityTime  Calories
     9   3 2016-03-12 10:00:00       300
 
     """
@@ -59,7 +58,7 @@ class GroupbyOperator(ProcessingOperator):
 
         Parameters
         ----------
-        kwargs: Arguments to pandas pd.groupby function
+        \\*\\*kwargs: Arguments to pandas pd.groupby function
 
         """
         self.kwargs = kwargs

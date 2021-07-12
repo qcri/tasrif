@@ -7,8 +7,9 @@ from tasrif.processing_pipeline import ProcessingOperator
 class DistributedUpsampleOperator(ProcessingOperator):
     """
 
-     Upsamples the dataframe based assuming the index
-      --------
+    Upsamples the dataframe based assuming the index
+
+    **Example**:
 
     >>> import pandas as pd
     >>> from tasrif.processing_pipeline.custom import DistributedUpsampleOperator
@@ -26,7 +27,6 @@ class DistributedUpsampleOperator(ProcessingOperator):
     >>>   timestamp
     >>>   2020-05-01     1.333333
     >>>   2020-05-02     1.000000]
-
     [                     sedentary_hours
     timestamp
     2020-05-01 00:00:00            4.125

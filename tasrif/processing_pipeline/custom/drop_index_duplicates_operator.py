@@ -8,12 +8,6 @@ class DropIndexDuplicatesOperator(ProcessingOperator):
     """
     Remove duplicate indices from one or more dataframes.
 
-    Parameters
-    ----------
-
-    Raises
-    ------
-
     Examples
     --------
 
@@ -24,13 +18,12 @@ class DropIndexDuplicatesOperator(ProcessingOperator):
     >>>
     >>> idx = pd.Index(['1', '2', '2', '3'])
     >>> df = pd.DataFrame([['tom', 10], ['Alfred', 15], ['Alfred', 18],
-    >>> ['juli', 14]], columns=['name', 'age'], index=idx)
+    ... ['juli', 14]], columns=['name', 'age'], index=idx)
     >>>
     >>> operator = DropIndexDuplicatesOperator(keep='first')
     >>> df = operator.process(df)[0]
     >>>
     >>> print(df)
-
          name  age
     1     tom   10
     2  Alfred   15
@@ -43,7 +36,7 @@ class DropIndexDuplicatesOperator(ProcessingOperator):
         """
         Initializes the operator
 
-        **kwargs:
+        \\*\\*kwargs:
           key word arguments passed to pandas DataFrame.drop_duplicates method
         """
         self.keep = keep

@@ -38,33 +38,34 @@ class CategorizeDurationOperator(ProcessingOperator):
         >>> df # pylint: disable=pointless-statement
         >>>
         >>>
-        >>>     Date    Last_Date   Duration    Steps   Calories
-        >>> 2016-12-31  2016-12-31  2016-12-31 05:01:00     0 days 05:01:00     10858   1852
-        >>> 2017-01-01  2017-01-01  2017-01-01 23:51:00     0 days 23:51:00     19802   2126
-        >>> 2017-01-02  2017-01-02  2017-01-03 03:32:00     1 days 03:32:00     1924    2201
-        >>> 2017-01-03  2017-01-03  2017-01-04 01:31:00     1 days 01:31:00     3393    1935
-        >>> 2017-01-04  2017-01-04  2017-01-04 03:44:00     0 days 03:44:00     8177    2833
-        >>> 2017-01-05  2017-01-05  2017-01-06 14:24:00     1 days 14:24:00     21838   2893
-        >>> 2017-01-06  2017-01-06  2017-01-08 00:53:00     2 days 00:53:00     5671    2095
-        >>> 2017-01-07  2017-01-07  2017-01-09 21:26:00     2 days 21:26:00     6792    2350
-        >>> 2017-01-08  2017-01-08  2017-01-09 05:21:00     1 days 05:21:00     24555   2425
-        >>>
-        >>> # %%
+            Date    Last_Date   Duration    Steps   Calories
+        2016-12-31  2016-12-31  2016-12-31 05:01:00     0 days 05:01:00     10858   1852
+        2017-01-01  2017-01-01  2017-01-01 23:51:00     0 days 23:51:00     19802   2126
+        2017-01-02  2017-01-02  2017-01-03 03:32:00     1 days 03:32:00     1924    2201
+        2017-01-03  2017-01-03  2017-01-04 01:31:00     1 days 01:31:00     3393    1935
+        2017-01-04  2017-01-04  2017-01-04 03:44:00     0 days 03:44:00     8177    2833
+        2017-01-05  2017-01-05  2017-01-06 14:24:00     1 days 14:24:00     21838   2893
+        2017-01-06  2017-01-06  2017-01-08 00:53:00     2 days 00:53:00     5671    2095
+        2017-01-07  2017-01-07  2017-01-09 21:26:00     2 days 21:26:00     6792    2350
+        2017-01-08  2017-01-08  2017-01-09 05:21:00     1 days 05:21:00     24555   2425
+
+
         >>> df1 = df.copy()
         >>> operator = CategorizeDurationOperator(duration_feature_name="Duration", category_definition="day")
         >>> df1 = operator.process(df1)[0]
         >>> df1 # pylint: disable=pointless-statement
         >>>
-        >>>     Date    Last_Date   Duration    Steps   Calories    day_delta
-        >>> 2016-12-31  2016-12-31  2016-12-31 05:01:00     0 days 05:01:00     10858   1852    0
-        >>> 2017-01-01  2017-01-01  2017-01-01 23:51:00     0 days 23:51:00     19802   2126    0
-        >>> 2017-01-02  2017-01-02  2017-01-03 03:32:00     1 days 03:32:00     1924    2201    1
-        >>> 2017-01-03  2017-01-03  2017-01-04 01:31:00     1 days 01:31:00     3393    1935    1
-        >>> 2017-01-04  2017-01-04  2017-01-04 03:44:00     0 days 03:44:00     8177    2833    0
-        >>> 2017-01-05  2017-01-05  2017-01-06 14:24:00     1 days 14:24:00     21838   2893    1
-        >>> 2017-01-06  2017-01-06  2017-01-08 00:53:00     2 days 00:53:00     5671    2095    2
-        >>> 2017-01-07  2017-01-07  2017-01-09 21:26:00     2 days 21:26:00     6792    2350    2
-        >>> 2017-01-08  2017-01-08  2017-01-09 05:21:00     1 days 05:21:00     24555   2425    1
+            Date    Last_Date   Duration    Steps   Calories    day_delta
+        2016-12-31  2016-12-31  2016-12-31 05:01:00     0 days 05:01:00     10858   1852    0
+        2017-01-01  2017-01-01  2017-01-01 23:51:00     0 days 23:51:00     19802   2126    0
+        2017-01-02  2017-01-02  2017-01-03 03:32:00     1 days 03:32:00     1924    2201    1
+        2017-01-03  2017-01-03  2017-01-04 01:31:00     1 days 01:31:00     3393    1935    1
+        2017-01-04  2017-01-04  2017-01-04 03:44:00     0 days 03:44:00     8177    2833    0
+        2017-01-05  2017-01-05  2017-01-06 14:24:00     1 days 14:24:00     21838   2893    1
+        2017-01-06  2017-01-06  2017-01-08 00:53:00     2 days 00:53:00     5671    2095    2
+        2017-01-07  2017-01-07  2017-01-09 21:26:00     2 days 21:26:00     6792    2350    2
+        2017-01-08  2017-01-08  2017-01-09 05:21:00     1 days 05:21:00     24555   2425    1
+
     """
     def __init__(self,
                  duration_feature_name="duration",
@@ -76,15 +77,18 @@ class CategorizeDurationOperator(ProcessingOperator):
         duration_feature_name : str
             Name of the feature to identify related time delta series
         category_definition : str or array of str
-            * Value is one of "day", "hour" or "minutes" to categorize based on
-                number of days, hours of the minutes
-            [
-                "day"
-            ]
-            * Array of dictionary customized column names are desired
-            [
-                {"day": "day_of_week"},
-            ]
+            Value is one of "day", "hour" or "minutes" to categorize based on
+            number of days, hours of the minutes::
+
+                [
+                    "day"
+                ]
+
+            Array of dictionary customized column names are desired::
+
+                [
+                    {"day": "day_of_week"},
+                ]
         """
 
         self.duration_feature_name = duration_feature_name

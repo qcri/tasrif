@@ -25,13 +25,16 @@ class SequenceOperator(ProcessingOperator):
         Examples
         --------
 
-        >>> from tasrif.processing_pipeline import SequenceOperator, DropDuplicatesOperator, DropNAOperator
+        >>> from tasrif.processing_pipeline import SequenceOperator
+        >>> from tasrif.processing_pipeline.pandas import DropDuplicatesOperator, DropNAOperator
         >>> df = pd.DataFrame({"name": ['Alfred', 'Batman', 'Catwoman'],
-        >>>                  "toy": [np.nan, 'Batmobile', 'Bullwhip'],
-        >>>                  "born": [pd.NaT, pd.Timestamp("1940-04-25"),
-        >>>                           pd.NaT]})
+        ...                 "toy": [np.nan, 'Batmobile', 'Bullwhip'],
+        ...                 "born": [pd.NaT, pd.Timestamp("1940-04-25"),
+        ...                          pd.NaT]})
         >>> pipeline = SequenceOperator([DropDuplicatesOperator(), DropNAOperator()])
         >>> pipeline.process(df)
+        (     name        toy       born
+         1  Batman  Batmobile 1940-04-25,)
 
         """
         for operator in processing_operators:

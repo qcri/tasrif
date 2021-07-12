@@ -8,23 +8,30 @@ from tasrif.processing_pipeline import ProcessingOperator
 class ConvertToDatetimeOperator(ProcessingOperator):
     """
 
-      Converts a set of (string) features to datetime using Pandas ``to_datetime``
+    Converts a set of (string) features to datetime using Pandas ``to_datetime``
 
-      Examples
-      --------
+    Examples
+    --------
 
-      >>> import pandas as pd
-      >>> from tasrif.processing_pipeline.pandas import ConvertToDatetimeOperator
-      >>>
-      >>> df0 = pd.DataFrame([[1, "2020-05-01 00:00:00", 1], [1, "2020-05-01 01:00:00", 1],
-      >>>                     [1, "2020-05-01 03:00:00", 2], [2, "2020-05-02 00:00:00", 1],
-      >>>                     [2, "2020-05-02 01:00:00", 1]],
-      >>>                     columns=['logId', 'timestamp', 'sleep_level'])
-      >>>
-      >>> operator = ConvertToDatetime(feature_names=["timestamp"], utc=True)
-      >>> df0 = operator.process(df0)
-      >>>
-      >>> print(df0)
+    >>> import pandas as pd
+    >>> from tasrif.processing_pipeline.pandas import ConvertToDatetimeOperator
+    >>>
+    >>> df0 = pd.DataFrame([[1, "2020-05-01 00:00:00", 1], [1, "2020-05-01 01:00:00", 1],
+    >>>                     [1, "2020-05-01 03:00:00", 2], [2, "2020-05-02 00:00:00", 1],
+    >>>                     [2, "2020-05-02 01:00:00", 1]],
+    >>>                     columns=['logId', 'timestamp', 'sleep_level'])
+    >>>
+    >>> operator = ConvertToDatetime(feature_names=["timestamp"], utc=True)
+    >>> df0 = operator.process(df0)
+    >>>
+    >>> print(df0)
+    .   logId   timestamp   sleep_level
+    0   1   2020-05-01 00:00:00+00:00   1
+    1   1   2020-05-01 01:00:00+00:00   1
+    2   1   2020-05-01 03:00:00+00:00   2
+    3   2   2020-05-02 00:00:00+00:00   1
+    4   2   2020-05-02 01:00:00+00:00   1
+
     """
 
     def __init__(self, feature_names, **kwargs):
@@ -35,7 +42,7 @@ class ConvertToDatetimeOperator(ProcessingOperator):
         feature_names : str
             Name of the string columns that represent datetime objects
 
-        **kwargs:
+        \\*\\*kwargs:
           key word arguments passed to pandas ``to_datetime`` method
 
         """
