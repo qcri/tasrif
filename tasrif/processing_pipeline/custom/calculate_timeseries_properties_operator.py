@@ -6,7 +6,7 @@ from kats.consts import TimeSeriesData
 from kats.tsfeatures.tsfeatures import TsFeatures
 from tasrif.processing_pipeline import ProcessingOperator
 
-class ExtractTimeseriesFeaturesOperator(ProcessingOperator):
+class CalculateTimeseriesPropertiesOperator(ProcessingOperator):
     """
     This method extracts timeseries features from passed dataframe object
 
@@ -22,7 +22,6 @@ class ExtractTimeseriesFeaturesOperator(ProcessingOperator):
     >>> df['Steps'] = np.random.randint(1000,25000, size=len(df))
     >>> df['Calories'] = np.random.randint(1800,3000, size=len(df))
     >>> df
-
     Date    Steps   Calories
     2016-12-31  2016-12-31  14648   2926
     2017-01-01  2017-01-01  9320    2190
@@ -36,11 +35,9 @@ class ExtractTimeseriesFeaturesOperator(ProcessingOperator):
     2020-01-07  2020-01-07  5577    2821
     2020-01-08  2020-01-08  10435   1830
 
-
     >>> operator = ExtractTimeseriesFeaturesOperator(timeseries_column="Date", value_column='Steps')
     >>> features = operator.process(df)[0]
     >>> features
-
     {'length': 1104,
      'mean': 13024.617753623188,
      'var': 49311921.9535254,

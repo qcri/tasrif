@@ -17,7 +17,7 @@
 import numpy as np
 import pandas as pd
 
-from tasrif.processing_pipeline.custom import ExtractTimeseriesFeaturesOperator
+from tasrif.processing_pipeline.custom import CalculateTimeseriesPropertiesOperator
 
 
 dates = pd.date_range('2016-12-31', '2020-01-08', freq='D').to_series()
@@ -29,6 +29,8 @@ df['Calories'] = np.random.randint(1800,3000, size=len(df))
 
 df
 
-operator = ExtractTimeseriesFeaturesOperator(timeseries_column="Date", value_column='Steps')
+operator = CalculateTimeseriesPropertiesOperator(timeseries_column="Date", value_column='Steps')
 features = operator.process(df)[0]
 features
+
+
