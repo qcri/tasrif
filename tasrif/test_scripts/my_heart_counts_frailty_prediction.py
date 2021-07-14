@@ -19,19 +19,37 @@ from tasrif.data_readers.my_heart_counts import SixMinuteWalkActivityDataset, He
 from tasrif.processing_pipeline import ProcessingPipeline
 from tasrif.processing_pipeline.pandas import DropNAOperator, ConvertToDatetimeOperator, DropFeaturesOperator, \
                                               SetIndexOperator, PivotResetColumnsOperator, ConcatOperator, \
-                                              MergeOperator, AsTypeOperator
-from tasrif.processing_pipeline.custom import CreateFeatureOperator, AggregateOperator, FilterOperator, IterateCsvOperator
+                                              MergeOperator, AsTypeOperator, JsonNormalizeOperator
+from tasrif.processing_pipeline.custom import CreateFeatureOperator, AggregateOperator, FilterOperator, \
+                                              IterateCsvOperator, IterateJsonOperator
 import warnings
 warnings.filterwarnings("ignore")
 
 # %%
 # Extract SixMinuteWalkActivity step count for each participant.
 smwa_file_path = os.environ['MYHEARTCOUNTS_SIXMINUTEWALKACTIVITY_PATH']
+json_folder_path = os.environ['MYHEARTCOUNTS_SIXMINUTEWALKACTIVITY_JSON_FOLDER_PATH']
+
+json_pipeline = ProcessingPipeline([
+    JsonNormalizeOperator()
+])
+
+smwa_pipeline = ProcessingPipeline([
+    SixMinuteWalkActivityDataset(smwa_file_path),
+    CreateFeatureOperator(
+        feature_name='file_name',
+        # The json filename has an extra '.0' appended to it.
+        feature_creator=lambda df: str(df['pedometer_fitness.walk.items'])[:-2]),
+    IterateJsonOperator(
+        folder_path=json_folder_path,
+        field='file_name',
+        pipeline=json_pipeline),
+])
 
 smwa = SixMinuteWalkActivityDataset(smwa_file_path)
 participant_smwa_steps = { 'healthCode': [], 'smwaSteps': [] }
 
-for row, smwa_data in smwa.processed_dataframe()[0]:
+for row, smwa_data in smwa_pipeline.process()[0]:
     if smwa_data is None:
         continue
     participant_smwa_steps['healthCode'].append(row.healthCode)
@@ -70,9 +88,10 @@ csv_pipeline = ProcessingPipeline([
                 aggregation_definition={'value': 'sum'}),
             SetIndexOperator('Date'),
             PivotResetColumnsOperator(level=1, columns='type')
-        ])
+])
 
-pipeline = ProcessingPipeline([
+hkd_pipeline = ProcessingPipeline([
+            HealthKitDataDataset(hkd_file_path),
             CreateFeatureOperator(
                 feature_name='file_name',
                 feature_creator=lambda df: str(df['data.csv'])),
@@ -80,12 +99,11 @@ pipeline = ProcessingPipeline([
                 folder_path=csv_folder_path,
                 field='file_name',
                 pipeline=csv_pipeline),
-        ])
+])
 
 # Append healthCode to each processed dataframe
-hkd = HealthKitDataDataset(hkd_file_path, pipeline)
 participant_daily_steps = []
-for row, hkd_data in hkd.processed_dataframe()[0]:
+for row, hkd_data in hkd_pipeline.process()[0]:
     if hkd_data is None:
         continue
     hkd_data['healthCode'] = hkd_data.apply(lambda df: row.healthCode, axis=1)

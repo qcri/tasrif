@@ -19,17 +19,10 @@
 import os
 from tasrif.data_readers.my_heart_counts import PARQSurveyDataset
 
-
 # %%
 parq_file_path = os.environ['MYHEARTCOUNTS_PARQSURVEY_PATH']
 
 # %%
 parq = PARQSurveyDataset(parq_file_path)
 # %%
-parq.raw_dataframe()
-
-# %%
-parq.processed_dataframe()
-
-# %%
-parq.participant_count()
+parq.process()[0]

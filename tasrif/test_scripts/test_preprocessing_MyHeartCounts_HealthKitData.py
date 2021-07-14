@@ -19,13 +19,5 @@ from tasrif.data_readers.my_heart_counts import HealthKitDataDataset
 
 hkd_file_path = os.environ['MYHEARTCOUNTS_HEALTHKITDATA_PATH']
 hkd = HealthKitDataDataset(hkd_file_path)
-record, df = next(hkd.processed_df[0])
 
-# %%
-hkd.raw_df
-
-# %%
-record
-
-# %%
-df
+hkd.process()[0]
