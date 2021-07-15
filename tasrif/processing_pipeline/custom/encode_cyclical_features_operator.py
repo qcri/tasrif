@@ -45,25 +45,24 @@ class EncodeCyclicalFeaturesOperator(ProcessingOperator):
     def __init__(self, date_feature_name="date", category_definition='hour'):
         """Creates a new instance of EncodeCyclicalFeaturesOperator
 
-        Parameters
-        ----------
-        date_feature_name : str
-            Name of the feature to identify related timestamp series
-        category_definition : str or array of str or dict
-            Value is one of "day", "month" to categorize based on
-            day of the week, month of the year or hijri month
-            Array of these values if multiple categorizations are desired.::
+        Args:
+            date_feature_name : str
+                Name of the feature to identify related timestamp series
+            category_definition : str or array of str or dict
+                Value is one of "day", "month" to categorize based on
+                day of the week, month of the year or hijri month
+                Array of these values if multiple categorizations are desired.::
 
-                [
-                    "days", "month"
-                ]
+                    [
+                        "days", "month"
+                    ]
 
-            Array of dictionary customized column names are desired::
+                Array of dictionary customized column names are desired::
 
-                [
-                    {"days": "day_of_week"},
-                    {"month", "calendar_month}
-                ]
+                    [
+                        {"days": "day_of_week"},
+                        {"month", "calendar_month}
+                    ]
         """
 
         self.date_feature_name = date_feature_name
@@ -72,10 +71,13 @@ class EncodeCyclicalFeaturesOperator(ProcessingOperator):
     def process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.
 
-        Returns
-        -------
-        pd.DataFrame -or- list[pd.DataFrame]
-            Processed dataframe(s) resulting from applying the operator
+        Args:
+            *data_frames (list of pd.DataFrame):
+              Variable number of pandas dataframes to be processed
+
+        Returns:
+            pd.DataFrame -or- list[pd.DataFrame]
+                Processed dataframe(s) resulting from applying the operator
         """
 
         processed = []

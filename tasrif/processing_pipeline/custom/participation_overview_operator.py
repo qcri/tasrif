@@ -83,18 +83,17 @@ class ParticipationOverviewOperator(ProcessingOperator):
                  filter_features=None):
         """Creates a new instance of ParticipationOverviewOperator
 
-        Parameters
-        ----------
-        participant_identifier : str
-            Name of the feature identifying the participant
-        date_feature_name : dict
-            Name of the feature identifying the date
-        overview_type : str
-            Type of overview which can take one of the two values  `participant_vs_features` or `date_vs_features`
-        filter_features: dict(str->func)
-            Dictionary of column/feature name to (lambda) function providing a selection clause.
-            Note that if a column or feature name is omitted
-            then a default selection of non-zero or non-empty values is applied.
+        Args:
+            participant_identifier (str):
+                Name of the feature identifying the participant
+            date_feature_name (str):
+                Name of the feature identifying the date
+            overview_type (str):
+                Type of overview which can take one of the two values  `participant_vs_features` or `date_vs_features`
+            filter_features (dict):
+                Dictionary of column/feature name to (lambda) function providing a selection clause.
+                Note that if a column or feature name is omitted
+                then a default selection of non-zero or non-empty values is applied.
 
         """
         self.participant_identifier = participant_identifier
@@ -105,10 +104,16 @@ class ParticipationOverviewOperator(ProcessingOperator):
     def process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.
 
-        Returns
-        -------
-        pd.DataFrame -or- list[pd.DataFrame]
-            Processed dataframe(s) resulting from applying the operator
+        Args:
+            *data_frames (list of pd.DataFrame):
+              Variable number of pandas dataframes to be processed
+
+        Returns:
+            pd.DataFrame -or- list[pd.DataFrame]
+                Processed dataframe(s) resulting from applying the operator
+
+        Raises:
+            ValueError: unknown `self.overview_type`.
         """
 
         if self.overview_type == "date_vs_features":

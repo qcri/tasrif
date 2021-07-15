@@ -26,10 +26,10 @@ class WithingsDataset:
     def processed_dataframe(self):  # pylint: disable=no-self-use
         """Gets the processed data frame (after applying the data pipeline) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return None
 
@@ -94,14 +94,13 @@ class WithingsSleepDataset(WithingsDataset):
     def __init__(self, folder, processing_pipeline=None):
         """Initializes an interday dataset reader with the input parameters.
 
-        Parameters
-        ----------
-        file: str
-            Path to the fitbit export folder containing withings data.
+        Args:
+            folder (str):
+                Path to the fitbit export folder containing withings data.
+            processing_pipeline (ProcessingPipeline):
+                The processing pipeline to be applied on the extracted data.
+                If no pipeline is passed, uses Default.PIPELINE set in the class.
 
-        processing_pipeline: ProcessingPipeline
-            The processing pipeline to be applied on the extracted data.
-            If no pipeline is passed, uses Default.PIPELINE set in the class.
         """
         self.folder = folder
         self.processing_pipeline = processing_pipeline if processing_pipeline else self.Default.PIPELINE
@@ -120,20 +119,20 @@ class WithingsSleepDataset(WithingsDataset):
     def raw_dataframe(self):
         """Gets the data frame (without any processing) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.raw_df
 
     def processed_dataframe(self):
         """Gets the processed data frame (after applying the data pipeline) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.processed_df
 
@@ -156,15 +155,15 @@ class WithingsStepsIntradayDataset(WithingsDataset):
     def __init__(self, folder, processing_pipeline=None):
         """Initializes an interday dataset reader with the input parameters.
 
-        Parameters
-        ----------
-        file: str
-            Path to the fitbit export folder containing withings data.
+        Args:
+            folder (str):
+                Path to the fitbit export folder containing withings data.
+            processing_pipeline (ProcessingPipeline):
+                The processing pipeline to be applied on the extracted data.
+                If no pipeline is passed, uses Default.PIPELINE set in the class.
 
-        processing_pipeline: ProcessingPipeline
-            The processing pipeline to be applied on the extracted data.
-            If no pipeline is passed, uses Default.PIPELINE set in the class.
         """
+
         self.folder = folder
         self.processing_pipeline = processing_pipeline if processing_pipeline else self.Default.PIPELINE
 
@@ -185,20 +184,20 @@ class WithingsStepsIntradayDataset(WithingsDataset):
     def raw_dataframe(self):
         """Gets the data frame (without any processing) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.raw_df
 
     def processed_dataframe(self):
         """Gets the processed data frame (after applying the data pipeline) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.processed_df
 
@@ -221,15 +220,15 @@ class WithingsVerticalRadiusIntradayDataset(WithingsDataset):
     def __init__(self, folder, processing_pipeline=None):
         """Initializes an interday dataset reader with the input parameters.
 
-        Parameters
-        ----------
-        file: str
-            Path to the fitbit export folder containing withings data.
+        Args:
+            folder (str):
+                Path to the fitbit export folder containing withings data.
+            processing_pipeline (ProcessingPipeline):
+                The processing pipeline to be applied on the extracted data.
+                If no pipeline is passed, uses Default.PIPELINE set in the class.
 
-        processing_pipeline: ProcessingPipeline
-            The processing pipeline to be applied on the extracted data.
-            If no pipeline is passed, uses Default.PIPELINE set in the class.
         """
+
         self.folder = folder
         self.processing_pipeline = processing_pipeline if processing_pipeline else self.Default.PIPELINE
 
@@ -250,20 +249,20 @@ class WithingsVerticalRadiusIntradayDataset(WithingsDataset):
     def raw_dataframe(self):
         """Gets the data frame (without any processing) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.raw_df
 
     def processed_dataframe(self):
         """Gets the processed data frame (after applying the data pipeline) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.processed_df
 
@@ -286,15 +285,15 @@ class WithingsSleepStateIntradayDataset(WithingsDataset):
     def __init__(self, folder, processing_pipeline=None):
         """Initializes an interday dataset reader with the input parameters.
 
-        Parameters
-        ----------
-        file: str
-            Path to the fitbit export folder containing withings data.
+        Args:
+            folder (str):
+                Path to the fitbit export folder containing withings data.
+            processing_pipeline (ProcessingPipeline):
+                The processing pipeline to be applied on the extracted data.
+                If no pipeline is passed, uses Default.PIPELINE set in the class.
 
-        processing_pipeline: ProcessingPipeline
-            The processing pipeline to be applied on the extracted data.
-            If no pipeline is passed, uses Default.PIPELINE set in the class.
         """
+
         self.folder = folder
         self.processing_pipeline = processing_pipeline if processing_pipeline else self.Default.PIPELINE
 
@@ -315,20 +314,20 @@ class WithingsSleepStateIntradayDataset(WithingsDataset):
     def raw_dataframe(self):
         """Gets the data frame (without any processing) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.raw_df
 
     def processed_dataframe(self):
         """Gets the processed data frame (after applying the data pipeline) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.processed_df
 
@@ -351,15 +350,15 @@ class WithingsQualityScoreIntradayDataset(WithingsDataset):
     def __init__(self, folder, processing_pipeline=None):
         """Initializes an interday dataset reader with the input parameters.
 
-        Parameters
-        ----------
-        file: str
-            Path to the fitbit export folder containing withings data.
+        Args:
+            folder (str):
+                Path to the fitbit export folder containing withings data.
+            processing_pipeline (ProcessingPipeline):
+                The processing pipeline to be applied on the extracted data.
+                If no pipeline is passed, uses Default.PIPELINE set in the class.
 
-        processing_pipeline: ProcessingPipeline
-            The processing pipeline to be applied on the extracted data.
-            If no pipeline is passed, uses Default.PIPELINE set in the class.
         """
+
         self.folder = folder
         self.processing_pipeline = processing_pipeline if processing_pipeline else self.Default.PIPELINE
 
@@ -380,20 +379,20 @@ class WithingsQualityScoreIntradayDataset(WithingsDataset):
     def raw_dataframe(self):
         """Gets the data frame (without any processing) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.raw_df
 
     def processed_dataframe(self):
         """Gets the processed data frame (after applying the data pipeline) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.processed_df
 
@@ -416,15 +415,15 @@ class WithingsLapPoolIntradayDataset(WithingsDataset):
     def __init__(self, folder, processing_pipeline=None):
         """Initializes an interday dataset reader with the input parameters.
 
-        Parameters
-        ----------
-        file: str
-            Path to the fitbit export folder containing withings data.
+        Args:
+            folder (str):
+                Path to the fitbit export folder containing withings data.
+            processing_pipeline (ProcessingPipeline):
+                The processing pipeline to be applied on the extracted data.
+                If no pipeline is passed, uses Default.PIPELINE set in the class.
 
-        processing_pipeline: ProcessingPipeline
-            The processing pipeline to be applied on the extracted data.
-            If no pipeline is passed, uses Default.PIPELINE set in the class.
         """
+
         self.folder = folder
         self.processing_pipeline = processing_pipeline if processing_pipeline else self.Default.PIPELINE
 
@@ -445,20 +444,20 @@ class WithingsLapPoolIntradayDataset(WithingsDataset):
     def raw_dataframe(self):
         """Gets the data frame (without any processing) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.raw_df
 
     def processed_dataframe(self):
         """Gets the processed data frame (after applying the data pipeline) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.processed_df
 
@@ -481,15 +480,15 @@ class WithingsHeartRateIntradayDataset(WithingsDataset):
     def __init__(self, folder, processing_pipeline=None):
         """Initializes an interday dataset reader with the input parameters.
 
-        Parameters
-        ----------
-        file: str
-            Path to the fitbit export folder containing withings data.
+        Args:
+            folder (str):
+                Path to the fitbit export folder containing withings data.
+            processing_pipeline (ProcessingPipeline):
+                The processing pipeline to be applied on the extracted data.
+                If no pipeline is passed, uses Default.PIPELINE set in the class.
 
-        processing_pipeline: ProcessingPipeline
-            The processing pipeline to be applied on the extracted data.
-            If no pipeline is passed, uses Default.PIPELINE set in the class.
         """
+
         self.folder = folder
         self.processing_pipeline = processing_pipeline if processing_pipeline else self.Default.PIPELINE
 
@@ -510,20 +509,20 @@ class WithingsHeartRateIntradayDataset(WithingsDataset):
     def raw_dataframe(self):
         """Gets the data frame (without any processing) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.raw_df
 
     def processed_dataframe(self):
         """Gets the processed data frame (after applying the data pipeline) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.processed_df
 
@@ -546,15 +545,15 @@ class WithingsHorizontalRadiusIntradayDataset(WithingsDataset):
     def __init__(self, folder, processing_pipeline=None):
         """Initializes an interday dataset reader with the input parameters.
 
-        Parameters
-        ----------
-        file: str
-            Path to the fitbit export folder containing withings data.
+        Args:
+            folder (str):
+                Path to the fitbit export folder containing withings data.
+            processing_pipeline (ProcessingPipeline):
+                The processing pipeline to be applied on the extracted data.
+                If no pipeline is passed, uses Default.PIPELINE set in the class.
 
-        processing_pipeline: ProcessingPipeline
-            The processing pipeline to be applied on the extracted data.
-            If no pipeline is passed, uses Default.PIPELINE set in the class.
         """
+
         self.folder = folder
         self.processing_pipeline = processing_pipeline if processing_pipeline else self.Default.PIPELINE
 
@@ -575,20 +574,20 @@ class WithingsHorizontalRadiusIntradayDataset(WithingsDataset):
     def raw_dataframe(self):
         """Gets the data frame (without any processing) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.raw_df
 
     def processed_dataframe(self):
         """Gets the processed data frame (after applying the data pipeline) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.processed_df
 
@@ -611,15 +610,15 @@ class WithingsGPSSpeedIntradayDataset(WithingsDataset):
     def __init__(self, folder, processing_pipeline=None):
         """Initializes an interday dataset reader with the input parameters.
 
-        Parameters
-        ----------
-        file: str
-            Path to the fitbit export folder containing withings data.
+        Args:
+            folder (str):
+                Path to the fitbit export folder containing withings data.
+            processing_pipeline (ProcessingPipeline):
+                The processing pipeline to be applied on the extracted data.
+                If no pipeline is passed, uses Default.PIPELINE set in the class.
 
-        processing_pipeline: ProcessingPipeline
-            The processing pipeline to be applied on the extracted data.
-            If no pipeline is passed, uses Default.PIPELINE set in the class.
         """
+
         self.folder = folder
         self.processing_pipeline = processing_pipeline if processing_pipeline else self.Default.PIPELINE
 
@@ -640,20 +639,20 @@ class WithingsGPSSpeedIntradayDataset(WithingsDataset):
     def raw_dataframe(self):
         """Gets the data frame (without any processing) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.raw_df
 
     def processed_dataframe(self):
         """Gets the processed data frame (after applying the data pipeline) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.processed_df
 
@@ -676,15 +675,15 @@ class WithingsElevationIntradayDataset(WithingsDataset):
     def __init__(self, folder, processing_pipeline=None):
         """Initializes an interday dataset reader with the input parameters.
 
-        Parameters
-        ----------
-        file: str
-            Path to the fitbit export folder containing withings data.
+        Args:
+            folder (str):
+                Path to the fitbit export folder containing withings data.
+            processing_pipeline (ProcessingPipeline):
+                The processing pipeline to be applied on the extracted data.
+                If no pipeline is passed, uses Default.PIPELINE set in the class.
 
-        processing_pipeline: ProcessingPipeline
-            The processing pipeline to be applied on the extracted data.
-            If no pipeline is passed, uses Default.PIPELINE set in the class.
         """
+
         self.folder = folder
         self.processing_pipeline = processing_pipeline if processing_pipeline else self.Default.PIPELINE
 
@@ -705,20 +704,20 @@ class WithingsElevationIntradayDataset(WithingsDataset):
     def raw_dataframe(self):
         """Gets the data frame (without any processing) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.raw_df
 
     def processed_dataframe(self):
         """Gets the processed data frame (after applying the data pipeline) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.processed_df
 
@@ -741,15 +740,15 @@ class WithingsDistanceIntradayDataset(WithingsDataset):
     def __init__(self, folder, processing_pipeline=None):
         """Initializes an interday dataset reader with the input parameters.
 
-        Parameters
-        ----------
-        file: str
-            Path to the fitbit export folder containing withings data.
+        Args:
+            folder (str):
+                Path to the fitbit export folder containing withings data.
+            processing_pipeline (ProcessingPipeline):
+                The processing pipeline to be applied on the extracted data.
+                If no pipeline is passed, uses Default.PIPELINE set in the class.
 
-        processing_pipeline: ProcessingPipeline
-            The processing pipeline to be applied on the extracted data.
-            If no pipeline is passed, uses Default.PIPELINE set in the class.
         """
+
         self.folder = folder
         self.processing_pipeline = processing_pipeline if processing_pipeline else self.Default.PIPELINE
 
@@ -770,20 +769,20 @@ class WithingsDistanceIntradayDataset(WithingsDataset):
     def raw_dataframe(self):
         """Gets the data frame (without any processing) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.raw_df
 
     def processed_dataframe(self):
         """Gets the processed data frame (after applying the data pipeline) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.processed_df
 
@@ -806,15 +805,15 @@ class WithingsDurationIntradayDataset(WithingsDataset):
     def __init__(self, folder, processing_pipeline=None):
         """Initializes an interday dataset reader with the input parameters.
 
-        Parameters
-        ----------
-        file: str
-            Path to the fitbit export folder containing withings data.
+        Args:
+            folder (str):
+                Path to the fitbit export folder containing withings data.
+            processing_pipeline (ProcessingPipeline):
+                The processing pipeline to be applied on the extracted data.
+                If no pipeline is passed, uses Default.PIPELINE set in the class.
 
-        processing_pipeline: ProcessingPipeline
-            The processing pipeline to be applied on the extracted data.
-            If no pipeline is passed, uses Default.PIPELINE set in the class.
         """
+
         self.folder = folder
         self.processing_pipeline = processing_pipeline if processing_pipeline else self.Default.PIPELINE
 
@@ -835,20 +834,20 @@ class WithingsDurationIntradayDataset(WithingsDataset):
     def raw_dataframe(self):
         """Gets the data frame (without any processing) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.raw_df
 
     def processed_dataframe(self):
         """Gets the processed data frame (after applying the data pipeline) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.processed_df
 
@@ -871,15 +870,15 @@ class WithingsCaloriesIntradayDataset(WithingsDataset):
     def __init__(self, folder, processing_pipeline=None):
         """Initializes an interday dataset reader with the input parameters.
 
-        Parameters
-        ----------
-        file: str
-            Path to the fitbit export folder containing withings data.
+        Args:
+            folder (str):
+                Path to the fitbit export folder containing withings data.
+            processing_pipeline (ProcessingPipeline):
+                The processing pipeline to be applied on the extracted data.
+                If no pipeline is passed, uses Default.PIPELINE set in the class.
 
-        processing_pipeline: ProcessingPipeline
-            The processing pipeline to be applied on the extracted data.
-            If no pipeline is passed, uses Default.PIPELINE set in the class.
         """
+
         self.folder = folder
         self.processing_pipeline = processing_pipeline if processing_pipeline else self.Default.PIPELINE
 
@@ -900,20 +899,20 @@ class WithingsCaloriesIntradayDataset(WithingsDataset):
     def raw_dataframe(self):
         """Gets the data frame (without any processing) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.raw_df
 
     def processed_dataframe(self):
         """Gets the processed data frame (after applying the data pipeline) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.processed_df
 
@@ -936,15 +935,15 @@ class WithingsSPO2IntradayDataset(WithingsDataset):
     def __init__(self, folder, processing_pipeline=None):
         """Initializes an interday dataset reader with the input parameters.
 
-        Parameters
-        ----------
-        file: str
-            Path to the fitbit export folder containing withings data.
+        Args:
+            folder (str):
+                Path to the fitbit export folder containing withings data.
+            processing_pipeline (ProcessingPipeline):
+                The processing pipeline to be applied on the extracted data.
+                If no pipeline is passed, uses Default.PIPELINE set in the class.
 
-        processing_pipeline: ProcessingPipeline
-            The processing pipeline to be applied on the extracted data.
-            If no pipeline is passed, uses Default.PIPELINE set in the class.
         """
+
         self.folder = folder
         self.processing_pipeline = processing_pipeline if processing_pipeline else self.Default.PIPELINE
 
@@ -965,20 +964,20 @@ class WithingsSPO2IntradayDataset(WithingsDataset):
     def raw_dataframe(self):
         """Gets the data frame (without any processing) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.raw_df
 
     def processed_dataframe(self):
         """Gets the processed data frame (after applying the data pipeline) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.processed_df
 
@@ -1001,15 +1000,15 @@ class WithingsAltitudeIntradayDataset(WithingsDataset):
     def __init__(self, folder, processing_pipeline=None):
         """Initializes an interday dataset reader with the input parameters.
 
-        Parameters
-        ----------
-        file: str
-            Path to the fitbit export folder containing withings data.
+        Args:
+            folder (str):
+                Path to the fitbit export folder containing withings data.
+            processing_pipeline (ProcessingPipeline):
+                The processing pipeline to be applied on the extracted data.
+                If no pipeline is passed, uses Default.PIPELINE set in the class.
 
-        processing_pipeline: ProcessingPipeline
-            The processing pipeline to be applied on the extracted data.
-            If no pipeline is passed, uses Default.PIPELINE set in the class.
         """
+
         self.folder = folder
         self.processing_pipeline = processing_pipeline if processing_pipeline else self.Default.PIPELINE
 
@@ -1030,20 +1029,20 @@ class WithingsAltitudeIntradayDataset(WithingsDataset):
     def raw_dataframe(self):
         """Gets the data frame (without any processing) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.raw_df
 
     def processed_dataframe(self):
         """Gets the processed data frame (after applying the data pipeline) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.processed_df
 
@@ -1068,15 +1067,15 @@ class WithingsLatLongIntradayDataset(WithingsDataset):
     def __init__(self, folder, processing_pipeline=None):
         """Initializes an interday dataset reader with the input parameters.
 
-        Parameters
-        ----------
-        file: str
-            Path to the fitbit export folder containing withings data.
+        Args:
+            folder (str):
+                Path to the fitbit export folder containing withings data.
+            processing_pipeline (ProcessingPipeline):
+                The processing pipeline to be applied on the extracted data.
+                If no pipeline is passed, uses Default.PIPELINE set in the class.
 
-        processing_pipeline: ProcessingPipeline
-            The processing pipeline to be applied on the extracted data.
-            If no pipeline is passed, uses Default.PIPELINE set in the class.
         """
+
         self.folder = folder
         self.processing_pipeline = processing_pipeline if processing_pipeline else self.Default.PIPELINE
 
@@ -1125,20 +1124,20 @@ class WithingsLatLongIntradayDataset(WithingsDataset):
     def raw_dataframe(self):
         """Gets the data frame (without any processing) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.raw_df
 
     def processed_dataframe(self):
         """Gets the processed data frame (after applying the data pipeline) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.processed_df
 
@@ -1161,15 +1160,15 @@ class WithingsWeightDataset:
     def __init__(self, folder, processing_pipeline=None):
         """Initializes an interday dataset reader with the input parameters.
 
-        Parameters
-        ----------
-        file: str
-            Path to the fitbit export folder containing withings data.
+        Args:
+            folder (str):
+                Path to the fitbit export folder containing withings data.
+            processing_pipeline (ProcessingPipeline):
+                The processing pipeline to be applied on the extracted data.
+                If no pipeline is passed, uses Default.PIPELINE set in the class.
 
-        processing_pipeline: ProcessingPipeline
-            The processing pipeline to be applied on the extracted data.
-            If no pipeline is passed, uses Default.PIPELINE set in the class.
         """
+
         self.folder = folder
         self.processing_pipeline = processing_pipeline if processing_pipeline else self.Default.PIPELINE
 
@@ -1188,20 +1187,20 @@ class WithingsWeightDataset:
     def raw_dataframe(self):
         """Gets the data frame (without any processing) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.raw_df
 
     def processed_dataframe(self):
         """Gets the processed data frame (after applying the data pipeline) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.processed_df
 
@@ -1225,15 +1224,15 @@ class WithingsBPDataset:
     def __init__(self, folder, processing_pipeline=None):
         """Initializes an interday dataset reader with the input parameters.
 
-        Parameters
-        ----------
-        file: str
-            Path to the fitbit export folder containing withings data.
+        Args:
+            folder (str):
+                Path to the fitbit export folder containing withings data.
+            processing_pipeline (ProcessingPipeline):
+                The processing pipeline to be applied on the extracted data.
+                If no pipeline is passed, uses Default.PIPELINE set in the class.
 
-        processing_pipeline: ProcessingPipeline
-            The processing pipeline to be applied on the extracted data.
-            If no pipeline is passed, uses Default.PIPELINE set in the class.
         """
+
         self.folder = folder
         self.processing_pipeline = processing_pipeline if processing_pipeline else self.Default.PIPELINE
 
@@ -1252,20 +1251,20 @@ class WithingsBPDataset:
     def raw_dataframe(self):
         """Gets the data frame (without any processing) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.raw_df
 
     def processed_dataframe(self):
         """Gets the processed data frame (after applying the data pipeline) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.processed_df
 
@@ -1288,15 +1287,15 @@ class WithingsHeightDataset:
     def __init__(self, folder, processing_pipeline=None):
         """Initializes an interday dataset reader with the input parameters.
 
-        Parameters
-        ----------
-        file: str
-            Path to the fitbit export folder containing withings data.
+        Args:
+            folder (str):
+                Path to the fitbit export folder containing withings data.
+            processing_pipeline (ProcessingPipeline):
+                The processing pipeline to be applied on the extracted data.
+                If no pipeline is passed, uses Default.PIPELINE set in the class.
 
-        processing_pipeline: ProcessingPipeline
-            The processing pipeline to be applied on the extracted data.
-            If no pipeline is passed, uses Default.PIPELINE set in the class.
         """
+
         self.folder = folder
         self.processing_pipeline = processing_pipeline if processing_pipeline else self.Default.PIPELINE
 
@@ -1324,20 +1323,20 @@ class WithingsHeightDataset:
     def raw_dataframe(self):
         """Gets the data frame (without any processing) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.raw_df
 
     def processed_dataframe(self):
         """Gets the processed data frame (after applying the data pipeline) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.processed_df
 
@@ -1359,15 +1358,15 @@ class WithingsActivitiesDataset:
     def __init__(self, folder, processing_pipeline=None):
         """Initializes an interday dataset reader with the input parameters.
 
-        Parameters
-        ----------
-        file: str
-            Path to the fitbit export folder containing withings data.
+        Args:
+            folder (str):
+                Path to the fitbit export folder containing withings data.
+            processing_pipeline (ProcessingPipeline):
+                The processing pipeline to be applied on the extracted data.
+                If no pipeline is passed, uses Default.PIPELINE set in the class.
 
-        processing_pipeline: ProcessingPipeline
-            The processing pipeline to be applied on the extracted data.
-            If no pipeline is passed, uses Default.PIPELINE set in the class.
         """
+
         self.folder = folder
         self.processing_pipeline = processing_pipeline if processing_pipeline else self.Default.PIPELINE
 
@@ -1401,19 +1400,19 @@ class WithingsActivitiesDataset:
     def raw_dataframe(self):
         """Gets the data frame (without any processing) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.raw_df
 
     def processed_dataframe(self):
         """Gets the processed data frame (after applying the data pipeline) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.processed_df

@@ -26,5 +26,14 @@ class NoopOperator(ProcessingOperator):
 
     def process(self, *args): #pylint: disable=no-self-use
         """This function returned the received input without any changes (unmutated).
+
+        Args:
+            *args (list[pd.DataFrame]):
+                list of dataframes
+
+        Returns:
+            args (list[pd.DataFrame]):
+                the same input without change
+
         """
         return args

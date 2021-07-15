@@ -36,17 +36,26 @@ class PivotResetColumnsOperator(ProcessingOperator):
         3	2020-05-02 00:00:00	    2.0	    1.0
         4	2020-05-02 01:00:00	    NaN	    1.0
 
-        Parameters
-        ----------
-        level: int or str
-            Either the integer position or the name of the level to reset the columns to.
-
-        \\*\\*kwargs: Arguments to pandas pivot function
+        Args:
+            level (int or str):
+                Either the integer position or the name of the level to reset the columns to.
+            **kwargs: Arguments to pandas pivot function
         """
         self.level = level
         self.kwargs = kwargs
 
     def process(self, *data_frames):
+        """Processes the passed data frame as per the configuration define in the constructor.
+
+        Args:
+            *data_frames (list of pd.DataFrame):
+              Variable number of pandas dataframes to be processed
+
+        Returns:
+            pd.DataFrame -or- list[pd.DataFrame]
+                Processed dataframe(s) resulting from applying the operator
+        """
+
         processed = []
 
         for data_frame in data_frames:

@@ -36,8 +36,9 @@ class DropIndexDuplicatesOperator(ProcessingOperator):
         """
         Initializes the operator
 
-        \\*\\*kwargs:
-          key word arguments passed to pandas DataFrame.drop_duplicates method
+        Args:
+            keep ('first', 'last', False): The value or values in a set of duplicates to mark as missing.
+
         """
         self.keep = keep
         super().__init__()
@@ -46,13 +47,14 @@ class DropIndexDuplicatesOperator(ProcessingOperator):
         """Process the passed data using the processing configuration specified
         in the constructor
 
-        data_frames:
-          Variable number of pandas dataframes to be processed
 
-        Returns
-        -------
-        data_frames
-            Processed data frames
+        Args:
+            *data_frames (list of pd.DataFrame):
+              Variable number of pandas dataframes to be processed
+
+        Returns:
+            data_frames
+                Processed data frames
         """
 
         processed = []

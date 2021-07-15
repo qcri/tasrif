@@ -32,10 +32,8 @@ class FitbitIntradayDataset:
     def processed_dataframe(self):  # pylint: disable=no-self-use
         """Gets the processed data frame (after applying the data pipeline) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            None
         """
         return None
 
@@ -114,10 +112,10 @@ class FitbitSleepDataset(FitbitIntradayDataset):
     def raw_dataframe(self):
         """Gets the data frame (without any processing) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
 
         return self.raw_df
@@ -125,10 +123,10 @@ class FitbitSleepDataset(FitbitIntradayDataset):
     def processed_dataframe(self):
         """Gets the processed data frame (after applying the data pipeline) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.processed_df
 
@@ -159,20 +157,20 @@ class FitbitPhysicalActivityDataset(FitbitIntradayDataset):
     def raw_dataframe(self):
         """Gets the data frame (without any processing) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.raw_df
 
     def processed_dataframe(self):
         """Gets the processed data frame (after applying the data pipeline) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.processed_df
 
@@ -435,9 +433,9 @@ class FitbitIntradayCompositeDataset:
     def processed_dataframe(self):
         """Gets the processed data frame (after applying the data pipeline) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.processed_df

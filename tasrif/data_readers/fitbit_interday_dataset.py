@@ -23,14 +23,13 @@ class FitbitInterdayDataset:
     def __init__(self, folder, processing_pipeline=None):
         """Initializes an interday dataset reader with the input parameters.
 
-        Parameters
-        ----------
-        file: str
-            Path to the fitbit export folder containing interday data.
+        Args:
+            folder (str):
+                Path to the fitbit export folder containing interday data.
+            processing_pipeline (ProcessingPipeline):
+                The processing pipeline to be applied on the extracted data.
+                If no pipeline is passed, uses Default.PIPELINE set in the class.
 
-        processing_pipeline: ProcessingPipeline
-            The processing pipeline to be applied on the extracted data.
-            If no pipeline is passed, uses Default.PIPELINE set in the class.
         """
         self.folder = folder
         self.processing_pipeline = processing_pipeline if processing_pipeline else self.Default.PIPELINE
@@ -50,10 +49,14 @@ class FitbitInterdayDataset:
     def _extract_data_from_table(self, file_name):
         """Extracts the table data from the interday dump. Requires 'table_name' attribute to be set.
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object corresponding to the raw data.
+        Args:
+            file_name (str):
+                name of the file
+
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object corresponding to the raw data.
+
         """
         found = False
         table_start_line = None
@@ -83,21 +86,22 @@ class FitbitInterdayDataset:
     def raw_dataframe(self):
         """Gets the data frame (without any processing) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.raw_df
 
     def processed_dataframe(self):  #pylint: disable=no-self-use
         """Gets the processed data frame (after applying the data pipeline) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
+
         return self.processed_df
 
 
@@ -213,6 +217,14 @@ class FitbitFoodLogDataset(FitbitInterdayDataset):
             "","Sodium","0 mg"
             "","Protein","0 g"
             "","Water","0 ml"
+
+        Args:
+            file_name (str):
+                name of the file
+
+        Returns:
+            pd.DataFrame
+
         """
         num_measurements_in_entry = 7
         food_log_entries = []

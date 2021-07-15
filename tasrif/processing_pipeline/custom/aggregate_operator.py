@@ -37,12 +37,12 @@ class AggregateOperator(ProcessingOperator):
     def __init__(self, groupby_feature_names, aggregation_definition):
         """Creates a new instance of AggregateOperator
 
-        Parameters
-        ----------
-        groupby_feature_names : str
-            Name of the feature to base the grouping on
-        aggregation_definition : dict
-            Dictionary containing feature to aggregation functions mapping.
+        Args:
+            groupby_feature_names (str):
+                Name of the feature to base the grouping on
+            aggregation_definition (dict):
+                Dictionary containing feature to aggregation functions mapping.
+
         """
         self.groupby_feature_names = groupby_feature_names
         self.aggregation_definition = aggregation_definition
@@ -50,10 +50,14 @@ class AggregateOperator(ProcessingOperator):
     def process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.
 
-        Returns
-        -------
-        pd.DataFrame -or- list[pd.DataFrame]
-            Processed dataframe(s) resulting from applying the operator
+        Args:
+            *data_frames (list of pd.DataFrame):
+              Variable number of pandas dataframes to be processed
+
+        Returns:
+            pd.DataFrame -or- list[pd.DataFrame]
+                Processed dataframe(s) resulting from applying the operator
+
         """
 
         columns = self.groupby_feature_names.copy() if isinstance(

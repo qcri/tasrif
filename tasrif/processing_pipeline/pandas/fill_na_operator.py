@@ -6,11 +6,6 @@ from tasrif.processing_pipeline import ProcessingOperator
 
 class FillNAOperator(ProcessingOperator):
     """
-    Parameters
-    ----------
-
-    Raises
-    ------
 
     Examples
     --------
@@ -39,8 +34,9 @@ class FillNAOperator(ProcessingOperator):
         """
         Initializes the operator
 
-        \\*\\*kwargs:
-          key word arguments passed to pandas DataFrame.dropna method
+        Args:
+            **kwargs:
+              key word arguments passed to pandas DataFrame.dropna method
         """
         self.kwargs = kwargs
         super().__init__()
@@ -49,13 +45,13 @@ class FillNAOperator(ProcessingOperator):
         """Process the passed data using the processing configuration specified
         in the constructor
 
-        data_frames:
-          Variable number of pandas dataframes to be processed
+        Args:
+            *data_frames (list of pd.DataFrame):
+              Variable number of pandas dataframes to be processed
 
-        Returns
-        -------
-        data_frames
-            Processed data frames
+        Returns:
+            data_frames
+                Processed data frames
         """
 
         processed = []

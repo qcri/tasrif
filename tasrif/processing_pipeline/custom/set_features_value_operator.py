@@ -74,12 +74,14 @@ class SetFeaturesValueOperator(ProcessingOperator):
     def __init__(self, features: list = None, selector: callable = None, value=None):
         """Creates a new instance of CreateFeatureOperator
 
-        Parameters
-        ----------
-        features : list
-            list of features to select
-        conditions : lambda function that result in pandas row indexing dataframe
-        (a dataframe of trues and falses), see example.
+        Args:
+            features (list):
+                list of features to select
+            selector (callable):
+                lambda function that result in pandas row indexing dataframe
+                (a dataframe of trues and falses), see example.
+            value (int, optional):
+                value to replace the selected rows.
         """
         self.features = features
         self.selector = selector
@@ -89,10 +91,13 @@ class SetFeaturesValueOperator(ProcessingOperator):
     def process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.
 
-        Returns
-        -------
-        pd.DataFrame -or- list[pd.DataFrame]
-            Processed dataframe(s) resulting from applying the operator
+        Args:
+            *data_frames (list of pd.DataFrame):
+              Variable number of pandas dataframes to be processed
+
+        Returns:
+            pd.DataFrame -or- list[pd.DataFrame]
+                Processed dataframe(s) resulting from applying the operator
         """
 
         self.raw_data_frames = data_frames

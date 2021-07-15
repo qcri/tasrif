@@ -12,12 +12,6 @@ class IterateCsvOperator(ProcessingOperator):
     """
     Operator that returns a Generator: one record per call.
 
-    Returns
-    -------
-    int
-    dataframe that represents one record
-
-
     Example
     --------
 
@@ -82,15 +76,15 @@ class IterateCsvOperator(ProcessingOperator):
     def __init__(self, folder_path, field, pipeline: ProcessingPipeline = None):
         """Creates a new instance of IterateCsvOperator
 
-        Parameters
-        ----------
-        folder_path: str
-        	path to csv files
-        field: str
-        	column that contains the csv file names
-        pipeline : ProcessingPipeline
-        	pipeline to apply on dataframe record before yielding it
+        Args:
+            folder_path (str):
+                path to csv files
+            field (str):
+                column that contains the csv file names
+            pipeline (ProcessingPipeline):
+                pipeline to apply on dataframe record before yielding it
         """
+
         self.folder_path = pathlib.Path(folder_path)
         self.field = field
         self.pipeline = pipeline
@@ -110,11 +104,14 @@ class IterateCsvOperator(ProcessingOperator):
     def process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.
 
-        Returns
-        -------
-        Tuple of series, and a Generator.
-        The series is the record information (one row of data_frame).
-        The generator returns a dataframe per next() call.
+        Args:
+            *data_frames (list of pd.DataFrame):
+              Variable number of pandas dataframes to be processed
+
+        Returns:
+	        list: Tuple of series, and a Generator.
+	        		The series is the record information (one row of data_frame).
+	        		The generator returns a dataframe per next() call.
         """
         output = []
         for data_frame in data_frames:

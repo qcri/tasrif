@@ -55,20 +55,24 @@ class DistributedUpsampleOperator(ProcessingOperator):
     def __init__(self, rule):
         """Creates a new instance of ResampleOperator
 
-        Parameters
-        ----------
-        rule: ruleDateOffset, Timedelta or str
-            The offset string or object representing target conversion.
+        Args:
+            rule (ruleDateOffset, Timedelta, str):
+                The offset string or object representing target conversion.
+
         """
         self.rule = rule
 
     def process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.
 
-        Returns
-        -------
-        pd.DataFrame -or- list[pd.DataFrame]
-            Processed dataframe(s) resulting from applying the operator
+        Args:
+            *data_frames (list of pd.DataFrame):
+              Variable number of pandas dataframes to be processed
+
+        Returns:
+            pd.DataFrame -or- list[pd.DataFrame]
+                Processed dataframe(s) resulting from applying the operator
+
         """
 
         processed = []

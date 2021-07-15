@@ -47,14 +47,15 @@ class SetIndexOperator(ProcessingOperator):
     """
     def __init__(self, keys, **kwargs):
         """
-        Initializes the operator
+        Initializes the operator.
 
-        keys: This parameter can be either a single column key,
-        a single array of the same length as the calling DataFrame,
-        or a list containing an arbitrary combination of column keys and arrays
+        Args:
+            keys (str or list):
+                This parameter can be either a single column key,
+                a single array of the same length as the calling DataFrame,
+                or a list containing an arbitrary combination of column keys and arrays.
+            **kwargs: key word arguments passed to pandas DataFrame.dropna method
 
-        \\*\\*kwargs:
-          key word arguments passed to pandas DataFrame.dropna method
         """
         self.keys = keys
         self.kwargs = kwargs
@@ -64,13 +65,13 @@ class SetIndexOperator(ProcessingOperator):
         """Process the passed data using the processing configuration specified
         in the constructor
 
-        data_frames:
-          Variable number of arrays of python dictionaries (representing JSON data) to be processed
+        Args:
+            data_frames (list of pd.DataFrame):
+                Variable number of arrays of python dictionaries (representing JSON data) to be processed
 
-        Returns
-        -------
-        data_frames
-            Processed data frames
+        Returns:
+            data_frames (list of pd.DataFrame):
+                Resulting dataframes.
         """
 
         processed = []

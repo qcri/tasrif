@@ -37,12 +37,12 @@ class CreateFeatureOperator(ProcessingOperator):
     def __init__(self, feature_name, feature_creator):
         """Creates a new instance of CreateFeatureOperator
 
-        Parameters
-        ----------
-        feature_name : str
-            Name of the new feature
-        feature_creator : lambda
-            lambda operator defining how the new feature can be created from existing column features.
+        Args:
+            feature_name (str):
+                Name of the new feature
+            feature_creator (callable):
+                lambda operator defining how the new feature can be created from existing column features.
+
         """
         self.feature_name = feature_name
         self.feature_creator = feature_creator
@@ -51,10 +51,13 @@ class CreateFeatureOperator(ProcessingOperator):
     def process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.
 
-        Returns
-        -------
-        pd.DataFrame -or- list[pd.DataFrame]
-            Processed dataframe(s) resulting from applying the operator
+        Args:
+            *data_frames (list of pd.DataFrame):
+              Variable number of pandas dataframes to be processed
+
+        Returns:
+            pd.DataFrame -or- list[pd.DataFrame]
+                Processed dataframe(s) resulting from applying the operator
         """
         processed = []
         for data_frame in data_frames:

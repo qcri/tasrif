@@ -39,27 +39,30 @@ class NormalizeOperator(ProcessingOperator):
 
     """
     def __init__(self, columns='all', method='zscore', normalization_parameters=None):
-        """Creates a new instance of NormalizeOperator
+        """
+        Creates a new instance of NormalizeOperator
 
-        Parameters
-        ----------
-        columns: list or str
-            Columns in the given dataframe to normalize
-        method: str
-            The normalization method ('zscore', 'minmax', 'maxabs', 'robust') to be used
-        normalize_parameters : dict
-            - Dictionary containing parameters for a specific normalization.
-            Default normalization parameters are as follows:
+        Args:
+            columns (list, str):
+                Columns in the given dataframe to normalize
+            method (str):
+                The normalization method ('zscore', 'minmax', 'maxabs', 'robust') to be used
+            normalization_parameters (dict):
+                Dictionary containing parameters for a specific normalization.::
+                Default normalization parameters are as follows:
+                    - If method is ``zscore``
+                        ``normalization_params = {'with_mean': True, 'with_std': True}``
+                    - If method is ``minmax``
+                        ``normalization_params = {'feature_range': (0,1)}``
+                    - If method is ``maxabs``
+                        ``normalization_params = {}``
+                    - If method is ``robust``
+                        ``normalization_params = {'with_scaling': True, 'with_centering': True,
+                        'quantile_range':(25.0, 75.0), 'unit_variance': False}``
 
-            If method is 'zscore':
-                normalization_params = {'with_mean': True, 'with_std': True}
-            If method is 'minmax':
-                normalization_params = {'feature_range': (0,1)}
-            If method is 'maxabs':
-                normalization_params = {}
-            If method is 'robust':
-                normalization_params = {'with_scaling': True, 'with_centering': True,
-                                'quantile_range':(25.0, 75.0), 'unit_variance': False}
+        Raises:
+            ValueError: parameter method unknown.
+
         """
         self.columns = columns
         if not normalization_parameters:
@@ -80,10 +83,14 @@ class NormalizeOperator(ProcessingOperator):
     def process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.
 
-        Returns
-        -------
-        pd.DataFrame -or- list[pd.DataFrame]
-            Processed dataframe(s) resulting from applying the operator
+        Args:
+            *data_frames (list of pd.DataFrame):
+              Variable number of pandas dataframes to be processed
+
+        Returns:
+            pd.DataFrame -or- list[pd.DataFrame]
+                Processed dataframe(s) resulting from applying the operator
+
         """
 
         processed = []

@@ -109,22 +109,16 @@ class QCutOperator(ProcessingOperator):
     def __init__(self, cut_column_name, bin_column_name, quantile, **kwargs):
         """Initializes the operator
 
-        Parameters
-        ----------
-
-        cut_column_name : str
-            Name of the column to perform the cut operation on
-
-        bin_column_name : str
-            Name of the column representing the bins
-
-        quantile: int or list-like of float
-
-            Number of quantiles. 10 for deciles, 4 for quartiles, etc.
-            Alternately array of quantiles, e.g. [0, .25, .5, .75, 1.] for quartiles.
-
-        \\*\\*kwargs:
-          key word arguments passed to pandas ``cut`` method
+        Args:
+            cut_column_name (str):
+                Name of the column to perform the cut operation on
+            bin_column_name (str):
+                Name of the column representing the bins
+            quantile (int or list-like of float):
+                Number of quantiles. 10 for deciles, 4 for quartiles, etc.
+                Alternately array of quantiles, e.g. [0, .25, .5, .75, 1.] for quartiles.
+            **kwargs:
+              key word arguments passed to pandas ``cut`` method
 
         """
         self.cut_column_name = cut_column_name
@@ -136,10 +130,13 @@ class QCutOperator(ProcessingOperator):
     def process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.
 
-        Returns
-        -------
-        pd.DataFrame -or- list[pd.DataFrame]
-            Processed dataframe(s) resulting from applying the operator
+        Args:
+            *data_frames (list of pd.DataFrame):
+              Variable number of pandas dataframes to be processed
+
+        Returns:
+            pd.DataFrame -or- list[pd.DataFrame]
+                Processed dataframe(s) resulting from applying the operator
         """
 
         processed = []

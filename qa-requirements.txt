@@ -2,4 +2,4 @@
 pylint-plugin-utils==0.4
 pylint-junit==0.3.2
 pytest-cov==2.12.1
-
+darglint==1.8.0

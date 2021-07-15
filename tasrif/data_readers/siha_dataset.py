@@ -49,20 +49,20 @@ class SihaDataset:
     def raw_dataframe(self):
         """Gets the data frame (without any processing) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.raw_df
 
     def processed_dataframe(self):
         """Gets the processed data frame (after applying the data pipeline) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.processed_df
 
@@ -108,21 +108,20 @@ class SihaSleepDataset(SihaDataset):
     def raw_dataframe(self):
         """Gets the data frame (without any processing) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
-        """
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
 
+        """
         return self.raw_df
 
     def processed_dataframe(self):
         """Gets the processed data frame (after applying the data pipeline) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.processed_df
 

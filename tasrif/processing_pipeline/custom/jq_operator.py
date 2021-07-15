@@ -76,11 +76,10 @@ class JqOperator(ProcessingOperator):
     def __init__(self, expression):
         """Creates a new instance of ResampleOperator
 
-        Parameters
-        ----------
-        expression: String
-            JQ expression to process the incoming JSON datasets (see https://stedolan.github.io/jq/manual/) for
-            more details
+        Args:
+            expression (str):
+                JQ expression to process the incoming JSON datasets (see https://stedolan.github.io/jq/manual/) for
+                more details
         """
         self.expression = expression
 
@@ -88,10 +87,13 @@ class JqOperator(ProcessingOperator):
     def process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.
 
-        Returns
-        -------
-        pd.DataFrame -or- list[pd.DataFrame]
-            Processed dataframe(s) resulting from applying the operator
+        Args:
+            *data_frames (list of pd.DataFrame):
+              Variable number of pandas dataframes to be processed
+
+        Returns:
+            pd.DataFrame -or- list[pd.DataFrame]
+                Processed dataframe(s) resulting from applying the operator
         """
 
         processed = []

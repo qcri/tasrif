@@ -45,12 +45,14 @@ class AddDurationOperator(ProcessingOperator):
                  duration_feature_name="duration"):
         """Creates a new instance of AddDurationOperator
 
-        Parameters
-        ----------
-        groupby_feature_names : str
-            Name of the feature to identify related timestamp series
-        timestamp_feature_name : str
-            Name of the feature respresenting the timestamp
+        Args:
+            groupby_feature_names (str):
+                Name of the feature to identify related timestamp series
+            timestamp_feature_name (str):
+                Name of the feature respresenting the timestamp
+            duration_feature_name (str):
+                Name of the feature representing the duration
+
         """
         self.groupby_feature_names = groupby_feature_names
         self.timestamp_feature_name = timestamp_feature_name
@@ -59,10 +61,14 @@ class AddDurationOperator(ProcessingOperator):
     def process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.
 
-        Returns
-        -------
-        pd.DataFrame -or- list[pd.DataFrame]
-            Processed dataframe(s) resulting from applying the operator
+        Args:
+            *data_frames (list of pd.DataFrame):
+              Variable number of pandas dataframes to be processed
+
+        Returns:
+            pd.DataFrame -or- list[pd.DataFrame]
+                Processed dataframe(s) resulting from applying the operator
+
         """
 
         processed = []

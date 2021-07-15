@@ -9,12 +9,6 @@ class DropDuplicatesOperator(ProcessingOperator):
     """
     Remove duplicate rows from one or more dataframes.
 
-    Parameters
-    ----------
-
-    Raises
-    ------
-
     Examples
     --------
 
@@ -48,8 +42,9 @@ class DropDuplicatesOperator(ProcessingOperator):
         """
         Initializes the operator
 
-        \\*\\*kwargs:
-          key word arguments passed to pandas DataFrame.drop_duplicates method
+        Args:
+            **kwargs:
+              key word arguments passed to pandas DataFrame.drop_duplicates method
         """
         self.kwargs = kwargs
         super().__init__()
@@ -58,13 +53,13 @@ class DropDuplicatesOperator(ProcessingOperator):
         """Process the passed data using the processing configuration specified
         in the constructor
 
-        data_frames:
-          Variable number of pandas dataframes to be processed
+        Args:
+            *data_frames (list of pd.DataFrame):
+              Variable number of pandas dataframes to be processed
 
-        Returns
-        -------
-        data_frames
-            Processed data frames
+        Returns:
+            data_frames
+                Processed data frames
         """
 
         processed = []

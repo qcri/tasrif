@@ -72,23 +72,22 @@ class CategorizeDurationOperator(ProcessingOperator):
                  category_definition="minute"):
         """Creates a new instance of CategorizeDurationOperator
 
-        Parameters
-        ----------
-        duration_feature_name : str
-            Name of the feature to identify related time delta series
-        category_definition : str or array of str
-            Value is one of "day", "hour" or "minutes" to categorize based on
-            number of days, hours of the minutes::
+        Args:
+            duration_feature_name (str):
+                Name of the feature to identify related time delta series
+            category_definition (str, list[str]): str or array of str
+                Value is one of "day", "hour" or "minutes" to categorize based on
+                number of days, hours of the minutes::
 
-                [
-                    "day"
-                ]
+                    [
+                        "day"
+                    ]
 
-            Array of dictionary customized column names are desired::
+                Array of dictionary customized column names are desired::
 
-                [
-                    {"day": "day_of_week"},
-                ]
+                    [
+                        {"day": "day_of_week"},
+                    ]
         """
 
         self.duration_feature_name = duration_feature_name
@@ -97,10 +96,13 @@ class CategorizeDurationOperator(ProcessingOperator):
     def process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.
 
-        Returns
-        -------
-        pd.DataFrame -or- list[pd.DataFrame]
-            Processed dataframe(s) resulting from applying the operator
+        Args:
+            *data_frames (list of pd.DataFrame):
+              Variable number of pandas dataframes to be processed
+
+        Returns:
+            pd.DataFrame -or- list[pd.DataFrame]
+                Processed dataframe(s) resulting from applying the operator
         """
 
         processed = []

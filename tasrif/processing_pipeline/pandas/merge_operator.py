@@ -7,14 +7,8 @@ from tasrif.processing_pipeline import ProcessingOperator
 class MergeOperator(ProcessingOperator):
     """Merge different datasets based on Pandas merge method.
 
-    Parameters
-    ----------
-
-    Returns
-    -------
-
     Examples
-    ---------
+    --------
     >>> df1 = pd.DataFrame({'id': [1, 2, 3], 'colors': ['red', 'white', 'blue']})
     >>> df2 = pd.DataFrame({'id': [1, 2, 3], 'cities': ['Doha', 'Vienna', 'Belo Horizonte']})
     >>> merged = MergeOperator().process(df1, df2)
@@ -28,14 +22,9 @@ class MergeOperator(ProcessingOperator):
     def __init__(self, **kwargs):
         """Merge different datasets on a common feature defined by ``on``.
 
-        Parameters
-        ----------
-        data_frames:
-          Variable number of pandas dataframes to be processed
-
-        \\*\\*kwargs:
-          key word arguments passed to pandas DataFrame.merge method
-
+        Args:
+            **kwargs:
+              key word arguments passed to pandas DataFrame.merge method
 
         """
         self.kwargs = kwargs
@@ -44,10 +33,13 @@ class MergeOperator(ProcessingOperator):
     def process(self, *data_frames):
         """Merge multiple datasets on a common feature defined on the constructor method.
 
-        Returns
-        -------
-        data_frame
-            One processed data frame resulting on the merge of several input data frames.
+        Args:
+            *data_frames (list of pd.DataFrame):
+              Variable number of pandas dataframes to be processed
+
+        Returns:
+            data_frame (pd.DataFrame):
+                One processed data frame resulting on the merge of several input data frames.
         """
         if len(data_frames) < 2:
             return data_frames

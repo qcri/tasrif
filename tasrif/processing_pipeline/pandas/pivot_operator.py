@@ -35,9 +35,8 @@ class PivotOperator(ProcessingOperator):
     def __init__(self, **kwargs):
         """Creates a new instance of PivotOperator
 
-        Parameters
-        ----------
-        \\*\\*kwargs: Arguments to pandas pivot function
+        Args:
+            **kwargs: Arguments to pandas pivot function
 
         """
         self.kwargs = kwargs
@@ -46,10 +45,13 @@ class PivotOperator(ProcessingOperator):
     def process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.
 
-        Returns
-        -------
-        pd.DataFrame -or- list[pd.DataFrame]
-            Processed dataframe(s) resulting from applying the operator
+        Args:
+            *data_frames (list of pd.DataFrame):
+              Variable number of pandas dataframes to be processed
+
+        Returns:
+            pd.DataFrame -or- list[pd.DataFrame]
+                Processed dataframe(s) resulting from applying the operator
         """
 
 

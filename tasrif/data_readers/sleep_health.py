@@ -48,9 +48,6 @@ from tasrif.processing_pipeline.custom import (
 class AboutMeDataset:
     """Provides access to the AboutMe dataset
 
-    Returns
-    -------
-    Instance of AboutMeDataset
     """
 
     processed_df = None
@@ -112,6 +109,12 @@ class AboutMeDataset:
 
         The default final dataset size is 3019.
 
+        Args:
+            amd_file_path (str):
+                path to the dataset
+            pipeline (ProcessingPipeline):
+                pipeline to apply on the dataset
+
         """
 
         self.raw_df = pd.read_csv(amd_file_path)
@@ -122,30 +125,31 @@ class AboutMeDataset:
     def participant_count(self):
         """Get the number of participants
 
-        Returns
-        -------
-        int
-            Number of participants in the dataset
+        Returns:
+            int
+                Number of participants in the dataset
+
         """
+
         return self.raw_df["participantId"].nunique()
 
     def raw_dataframe(self):
         """Gets the data frame (without any processing) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.raw_df
 
     def processed_dataframe(self):
         """Gets the processed data frame (after applying the data pipeline) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.processed_df
 
@@ -157,9 +161,6 @@ class AboutMeDataset:
 class SleepQualityCheckerDataset:
     """Provides access to the SleepQualityChecker dataset
 
-    Returns
-    -------
-    Instance of SleepQualityCheckerDataset
     """
     def __init__(
         self,
@@ -202,6 +203,12 @@ class SleepQualityCheckerDataset:
             - The default pipeline groups multiple entries for different`participantId` into one row per participant
               and multiple column with statistics for the sleep quality score (`sq_score`) of each participant.
 
+        Args:
+            sqc_file_path (str):
+                path to the dataset
+            pipeline (ProcessingPipeline):
+                pipeline to apply on the dataset
+
         """
 
         self.raw_df = pd.read_csv(sqc_file_path)
@@ -213,30 +220,30 @@ class SleepQualityCheckerDataset:
     def participant_count(self):
         """Get the number of participants
 
-        Returns
-        -------
-        int
-            Number of participants in the dataset
+        Returns:
+            int
+                Number of participants in the dataset
+
         """
         return self.raw_df["participantId"].nunique()
 
     def raw_dataframe(self):
         """Gets the data frame (without any processing) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.raw_df
 
     def processed_dataframe(self):
         """Gets the processed data frame (after applying the data pipeline) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.processed_df
 
@@ -275,6 +282,14 @@ class OnboardingDemographicsDataset:
                 2.(d) height_inches: 337 (4.1%)
 
         The final dataset size after removing all NAs is 7558 (retaining 93% of the original dataset).
+
+        Args:
+            obd_file_path (str):
+                path to the dataset
+            pipeline (ProcessingPipeline):
+                pipeline to apply on the dataset
+
+
         """
         self.raw_df = pd.read_csv(obd_file_path)
         self.processed_df = self.raw_df.copy()
@@ -284,30 +299,31 @@ class OnboardingDemographicsDataset:
     def participant_count(self):
         """Get the number of participants
 
-        Returns
-        -------
-        int
-            Number of participants in the dataset
+        Returns:
+            int
+                Number of participants in the dataset
+
         """
+
         return self.raw_df["participantId"].nunique()
 
     def raw_dataframe(self):
         """Gets the data frame (without any processing) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.raw_df
 
     def processed_dataframe(self):
         """Gets the processed data frame (after applying the data pipeline) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.processed_df
 
@@ -401,6 +417,13 @@ class SleepHabitDataset:
                 Accumulatively, this step removes 192 rows (5.8% of the original number of rows).
             4. One hot encode categorical features.
 
+        Args:
+            shd_file_path (str):
+                path to the dataset
+            pipeline (ProcessingPipeline):
+                pipeline to apply on the dataset
+
+
         """
         self.raw_df = pd.read_csv(shd_file_path)
         self.processed_df = self.raw_df.copy()
@@ -410,30 +433,31 @@ class SleepHabitDataset:
     def participant_count(self):
         """Get the number of participants
 
-        Returns
-        -------
-        int
-            Number of participants in the dataset
+        Returns:
+            int
+                Number of participants in the dataset
+
         """
+
         return self.raw_df["participantId"].nunique()
 
     def raw_dataframe(self):
         """Gets the data frame (without any processing) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.raw_df
 
     def processed_dataframe(self):
         """Gets the processed data frame (after applying the data pipeline) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.processed_df
 
@@ -512,6 +536,14 @@ class MyFamilyDataset:
                questionnaire AND included the option "prefer not to answer" as well.
 
         Final dataset shape after default preprocessing pipeline: (2695, 21)
+
+        Args:
+            mf_file_path (str):
+                path to the dataset
+            pipeline (ProcessingPipeline):
+                pipeline to apply on the dataset
+
+
         """
         self.raw_df = pd.read_csv(mf_file_path)
         self.processed_df = self.raw_df.copy()
@@ -521,30 +553,31 @@ class MyFamilyDataset:
     def participant_count(self):
         """Get the number of participants
 
-        Returns
-        -------
-        int
-            Number of participants in the dataset
+        Returns:
+            int
+                Number of participants in the dataset
+
         """
+
         return self.raw_df["participantId"].nunique()
 
     def raw_dataframe(self):
         """Gets the data frame (without any processing) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.raw_df
 
     def processed_dataframe(self):
         """Gets the processed data frame (after applying the data pipeline) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.processed_df
 
@@ -811,6 +844,14 @@ class MyHealthDataset:
             4. One hot encode the general health questions
 
         Final dataset shape after default preprocessing pipeline is (1445, 160)
+
+        Args:
+            mh_file_path (str):
+                path to the dataset
+            pipeline (ProcessingPipeline):
+                pipeline to apply on the dataset
+
+
         """
         self.raw_df = pd.read_csv(mh_file_path)
         self.processed_df = self.raw_df.copy()
@@ -820,30 +861,31 @@ class MyHealthDataset:
     def participant_count(self):
         """Get the number of participants
 
-        Returns
-        -------
-        int
-            Number of participants in the dataset
+        Returns:
+            int
+                Number of participants in the dataset
+
         """
+
         return self.raw_df["participantId"].nunique()
 
     def raw_dataframe(self):
         """Gets the data frame (without any processing) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.raw_df
 
     def processed_dataframe(self):
         """Gets the processed data frame (after applying the data pipeline) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.processed_df
 
@@ -918,6 +960,14 @@ class ResearchInterestDataset:
             4. One hot encode categorical features.
 
         Final dataset shape after default preprocessing pipeline: (2072, 21)
+
+        Args:
+            ri_file_path (str):
+                path to the dataset
+            pipeline (ProcessingPipeline):
+                pipeline to apply on the dataset
+
+
         """
         self.raw_df = pd.read_csv(ri_file_path)
         self.processed_df = self.raw_df.copy()
@@ -927,30 +977,31 @@ class ResearchInterestDataset:
     def participant_count(self):
         """Get the number of participants
 
-        Returns
-        -------
-        int
-            Number of participants in the dataset
+        Returns:
+            int
+                Number of participants in the dataset
+
         """
+
         return self.raw_df["participantId"].nunique()
 
     def raw_dataframe(self):
         """Gets the data frame (without any processing) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.raw_df
 
     def processed_dataframe(self):
         """Gets the processed data frame (after applying the data pipeline) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.processed_df
 
@@ -1087,6 +1138,14 @@ class SleepAssessmentDataset:
             (5) Dataset contains one string column ('told_by_doctor_specify'), with text that was not preprocessed.
 
         Final dataset shape after default preprocessing pipeline: (2123, 83)
+
+        Args:
+            sa_file_path (str):
+                path to the dataset
+            pipeline (ProcessingPipeline):
+                pipeline to apply on the dataset
+
+
         """
         full_path = pathlib.Path(sa_file_path)
         self.raw_df = pd.read_csv(full_path)
@@ -1097,30 +1156,31 @@ class SleepAssessmentDataset:
     def participant_count(self):
         """Get the number of participants
 
-        Returns
-        -------
-        int
-            Number of participants in the dataset
+        Returns:
+            int
+                Number of participants in the dataset
+
         """
+
         return self.raw_df["participantId"].nunique()
 
     def raw_dataframe(self):
         """Gets the data frame (without any processing) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.raw_df
 
     def processed_dataframe(self):
         """Gets the processed data frame (after applying the data pipeline) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
         return self.processed_df
 
@@ -1168,27 +1228,27 @@ class AMCheckinDataset:
     ):
         """
         Column description:
-        participant_id  string
-            Unique participant identification   n/a
-        AMCH1   datetime
-            Response to 'What time did you try to go to sleep?'
-            (local time with timezone information)  n/a
-        AMCH2     boolean
-            Response to 'Did you have trouble falling asleep?'  TRUE/FALSE
-        AMCH2A*   numeric
-            Response to 'How long would you say it took you to fall asleep in minutes?' n/a
-        AMCH3*    numeric
-            Response to 'How many times did you wake up while sleeping
-            (Do not include final awakening)'
-        AMCH3A*   numeric
-            Response to 'How long in total were you awake overnight?
-            Enter total time you believe you were awake in minutes.' n/a
-        AMCH4     datetime
-            Response to 'What time did you wake up today?' (local time with timezone information)
-        AMCH-5*   numeric
-            Response to 'About how many minutes did you sleep last night?'  n/a
-        timestamp datetime
-            Date & time of survey completion (local time with timezone information)
+            - ``participant_id``  string
+                Unique participant identification   n/a
+            - ``AMCH1``   datetime
+                Response to 'What time did you try to go to sleep?'
+                (local time with timezone information)  n/a
+            - ``AMCH2``     boolean
+                Response to 'Did you have trouble falling asleep?'  TRUE/FALSE
+            - ``AMCH2A\\*``   numeric
+                Response to 'How long would you say it took you to fall asleep in minutes?' n/a
+            - ``AMCH3\\*``    numeric
+                Response to 'How many times did you wake up while sleeping
+                (Do not include final awakening)'
+            - ``AMCH3A\\*``   numeric
+                Response to 'How long in total were you awake overnight?
+                Enter total time you believe you were awake in minutes.' n/a
+            - ``AMCH4``     datetime
+                Response to 'What time did you wake up today?' (local time with timezone information)
+            - ``AMCH-5\\*``   numeric
+                Response to 'About how many minutes did you sleep last night?'  n/a
+            - ``timestamp`` datetime
+                Date & time of survey completion (local time with timezone information)
 
 
         Some important stats:
@@ -1202,6 +1262,13 @@ class AMCheckinDataset:
          - ``AMCH4`` has 377 NAs ( 49103 / 49480 ) = 0.76 %
          - ``AMCH5`` has 12761 NAs ( 36719 / 49480 ) = 25.79 %
          - ``timestamp`` has 0 NAs ( 49480 / 49480 ) = 0.00 %
+
+        Args:
+            amc_file_path (str):
+                path to the dataset
+            pipeline (ProcessingPipeline):
+                pipeline to apply on the dataset
+
         """
 
         self.processed_df = pd.read_csv(amc_file_path)
@@ -1212,21 +1279,22 @@ class AMCheckinDataset:
     def participant_count(self):
         """Get the number of participants
 
-        Returns
-        -------
-        int
-            Number of participants in the dataset
+        Returns:
+            int
+                Number of participants in the dataset
+
         """
+
         number_participants = self.raw_df["participantId"].nunique()
         return number_participants
 
     def raw_dataframe(self):
         """Gets the data frame (without any processing) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
 
         return self.raw_df
@@ -1234,10 +1302,10 @@ class AMCheckinDataset:
     def processed_dataframe(self):
         """Gets the processed data frame (after applying the data pipeline) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
 
         return self.processed_df
@@ -1245,10 +1313,6 @@ class AMCheckinDataset:
     def _process(self):
         """Gets the processed data frame (after applying the data pipeline) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
         """
 
         if self.pipeline:
@@ -1291,26 +1355,26 @@ class PMCheckinDataset:
     ):
         """
         Column description:
-        participant_id  string
-            Unique participant identification   n/a
-        alcohol*   numeric
-            Response to 'How many alcoholic beverages did you consume today?'
-        caffeine*     numeric
-            Response to 'How many caffeinated beverages did you consume today?'
-        NapCount   categorical
-            Response to 'How many times did you nap or doze today?'
-            0=None,1=Once,2=Twice,3=Three times of more
-        PMCH1    categorical
-            Response to 'How difficult was it for you to stay awake today?'
-            1=Very difficult,2=Somewhat difficult,3=Not difficult
-        PMCH2A*   numeric
-                Response to 'In total, how long did you nap or doze today?
-                (Enter estimated time in minutes)'
-        PMCH3     categorical
-            Response to 'Did you consume any of the folowing today?'
-            0=None of the above,1=Caffeine,10=Alcohol,100=Medication
-        timestamp datetime
-            Date & time of survey completion (local time with timezone information)
+            - ``participant_id``  string
+                Unique participant identification   n/a
+            - ``alcohol*``   numeric
+                Response to 'How many alcoholic beverages did you consume today?'
+            - ``caffeine\\*``     numeric
+                Response to 'How many caffeinated beverages did you consume today?'
+            - ``NapCount``   categorical
+                Response to 'How many times did you nap or doze today?'
+                0=None,1=Once,2=Twice,3=Three times of more
+            - ``PMCH1``    categorical
+                Response to 'How difficult was it for you to stay awake today?'
+                1=Very difficult,2=Somewhat difficult,3=Not difficult
+            - ``PMCH2A\\*``   numeric
+                    Response to 'In total, how long did you nap or doze today?
+                    (Enter estimated time in minutes)'
+            - ``PMCH3``     categorical
+                Response to 'Did you consume any of the folowing today?'
+                0=None of the above,1=Caffeine,10=Alcohol,100=Medication
+            - ``timestamp`` datetime
+                Date & time of survey completion (local time with timezone information)
 
 
         Some important stats:
@@ -1324,6 +1388,13 @@ class PMCheckinDataset:
             - ``alcohol`` has 0 NAs ( 27380 / 27380 ) = 0.00 %
             - ``caffeine`` has 0 NAs ( 27380 / 27380 ) = 0.00 %
 
+        Args:
+            pmc_file_path (str):
+                path to the dataset
+            pipeline (ProcessingPipeline):
+                pipeline to apply on the dataset
+
+
         """
 
         self.processed_df = pd.read_csv(pmc_file_path)
@@ -1334,21 +1405,22 @@ class PMCheckinDataset:
     def participant_count(self):
         """Get the number of participants
 
-        Returns
-        -------
-        int
-            Number of participants in the dataset
+        Returns:
+            int
+                Number of participants in the dataset
+
         """
+
         number_participants = self.raw_df["participantId"].nunique()
         return number_participants
 
     def raw_dataframe(self):
         """Gets the data frame (without any processing) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
 
         return self.raw_df
@@ -1356,10 +1428,10 @@ class PMCheckinDataset:
     def processed_dataframe(self):
         """Gets the processed data frame (after applying the data pipeline) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
+
         """
 
         return self.processed_df

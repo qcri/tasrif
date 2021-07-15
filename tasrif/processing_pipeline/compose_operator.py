@@ -12,15 +12,12 @@ class ComposeOperator(ProcessingOperator):
     def __init__(self, processing_operators):
         """Constructs a compose operator from a list of operators
 
-        Parameters
-        ----------
-        processing_operators : list[ProcessingOperator]
-            Python list of processing operators
+        Args:
+            processing_operators : list[ProcessingOperator]
+                Python list of processing operators
 
-        Raises
-        ------
-        ValueError
-            Occurs when one of the objects in the specified list is not a ProcessingOperator
+        Raises:
+            ValueError: Occurs when one of the objects in the specified list is not a ProcessingOperator
 
         Examples
         --------
@@ -55,6 +52,15 @@ class ComposeOperator(ProcessingOperator):
         """Processes a list of processing operators. Input of an operator is received from the
         previous operator. The input for the first operator is passed to this function.
         The final result is the output of the final operation in the chain.
+
+        Args:
+            *args (list of ProcessingOperator):
+                Variable number of ProcessingOperator to be applied on a dataframe
+
+        Returns:
+            output (list[pd.DataFrame]):
+                processed dataframes
+
         """
         output = []
         for operator in self.processing_operators:

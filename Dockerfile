@@ -20,5 +20,7 @@ RUN pip install -e .
 
 COPY run-prospector.sh /home
 COPY run-pylint.sh /home
+COPY run-darglint.sh /home
 
 COPY / /home
+RUN ["chmod", "+x", "/home/run-darglint.sh"]

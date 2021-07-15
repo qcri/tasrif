@@ -7,11 +7,6 @@ from tasrif.processing_pipeline import ProcessingOperator
 
 class ResetIndexOperator(ProcessingOperator):
     """
-    Parameters
-    ----------
-
-    Raises
-    ------
 
     Examples
     --------
@@ -60,8 +55,9 @@ class ResetIndexOperator(ProcessingOperator):
         """
         Initializes the operator
 
-        \\*\\*kwargs:
-          key word arguments passed to pandas DataFrame.reset_index method
+        Args:
+            **kwargs:
+              key word arguments passed to pandas DataFrame.reset_index method
         """
 
         self.kwargs = kwargs
@@ -71,13 +67,13 @@ class ResetIndexOperator(ProcessingOperator):
         """Process the passed data using the processing configuration specified
         in the constructor
 
-        data_frames:
-          Variable number of arrays of python dictionaries (representing JSON data) to be processed
+        Args:
+            *data_frames (list of pd.DataFrame):
+                Variable number of arrays of python dictionaries (representing JSON data) to be processed
 
-        Returns
-        -------
-        data_frames
-            Processed data frames
+        Returns:
+            data_frames (list of pd.DataFrame)
+                Processed data frames
         """
 
         processed = []

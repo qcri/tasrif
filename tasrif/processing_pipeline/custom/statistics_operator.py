@@ -51,16 +51,15 @@ class StatisticsOperator(ProcessingOperator):
         ):
         """Creates a new instance of StatisticsOperator
 
-        Parameters
-        ----------
-        participant_identifier : str
-            Name of the feature identifying the participant
-        date_feature_name : dict
-            Name of the feature identifying the date
-        filter_features: dict(str->func)
-            Dictionary of column/feature name to (lambda) function providing a selection clause.
-            Note that if a column or feature name is omitted then a default
-            selection of non-zero or non-empty values is applied.
+        Args:
+            participant_identifier (str):
+                Name of the feature identifying the participant
+            date_feature_name (str):
+                Name of the feature identifying the date
+            filter_features (dict):
+                Dictionary of column/feature name to (lambda) function providing a selection clause.
+                Note that if a column or feature name is omitted then a default
+                selection of non-zero or non-empty values is applied.
         """
         self.participant_identifier = participant_identifier
         self.date_feature_name = date_feature_name
@@ -69,10 +68,13 @@ class StatisticsOperator(ProcessingOperator):
     def process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.
 
-        Returns
-        -------
-        pd.DataFrame -or- list[pd.DataFrame]
-            Processed dataframe(s) resulting from applying the operator
+        Args:
+            *data_frames (list of pd.DataFrame):
+              Variable number of pandas dataframes to be processed
+
+        Returns:
+            pd.DataFrame -or- list[pd.DataFrame]
+                Processed dataframe(s) resulting from applying the operator
         """
 
         result = []

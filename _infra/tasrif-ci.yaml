@@ -125,4 +125,26 @@ stages:
           publishRunAttachments: true
           testRunTitle: 'Notebook tests'
         condition: succeededOrFailed()
+    - job: RunDarglint
+      displayName: Run darglint
+      steps:
+      - checkout: none # No need, docker run will pull the image
+      - task: Docker@2
+        displayName: 'Run darglint'
+        inputs:
+          command: run # Docker@2 can take direct docker commands as input
+          containerRegistry: tasrif-acr
+          arguments: >-
+            -v $(System.DefaultWorkingDirectory)/darglint:/home/darglint
+            qcriswtasrif.azurecr.io/$(Build.Repository.Name):$(Build.BuildId)
+            /home/run-darglint.sh
+      - task: PublishTestResults@2
+        displayName: 'Publish darglint results'
+        inputs:
+          testResultsFormat: 'Junit'
+          testResultsFiles: '**/*.xml'
+          searchFolder: '$(System.DefaultWorkingDirectory)/darglint'
+          publishRunAttachments: true
+          testRunTitle: 'Darglint'
+        condition: succeededOrFailed()
 

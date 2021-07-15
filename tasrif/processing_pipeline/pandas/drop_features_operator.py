@@ -7,16 +7,6 @@ from tasrif.processing_pipeline import ProcessingOperator
 class DropFeaturesOperator(ProcessingOperator):
     """
 
-      Parameters
-      ----------
-
-      Raises
-      ------
-      ValueError
-          Occurs when one of the objects in drop_features is not a column within
-          \\*data_frames
-
-
       Examples
       --------
 
@@ -52,8 +42,10 @@ class DropFeaturesOperator(ProcessingOperator):
         """
         Initializes the operator
 
-        drop_features:
-          features (columns) to drop from each dataframe
+        Args:
+            drop_features:
+              features (columns) to drop from each dataframe
+
         """
         self.drop_features = drop_features
         super().__init__()
@@ -65,10 +57,18 @@ class DropFeaturesOperator(ProcessingOperator):
         """Process the passed data using the processing configuration specified
         in the constructor
 
-        Returns
-        -------
-        data_frames
-            Processed data frames
+        Args:
+            *data_frames (list of pd.DataFrame):
+              Variable number of pandas dataframes to be processed
+
+        Returns:
+            data_frames
+                Processed data frames
+
+        Raises:
+            ValueError: Occurs when one of the objects in drop_features is not a column within
+                *data_frames
+
         """
 
         processed = []

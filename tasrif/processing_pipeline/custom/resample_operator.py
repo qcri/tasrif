@@ -38,13 +38,12 @@ class ResampleOperator(ProcessingOperator):
     def __init__(self, rule, aggregation_definition):
         """Creates a new instance of ResampleOperator
 
-        Parameters
-        ----------
-        rule: ruleDateOffset, Timedelta or str
-            The offset string or object representing target conversion.
-        aggregation_definition : dict or str
-            - Dictionary containing feature to aggregation functions mapping.
-            - function defining the aggregation behavior ('sum', 'mean', 'ffill', etc.)
+        Args:
+            rule (ruleDateOffset, Timedelta, str):
+                The offset string or object representing target conversion.
+            aggregation_definition (dict, str):
+                - Dictionary containing feature to aggregation functions mapping.
+                - function defining the aggregation behavior ('sum', 'mean', 'ffill', etc.)
         """
         self.rule = rule
         self.aggregation_definition = aggregation_definition
@@ -52,10 +51,13 @@ class ResampleOperator(ProcessingOperator):
     def process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.
 
-        Returns
-        -------
-        pd.DataFrame -or- list[pd.DataFrame]
-            Processed dataframe(s) resulting from applying the operator
+        Args:
+            *data_frames (list of pd.DataFrame):
+              Variable number of pandas dataframes to be processed
+
+        Returns:
+            pd.DataFrame -or- list[pd.DataFrame]
+                Processed dataframe(s) resulting from applying the operator
         """
 
         processed = []

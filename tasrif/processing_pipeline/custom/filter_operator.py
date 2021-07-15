@@ -78,16 +78,17 @@ class FilterOperator(ProcessingOperator):
         """
         Initializes the operator
 
-        participant_id_column:
-          patient identifier column
-        ts_column
-            time series column
-        epoch_filter
-            row filter
-        day_filter
-            filter the days per patient
-        filter_type
-            include the filtered epochs, and days, or exclude them.
+        Args:
+            participant_id_column (str):
+              patient identifier column
+            ts_column (str):
+                time series column
+            epoch_filter (str, callable):
+                row filter
+            day_filter (str, callable):
+                filter the days per patient
+            filter_type (str):
+                include the filtered epochs, and days, or exclude them.
         """
 
         self.participant_id_column = participant_id_column
@@ -100,27 +101,36 @@ class FilterOperator(ProcessingOperator):
         """Process the passed data using the processing configuration specified
         in the constructor
 
-        data_frames:
-          Variable number of pandas dataframes to be processed
+        Args:
+            *data_frames (list of pd.DataFrame):
+              Variable number of pandas dataframes to be processed
 
-        Returns
-        -------
-        data_frames
-            Processed data frames
+        Returns:
+            data_frames
+                Processed data frames
         """
 
         processed = []
 
         for data_frame in data_frames:
             processed_df = None
-            processed_df = self.process_epoch(data_frame)
-            processed_df = self.process_day(processed_df)
+            processed_df = self._process_epoch(data_frame)
+            processed_df = self._process_day(processed_df)
             processed.append(processed_df)
 
         return processed
 
-    def process_epoch(self, data_frame):
+    def _process_epoch(self, data_frame):
         """ filters rows based on self.epoch_filter
+
+        Args:
+            data_frame (pd.DataFrame):
+                pandas dataframes to be filtered by row.
+
+        Returns:
+            processed_df (pd.DataFrame):
+                filtered pandas DataFrame
+
         """
         if isinstance(self.epoch_filter, str):
             if self.filter_type == "include":
@@ -135,8 +145,17 @@ class FilterOperator(ProcessingOperator):
 
         return processed_df
 
-    def process_day(self, processed_df):
+    def _process_day(self, processed_df):
         """ filters patient days based on self.day_filter
+
+        Args:
+            processed_df (pd.DataFrame):
+                Pandas DataFrame that has been filtered by `_process_epoch`
+
+        Returns:
+            processed_df (pd.DataFrame):
+                filtered dataframe by dat
+
         """
         if self.day_filter:
 
@@ -154,7 +173,7 @@ class FilterOperator(ProcessingOperator):
 
                 if ('consecutive_days'
                         in self.day_filter) and not processed_df.empty:
-                    processed_df = self.consecutive_days_filter(
+                    processed_df = self._consecutive_days_filter(
                         processed_df, self.day_filter['consecutive_days'])
 
             elif type(self.day_filter == list):
@@ -172,13 +191,30 @@ class FilterOperator(ProcessingOperator):
 
                     if ('consecutive_days'
                             in day_filter_item) and not processed_df.empty:
-                        processed_df = self.consecutive_days_filter(
+                        processed_df = self._consecutive_days_filter(
                             processed_df, day_filter_item['consecutive_days'])
 
         return processed_df
 
-    def consecutive_days_filter(self, dataframe, consecutive_days_range):
-        """Finds consecutive days
+    def _consecutive_days_filter(self, dataframe, consecutive_days_range):
+        """Helper function for `_process_day`. Finds the number of consecutive days
+        per participant, and filters them out of the dataframe if the number is out of
+        the range of `consecutive_days_range` (exclusive, inclusive)
+
+        Args:
+            dataframe (pd.DataFrame):
+                Variable number of pandas dataframes to be processed
+            consecutive_days_range (int, 2-tuple of ints):
+                - *int*: minimum number of days (exclusive) for the consecutive days
+                    to be included within the returned dataframe.
+                - a 2-tuple of ints that represent the minimum (exclusive) number of consecutive days,
+                    and the maximum number of consecutive days (inclusive) to be included within the
+                    returned dataframe (see example).
+
+        Returns:
+            dataframe (pd.DataFrame):
+                dataframe that include consecutive days as per the criteria.
+
         """
 
         days_per_id = dataframe.groupby([
@@ -218,12 +254,23 @@ class FilterOperator(ProcessingOperator):
             sequences_to_keep)]
 
         dataframe = dataframe.groupby(self.participant_id_column).apply(
-            lambda x: self.keep_days_in_df(x, days_to_keep)).reset_index(
+            lambda x: self._keep_days_in_df(x, days_to_keep)).reset_index(
                 drop=True)
         return dataframe
 
-    def keep_days_in_df(self, dataframe, days_to_keep):
+    def _keep_days_in_df(self, dataframe, days_to_keep):
         """Helper function for consecutive_days_filter
+
+        Args:
+            dataframe (pd.DataFrame):
+                dataframe of all days.
+            days_to_keep (pd.DataFrame):
+                dataframe of consecutive days that match the criteria
+
+        Returns:
+            dataframe (pd.DataFrame):
+                dataframe that has been filtered using `days_to_keep`
+
         """
 
         days = days_to_keep.loc[days_to_keep[self.participant_id_column] ==

@@ -26,15 +26,11 @@ class SortOperator(ProcessingOperator):
     """
 
     def __init__(self, **kwargs):
-        """Sort datasets using the Pandas function `sort_values`.
+        """
+        Sort datasets using the Pandas function `sort_values`.
 
-        Parameters
-        ----------
-        data_frames:
-          Variable number of pandas dataframes to be processed
-
-        \\*\\*kwargs:
-          key word arguments passed to pandas DataFrame.sort_values method
+        Args:
+            **kwargs: keyword arguments passed to pandas DataFrame.sort_values method
 
 
         """
@@ -44,10 +40,12 @@ class SortOperator(ProcessingOperator):
     def process(self, *data_frames):
         """Sort multiple datasets using the Pandas function `sort_values`.
 
-        Returns
-        -------
-        data_frames
-            Resulting dataframes after sorting.
+        Args:
+            *data_frames: Variable number of pandas dataframes to be processed
+
+        Returns:
+            data_frames (list of pd.DataFrame):
+                Resulting dataframes after sorting.
         """
         # Gets one single
         processed = []

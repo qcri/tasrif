@@ -51,20 +51,17 @@ class OneHotEncoderOperator(ProcessingOperator):
     def __init__(self, feature_names: list, drop_first: bool = True, separator: str = ","):
         """Creates a new instance of OneHotEncoderOperator
 
-        Parameters
-        ----------
-        feature_names : list
-            The list of categorical features that will be one hot encoded
-
-        drop_first : bool
-            Transforming a category of X values into exactly X columns most of the times is redundant.
-            If the values are NOT multiple choice, any of the new columns can be removed without resulting in loss of
-            information, at least in a ML perspective.
-            Default: False
-
-        separator : str
-            That is the separator, if any, used when the values in a column are represented as multiple choice.
-            Default: ','
+        Args:
+            feature_names (list):
+                The list of categorical features that will be one hot encoded
+            drop_first (bool):
+                Transforming a category of X values into exactly X columns most of the times is redundant.
+                If the values are NOT multiple choice, any of the new columns can be removed without
+                resulting in loss of information, at least in a ML perspective.
+                Default: False
+            separator (str):
+                That is the separator, if any, used when the values in a column are represented as multiple choice.
+                Default: ','
         """
         self.feature_names = feature_names
         self.drop_first = drop_first
@@ -73,10 +70,13 @@ class OneHotEncoderOperator(ProcessingOperator):
     def process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.
 
-        Returns
-        -------
-        pd.DataFrame -or- list[pd.DataFrame]
-            Processed dataframe(s) resulting from applying the operator
+        Args:
+            *data_frames (list of pd.DataFrame):
+              Variable number of pandas dataframes to be processed
+
+        Returns:
+            pd.DataFrame -or- list[pd.DataFrame]
+                Processed dataframe(s) resulting from applying the operator
         """
         processed = []
         for data_frame in data_frames:

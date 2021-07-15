@@ -49,10 +49,9 @@ class ZenodoCompositeFitbitDataset:
         """Gets the dataframe grouped by participants. The result is a data frames where each row
         represents exactly one partipant
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
         """
         return self.group_df
 
@@ -147,30 +146,27 @@ class ZenodoFitbitActivityDataset:
     def raw_dataframe(self):
         """Gets the data frame (without any processing) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
         """
         return self.raw_df
 
     def processed_dataframe(self):
         """Gets the processed data frame (after applying the data pipeline) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
         """
         return self.zadf
 
     def participant_count(self):
         """Get the number of participants
 
-        Returns
-        -------
-        int
-            Number of participants in the dataset
+        Returns:
+            int
+                Number of participants in the dataset
         """
 
         return self.zadf["Id"].nunique()
@@ -179,10 +175,9 @@ class ZenodoFitbitActivityDataset:
         """Gets the dataframe grouped by participants. The result is a data frames where each row
         represents exactly one partipant
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
         """
 
         return self.group_df
@@ -190,10 +185,9 @@ class ZenodoFitbitActivityDataset:
     def participant_dataframes(self):
         """Gets and array of individual participant data frames
 
-        Returns
-        -------
-        pd.Dataframe[]
-            Array of dataframe objects representing the data from each partipant
+        Returns:
+            pd.Dataframe[]
+                Array of dataframe objects representing the data from each partipant
         """
 
         return [
@@ -258,30 +252,27 @@ class ZenodoFitbitWeightDataset:
     def raw_dataframe(self):
         """Gets the data frame (without any processing) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
         """
         return self.raw_df
 
     def processed_dataframe(self):
         """Gets the processed data frame (after applying the data pipeline) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
         """
         return self.zwdf
 
     def participant_dataframes(self):
         """Gets and array of individual participant data frames
 
-        Returns
-        -------
-        pd.Dataframe[]
-            Array of dataframe objects representing the data from each partipant
+        Returns:
+            pd.Dataframe[]
+                Array of dataframe objects representing the data from each partipant
         """
         return [
             pd.DataFrame(y) for x, y in self.zwdf.groupby("Id", as_index=False)
@@ -291,10 +282,9 @@ class ZenodoFitbitWeightDataset:
         """Gets the dataframe grouped by participants. The result is a data frames where each row
         represents exactly one partipant
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
         """
 
         return self.group_df
@@ -377,30 +367,27 @@ class ZenodoFitbitSleepDataset:
     def raw_dataframe(self):
         """Gets the data frame (without any processing) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
         """
         return self.raw_df
 
     def processed_dataframe(self):
         """Gets the processed data frame (after applying the data pipeline) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
         """
         return self.zsdf
 
     def participant_dataframes(self):
         """Gets and array of individual participant data frames
 
-        Returns
-        -------
-        pd.Dataframe[]
-            Array of dataframe objects representing the data from each partipant
+        Returns:
+            pd.Dataframe[]
+                Array of dataframe objects representing the data from each partipant
         """
         return [
             pd.DataFrame(y) for x, y in self.zsdf.groupby("Id", as_index=False)
@@ -409,10 +396,9 @@ class ZenodoFitbitSleepDataset:
     def grouped_dataframe(self):
         """Gets and array of individual participant data frames
 
-        Returns
-        -------
-        pd.Dataframe[]
-            Array of dataframe objects representing the data from each partipant
+        Returns:
+            pd.Dataframe[]
+                Array of dataframe objects representing the data from each partipant
         """
         return self.group_df
 
@@ -483,30 +469,27 @@ class ZenodoFitbitIntradayCaloriesDataset:
     def raw_dataframe(self):
         """Gets the data frame (without any processing) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
         """
         return self.raw_df
 
     def processed_dataframe(self):
         """Gets the processed data frame (after applying the data pipeline) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
         """
         return self.zcdf
 
     def participant_dataframes(self):
         """Gets and array of individual participant data frames
 
-        Returns
-        -------
-        pd.Dataframe[]
-            Array of dataframe objects representing the data from each partipant
+        Returns:
+            pd.Dataframe
+                Array of dataframe objects representing the data from each partipant
         """
         return [
             pd.DataFrame(y) for x, y in self.zcdf.groupby("Id", as_index=False)
@@ -515,10 +498,9 @@ class ZenodoFitbitIntradayCaloriesDataset:
     def grouped_dataframe(self):
         """Gets and array of individual participant data frames
 
-        Returns
-        -------
-        pd.Dataframe[]
-            Array of dataframe objects representing the data from each partipant
+        Returns:
+            pd.Dataframe
+                Array of dataframe objects representing the data from each partipant
         """
         return self.group_df
 
@@ -591,30 +573,27 @@ class ZenodoFitbitIntradayIntensitiesDataset:
     def raw_dataframe(self):
         """Gets the data frame (without any processing) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
         """
         return self.raw_df
 
     def processed_dataframe(self):
         """Gets the processed data frame (after applying the data pipeline) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
         """
         return self.zidf
 
     def participant_dataframes(self):
         """Gets and array of individual participant data frames
 
-        Returns
-        -------
-        pd.Dataframe[]
-            Array of dataframe objects representing the data from each partipant
+        Returns:
+            pd.Datafram
+                Array of dataframe objects representing the data from each partipant
         """
         return [
             pd.DataFrame(y) for x, y in self.zidf.groupby("Id", as_index=False)
@@ -623,10 +602,9 @@ class ZenodoFitbitIntradayIntensitiesDataset:
     def grouped_dataframe(self):
         """Gets and array of individual participant data frames
 
-        Returns
-        -------
-        pd.Dataframe[]
-            Array of dataframe objects representing the data from each partipant
+        Returns:
+            pd.Dataframe
+                Array of dataframe objects representing the data from each partipant
         """
         return self.group_df
 
@@ -697,30 +675,27 @@ class ZenodoFitbitIntradayMETsDataset:
     def raw_dataframe(self):
         """Gets the data frame (without any processing) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
         """
         return self.raw_df
 
     def processed_dataframe(self):
         """Gets the processed data frame (after applying the data pipeline) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
         """
         return self.zmetdf
 
     def participant_dataframes(self):
         """Gets and array of individual participant data frames
 
-        Returns
-        -------
-        pd.Dataframe[]
-            Array of dataframe objects representing the data from each partipant
+        Returns:
+            pd.Dataframe
+                Array of dataframe objects representing the data from each partipant
         """
         return [
             pd.DataFrame(y)
@@ -730,10 +705,9 @@ class ZenodoFitbitIntradayMETsDataset:
     def grouped_dataframe(self):
         """Gets and array of individual participant data frames
 
-        Returns
-        -------
-        pd.Dataframe[]
-            Array of dataframe objects representing the data from each partipant
+        Returns:
+            pd.Dataframe
+                Array of dataframe objects representing the data from each partipant
         """
         return self.group_df
 
@@ -804,30 +778,27 @@ class ZenodoFitbitIntradayStepsDataset:
     def raw_dataframe(self):
         """Gets the data frame (without any processing) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
         """
         return self.raw_df
 
     def processed_dataframe(self):
         """Gets the processed data frame (after applying the data pipeline) for the dataset
 
-        Returns
-        -------
-        pd.Dataframe
-            Pandas dataframe object representing the data
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object representing the data
         """
         return self.zsdf
 
     def participant_dataframes(self):
         """Gets and array of individual participant data frames
 
-        Returns
-        -------
-        pd.Dataframe[]
-            Array of dataframe objects representing the data from each partipant
+        Returns:
+            pd.Dataframe
+                Array of dataframe objects representing the data from each partipant
         """
         return [
             pd.DataFrame(y) for x, y in self.zsdf.groupby("Id", as_index=False)
@@ -836,10 +807,9 @@ class ZenodoFitbitIntradayStepsDataset:
     def grouped_dataframe(self):
         """Gets and array of individual participant data frames
 
-        Returns
-        -------
-        pd.Dataframe[]
-            Array of dataframe objects representing the data from each partipant
+        Returns:
+            pd.Dataframe
+                Array of dataframe objects representing the data from each partipant
         """
         return self.group_df
 

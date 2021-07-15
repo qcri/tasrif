@@ -37,13 +37,11 @@ class ConvertToDatetimeOperator(ProcessingOperator):
     def __init__(self, feature_names, **kwargs):
         """Convert a set of columns features from string to datetime
 
-        Parameters
-        ----------
-        feature_names : str
-            Name of the string columns that represent datetime objects
-
-        \\*\\*kwargs:
-          key word arguments passed to pandas ``to_datetime`` method
+        Args:
+            feature_names (str):
+                Name of the string columns that represent datetime objects
+            **kwargs:
+              key word arguments passed to pandas ``to_datetime`` method
 
         """
         self.feature_names = feature_names
@@ -53,10 +51,13 @@ class ConvertToDatetimeOperator(ProcessingOperator):
     def process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.
 
-        Returns
-        -------
-        pd.DataFrame -or- list[pd.DataFrame]
-            Processed dataframe(s) resulting from applying the operator
+        Args:
+            *data_frames (list of pd.DataFrame):
+              Variable number of pandas dataframes to be processed
+
+        Returns:
+            pd.DataFrame -or- list[pd.DataFrame]
+                Processed dataframe(s) resulting from applying the operator
         """
         columns = self.feature_names.copy() if isinstance(self.feature_names, list) else [self.feature_names]
 

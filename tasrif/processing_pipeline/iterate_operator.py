@@ -12,15 +12,12 @@ class IterateOperator(ProcessingOperator):
     def __init__(self, operator):
         """Constructs a iterate operator
 
-        Parameters
-        ----------
-        operator : ProcessingOperator
-            Operation to be applied to the input
+        Args:
+            operator (ProcessingOperator):
+                Operation to be applied to the input
 
-        Raises
-        ------
-        ValueError
-            Occurs when input argument is not a ProcessingOperator
+        Raises:
+            ValueError: Occurs when input argument is not a ProcessingOperator
 
         Examples
         --------
@@ -53,10 +50,14 @@ class IterateOperator(ProcessingOperator):
     def process(self, *dataframes):
         """Processes the dataframes with the operator. The operator is applied to each dataframe independently.
 
-        Parameters
-        ----------
-        iterator: iterable
-            An iterable object on which the input operator will be applied on.
+        Args:
+            *dataframes (list[pd.DataFrame]):
+                list of dataframes to be applied on by the processes
+
+        Returns:
+            output (list[pd.DataFrame]):
+                processed dataframes
+
         """
         output = []
         for dataframe in dataframes:

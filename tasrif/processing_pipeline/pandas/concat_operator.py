@@ -8,12 +8,6 @@ from tasrif.processing_pipeline import ProcessingOperator
 class ConcatOperator(ProcessingOperator):
     """Concatenate different datasets based on Pandas concat method.
 
-    Parameters
-    ----------
-
-    Returns
-    -------
-
     Examples
     --------
 
@@ -40,13 +34,9 @@ class ConcatOperator(ProcessingOperator):
     def __init__(self, **kwargs):
         """Merge different datasets on a common feature defined by ``on``.
 
-        Parameters
-        ----------
-        data_frames:
-          Variable number of pandas dataframes to be processed
-
-        \\*\\*kwargs:
-          key word arguments passed to pandas concat method
+        Args:
+            **kwargs:
+              key word arguments passed to pandas concat method
 
 
         """
@@ -56,10 +46,13 @@ class ConcatOperator(ProcessingOperator):
     def process(self, *data_frames):
         """Concatenate multiple datasets.
 
-        Returns
-        -------
-        data_frame
-            Concatenated dataframe based on the input data_frames.
+        Args:
+            *data_frames (list of pd.DataFrame):
+              Variable number of pandas dataframes to be processed
+
+        Returns:
+            data_frame
+                Concatenated dataframe based on the input data_frames.
         """
         data_frame = pd.concat(list(data_frames), **self.kwargs)
         return [data_frame]

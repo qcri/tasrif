@@ -56,9 +56,8 @@ class GroupbyOperator(ProcessingOperator):
     def __init__(self, **kwargs):
         """Creates a new instance of GroupbyOperator
 
-        Parameters
-        ----------
-        \\*\\*kwargs: Arguments to pandas pd.groupby function
+        Args:
+            **kwargs: Arguments to pandas pd.groupby function
 
         """
         self.kwargs = kwargs
@@ -67,10 +66,13 @@ class GroupbyOperator(ProcessingOperator):
     def process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.
 
-        Returns
-        -------
-        pd.DataFrame -or- list[pd.DataFrame]
-            Processed dataframe(s) resulting from applying the operator
+        Args:
+            *data_frames (list of pd.DataFrame):
+              Variable number of pandas dataframes to be processed
+
+        Returns:
+            pd.DataFrame -or- list[pd.DataFrame]
+                Processed dataframe(s) resulting from applying the operator
         """
 
         processed = []

@@ -40,14 +40,13 @@ class AsTypeOperator(ProcessingOperator):
     def __init__(self, dtype, **kwargs):
         """Creates a new instance of AddDurationOperator
 
-        Parameters
-        ----------
-        dtype: dtypedata type, or dict of column name -> data type
-               Use a numpy.dtype or Python type to cast entire pandas object to the same type.
-               Alternatively, use {col: dtype, …}, where col is a column label and dtype is a numpy.dtype or
-               Python type to cast one or more of the DataFrame’s columns to column-specific types.
 
-        \\*\\*kwargs: Arguments to pandas pd.astype function
+        Args:
+            dtype: dtypedata type, or dict of column name -> data type
+                   Use a numpy.dtype or Python type to cast entire pandas object to the same type.
+                   Alternatively, use {col: dtype, …}, where col is a column label and dtype is a numpy.dtype or
+                   Python type to cast one or more of the DataFrame’s columns to column-specific types.
+            **kwargs: Arguments to pandas pd.astype function
 
         """
         self.dtype = dtype
@@ -57,10 +56,13 @@ class AsTypeOperator(ProcessingOperator):
     def process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.
 
-        Returns
-        -------
-        pd.DataFrame -or- list[pd.DataFrame]
-            Processed dataframe(s) resulting from applying the operator
+        Args:
+            *data_frames (list of pd.DataFrame):
+              Variable number of pandas dataframes to be processed
+
+        Returns:
+            pd.DataFrame -or- list[pd.DataFrame]
+                Processed dataframe(s) resulting from applying the operator
         """
 
 
