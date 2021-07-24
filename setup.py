@@ -16,7 +16,7 @@ setup(
         'numpy >= 1.19.5',
         'pyjq >= 2.5.1',
         'matplotlib >= 3.0.0',
-        'ummalqura>=2.0.1',
+        'ummalqura>=2.0.1'
     ],
     # numpy also needs to be specified in setup_requires,
     # see https://github.com/numpy/numpy/issues/2434#issuecomment-65252402
@@ -24,6 +24,6 @@ setup(
         'numpy >= 1.19.5',
     ],
     extras_require={
-        "Kats":  ["Kats>=0.1.0"],
+        "Kats":  ["Kats>=0.1.0"]
     }
 )
