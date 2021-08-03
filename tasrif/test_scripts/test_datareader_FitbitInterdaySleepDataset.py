@@ -15,13 +15,7 @@
 
 # %%
 import os
-from tasrif.data_readers.fitbit_interday_dataset import FitbitSleepDataset
+from tasrif.data_readers.fitbit_interday_dataset import FitbitInterdayDataset
 
-# %%
-sds = FitbitSleepDataset(os.environ['FITBIT_INTERDAY_PATH'])
-
-# %%
-sds.raw_dataframe()
-
-# %%
-sds.processed_dataframe()
+sds = FitbitInterdayDataset(os.environ['FITBIT_INTERDAY_PATH'], table_name="Sleep")
+sds.process()[0]

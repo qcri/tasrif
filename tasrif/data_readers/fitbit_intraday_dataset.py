@@ -37,7 +37,6 @@ class FitbitIntradayDataset:
         """
         return None
 
-
 class FitbitSleepDataset(FitbitIntradayDataset):
     """Class to work with the Sleep json files from a fitbit export dump."""
     class Default:  # pylint: disable=too-few-public-methods
