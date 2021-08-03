@@ -7,3 +7,4 @@ from tasrif.processing_pipeline.sequence_operator import SequenceOperator
 from tasrif.processing_pipeline.compose_operator import ComposeOperator
 from tasrif.processing_pipeline.noop_operator import NoopOperator
 from tasrif.processing_pipeline.iterate_operator import IterateOperator
+from tasrif.processing_pipeline.generator_processing_operator import GeneratorProcessingOperator
