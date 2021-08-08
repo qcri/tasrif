@@ -17,16 +17,16 @@
 
 # %%
 import os
-from tasrif.data_readers.my_heart_counts import DayOneSurveyDataset
+from tasrif.data_readers.my_heart_counts import MyHeartCountsDataset
 
 # %%
 dos_file_path = os.environ['MYHEARTCOUNTS_DAYONESURVEY_PATH']
 
 # %%
-dcs = DayOneSurveyDataset(dos_file_path)
+dcs = MyHeartCountsDataset(dos_file_path)
 
 # %%
 dcs.process()[0]
 
 # %%
-DayOneSurveyDataset.device_mapping
+MyHeartCountsDataset.day_one_survey_device_mapping

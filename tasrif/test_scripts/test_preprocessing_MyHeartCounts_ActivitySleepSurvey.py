@@ -14,9 +14,9 @@
 
 # %%
 import os
-from tasrif.data_readers.my_heart_counts import ActivitySleepSurveyDataset
+from tasrif.data_readers.my_heart_counts import MyHeartCountsDataset
 
 aas_file_path = os.environ['MYHEARTCOUNTS_ACTIVITYSLEEPSURVEY_PATH']
-aas = ActivitySleepSurveyDataset(aas_file_path)
+aas = MyHeartCountsDataset(aas_file_path)
 
 aas.process()[0]

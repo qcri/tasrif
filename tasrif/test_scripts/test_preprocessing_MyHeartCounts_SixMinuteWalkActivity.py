@@ -14,9 +14,9 @@
 
 # %%
 import os
-from tasrif.data_readers.my_heart_counts import SixMinuteWalkActivityDataset
+from tasrif.data_readers.my_heart_counts import MyHeartCountsDataset
 
 smwa_file_path = os.environ['MYHEARTCOUNTS_SIXMINUTEWALKACTIVITY_PATH']
-smwa = SixMinuteWalkActivityDataset(smwa_file_path)
+smwa = MyHeartCountsDataset(smwa_file_path)
 
 smwa.process()[0]

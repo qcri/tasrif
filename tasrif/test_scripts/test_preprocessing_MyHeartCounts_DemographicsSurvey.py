@@ -14,9 +14,9 @@
 
 # %%
 import os
-from tasrif.data_readers.my_heart_counts import DemographicsSurveyDataset
+from tasrif.data_readers.my_heart_counts import MyHeartCountsDataset
 
 dmo_file_path = os.environ['MYHEARTCOUNTS_DEMOGRAPHICS_PATH']
-dmo = DemographicsSurveyDataset(dmo_file_path)
+dmo = MyHeartCountsDataset(dmo_file_path)
 
 dmo.process()[0]

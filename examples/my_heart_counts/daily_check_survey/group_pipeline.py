@@ -2,7 +2,7 @@ import os
 from tasrif.processing_pipeline import ProcessingPipeline
 from tasrif.processing_pipeline.pandas import DropFeaturesOperator
 from tasrif.processing_pipeline.custom import AggregateOperator
-from tasrif.data_readers.my_heart_counts import DailyCheckSurveyDataset
+from tasrif.data_readers.my_heart_counts import MyHeartCountsDataset
 
 dcs_file_path = os.environ['MYHEARTCOUNTS_DAILYCHECKSURVEY_PATH']
 
@@ -20,7 +20,7 @@ Steps:
         - repeat for activity2_option
 '''
 pipeline = ProcessingPipeline([
-    DailyCheckSurveyDataset(dcs_file_path),
+    MyHeartCountsDataset(dcs_file_path),
     DropFeaturesOperator(["recordId"]),
     AggregateOperator(
         groupby_feature_names="healthCode",

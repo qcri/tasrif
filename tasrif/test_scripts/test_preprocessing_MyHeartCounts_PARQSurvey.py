@@ -17,12 +17,12 @@
 
 # %%
 import os
-from tasrif.data_readers.my_heart_counts import PARQSurveyDataset
+from tasrif.data_readers.my_heart_counts import MyHeartCountsDataset
 
 # %%
 parq_file_path = os.environ['MYHEARTCOUNTS_PARQSURVEY_PATH']
 
 # %%
-parq = PARQSurveyDataset(parq_file_path)
+parq = MyHeartCountsDataset(parq_file_path)
 # %%
 parq.process()[0]

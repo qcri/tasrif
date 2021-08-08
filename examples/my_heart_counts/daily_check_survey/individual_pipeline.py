@@ -3,7 +3,7 @@ import pandas as pd
 from tasrif.processing_pipeline import ProcessingPipeline
 from tasrif.processing_pipeline.pandas import DropFeaturesOperator
 from tasrif.processing_pipeline.custom import CreateFeatureOperator, SetFeaturesValueOperator
-from tasrif.data_readers.my_heart_counts import DailyCheckSurveyDataset
+from tasrif.data_readers.my_heart_counts import MyHeartCountsDataset
 
 dcs_file_path = os.environ['MYHEARTCOUNTS_DAILYCHECKSURVEY_PATH']
 
@@ -25,7 +25,7 @@ Steps:
     - average the time if self.merge_activity_features is true, set it to column 'activity_time'
 '''
 pipeline = ProcessingPipeline([
-    DailyCheckSurveyDataset(dcs_file_path),
+    MyHeartCountsDataset(dcs_file_path),
     DropFeaturesOperator([
         "appVersion",
         "phoneInfo",

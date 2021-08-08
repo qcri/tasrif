@@ -1,6 +1,6 @@
 import os
 from tasrif.processing_pipeline import ProcessingPipeline
-from tasrif.data_readers.my_heart_counts import HealthKitDataDataset
+from tasrif.data_readers.my_heart_counts import MyHeartCountsDataset
 from tasrif.processing_pipeline.custom import CreateFeatureOperator, IterateCsvOperator, \
                                               AggregateOperator
 from tasrif.processing_pipeline.pandas import ConvertToDatetimeOperator, DropNAOperator, \
@@ -27,7 +27,7 @@ csv_pipeline = ProcessingPipeline([
 ])
 
 pipeline = ProcessingPipeline([
-    HealthKitDataDataset(hkd_file_path),
+    MyHeartCountsDataset(hkd_file_path),
     CreateFeatureOperator(
         feature_name='file_name',
         feature_creator=lambda df: str(df['data.csv'])),

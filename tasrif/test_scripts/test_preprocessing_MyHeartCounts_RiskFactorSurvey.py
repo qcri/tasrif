@@ -14,9 +14,9 @@
 
 # %%
 import os
-from tasrif.data_readers.my_heart_counts import RiskFactorSurveyDataset
+from tasrif.data_readers.my_heart_counts import MyHeartCountsDataset
 
 rf_file_path = os.environ['MYHEARTCOUNTS_RISKFACTORSURVEY_PATH']
-rf = RiskFactorSurveyDataset(rf_file_path)
+rf = MyHeartCountsDataset(rf_file_path)
 
 rf.process()[0]

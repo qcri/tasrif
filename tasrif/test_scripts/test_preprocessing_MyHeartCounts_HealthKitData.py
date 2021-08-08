@@ -15,9 +15,9 @@
 # %%
 import os
 
-from tasrif.data_readers.my_heart_counts import HealthKitDataDataset
+from tasrif.data_readers.my_heart_counts import MyHeartCountsDataset
 
 hkd_file_path = os.environ['MYHEARTCOUNTS_HEALTHKITDATA_PATH']
-hkd = HealthKitDataDataset(hkd_file_path)
+hkd = MyHeartCountsDataset(hkd_file_path)
 
 hkd.process()[0]

@@ -14,9 +14,9 @@
 
 # %%
 import os
-from tasrif.data_readers.my_heart_counts import HeartAgeSurveyDataset
+from tasrif.data_readers.my_heart_counts import MyHeartCountsDataset
 
 has_file_path = os.environ['MYHEARTCOUNTS_HEARTAGESURVEY_PATH']
-has = HeartAgeSurveyDataset(has_file_path)
+has = MyHeartCountsDataset(has_file_path)
 
 has.process()[0]

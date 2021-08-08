@@ -14,9 +14,9 @@
 
 # %%
 import os
-from tasrif.data_readers.my_heart_counts import QualityOfLifeSurveyDataset
+from tasrif.data_readers.my_heart_counts import MyHeartCountsDataset
 
 qol_file_path = os.environ['MYHEARTCOUNTS_QUALITYOFLIFE_PATH']
-qol = QualityOfLifeSurveyDataset(qol_file_path)
+qol = MyHeartCountsDataset(qol_file_path)
 
 qol.process()[0]

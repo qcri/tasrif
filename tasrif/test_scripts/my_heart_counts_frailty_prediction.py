@@ -15,7 +15,7 @@
 # %%
 import os
 import pandas as pd
-from tasrif.data_readers.my_heart_counts import SixMinuteWalkActivityDataset, HealthKitDataDataset
+from tasrif.data_readers.my_heart_counts import MyHeartCountsDataset
 from tasrif.processing_pipeline import ProcessingPipeline
 from tasrif.processing_pipeline.pandas import DropNAOperator, ConvertToDatetimeOperator, DropFeaturesOperator, \
                                               SetIndexOperator, PivotResetColumnsOperator, ConcatOperator, \
@@ -35,7 +35,7 @@ json_pipeline = ProcessingPipeline([
 ])
 
 smwa_pipeline = ProcessingPipeline([
-    SixMinuteWalkActivityDataset(smwa_file_path),
+    MyHeartCountsDataset(smwa_file_path),
     CreateFeatureOperator(
         feature_name='file_name',
         # The json filename has an extra '.0' appended to it.
@@ -46,7 +46,7 @@ smwa_pipeline = ProcessingPipeline([
         pipeline=json_pipeline),
 ])
 
-smwa = SixMinuteWalkActivityDataset(smwa_file_path)
+smwa = MyHeartCountsDataset(smwa_file_path)
 participant_smwa_steps = { 'healthCode': [], 'smwaSteps': [] }
 
 for row, smwa_data in smwa_pipeline.process()[0]:
@@ -91,7 +91,7 @@ csv_pipeline = ProcessingPipeline([
 ])
 
 hkd_pipeline = ProcessingPipeline([
-            HealthKitDataDataset(hkd_file_path),
+            MyHeartCountsDataset(hkd_file_path),
             CreateFeatureOperator(
                 feature_name='file_name',
                 feature_creator=lambda df: str(df['data.csv'])),

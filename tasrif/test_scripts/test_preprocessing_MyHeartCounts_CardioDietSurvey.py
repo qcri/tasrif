@@ -14,9 +14,9 @@
 
 # %%
 import os
-from tasrif.data_readers.my_heart_counts import CardioDietSurveyDataset
+from tasrif.data_readers.my_heart_counts import MyHeartCountsDataset
 
 cds_file_path = os.environ['MYHEARTCOUNTS_CARDIODIETSURVEY_PATH']
-cds = CardioDietSurveyDataset(cds_file_path)
+cds = MyHeartCountsDataset(cds_file_path)
 
 cds.process()[0]
