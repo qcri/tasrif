@@ -2,15 +2,15 @@
 collected by crowd sourcing.
 
     Available Interday datasets:
-        - ZenodoFitbitActivityDataset
-        - ZenodoFitbitWeightDataset
-        - ZenodoFitbitSleepDataset
+        - ActivityDataset
+        - WeightDataset
+        - SleepDataset
 
     Available Intraday datasets:
-        - ZenodoFitbitIntradayCaloriesDataset
-        - ZenodoFitbitIntradayIntensitiesDataset
-        - ZenodoFitbitIntradayMETsDataset
-        - ZenodoFitbitIntradayStepsDataset
+        - IntradayCaloriesDataset
+        - IntradayIntensitiesDataset
+        - IntradayMETsDataset
+        - IntradayStepsDataset
 
 
 """
@@ -19,800 +19,115 @@ import pathlib
 import pandas as pd
 
 from tasrif.processing_pipeline import (
-    SequenceOperator,
-    ComposeOperator,
-    NoopOperator,
-)
-from tasrif.processing_pipeline.custom import (
-    CreateFeatureOperator,
-    AggregateOperator,
-    AddDurationOperator,
-    DropIndexDuplicatesOperator,
-    ResampleOperator,
-)
-from tasrif.processing_pipeline.pandas import (
-    DropNAOperator,
-    DropFeaturesOperator,
-    SetIndexOperator,
-    ResetIndexOperator,
-    GroupbyOperator,
+    ProcessingOperator,
 )
 
-
-class ZenodoCompositeFitbitDataset:
-    """Class to work with multiple zenodo datasets by merging/concatenating the features."""
-    def __init__(self, zenodo_datasets):
-        self.zenodo_datasets = zenodo_datasets
-        self._process()
-
-    def grouped_dataframe(self):
-        """Gets the dataframe grouped by participants. The result is a data frames where each row
-        represents exactly one partipant
-
-        Returns:
-            pd.Dataframe
-                Pandas dataframe object representing the data
-        """
-        return self.group_df
-
-    def _process(self):
-        dfs = []
-        for zds in self.zenodo_datasets:
-            dfs.append(zds.grouped_dataframe())
-
-        self.group_df = pd.concat(dfs, axis=1, join="inner")
-
-
-class ZenodoFitbitActivityDataset:
-    """Class that represents the activity related CSV files of the fitbit dataset published on Zenodo
+class ZenodoFitbitDataset(ProcessingOperator):
+    """Base class for all Zenodo fitbit datasets
     """
-    class Default:  # pylint: disable=too-few-public-methods
+    valid_table_names = [
+        "Activity",
+        "Weight",
+        "Sleep",
+        "IntradayCalories",
+        "IntradayIntensities",
+        "IntradayMETs",
+        "IntradaySteps",
+    ]
+
+    def __init__(self, folder, table_name):
+        """Initializes an interday dataset reader with the input parameters.
+
+        Args:
+            folder (str):
+                Path to the Zenodo export folder containing data.
+            table_name (str):
+                The table to extract data from.
         """
-        Default parameters used by the class.
+        # Abort if table_name isn't valid
+        self._validate_table_name(table_name)
+
+        self.folder = folder
+        self.table_name = table_name
+
+    def process(self, *data_frames):
+        # Accumulate dataframes from all files and concat them all at once
+        dataframes = self._extract_data_from_file()
+        return dataframes
+
+    def _validate_table_name(self, table_name):
+        """Validates table_name if it is included within the valid_table_names.
+
+        Args:
+            table_name (str):
+                The table to validate.
+
+        Raises:
+            RuntimeError: Occurs when table_name is not included in self.valid_table_names
+
+        """
+        if table_name not in self.valid_table_names:
+            raise RuntimeError(f"Invalid table_name, must be from the following: {self.valid_table_names}")
+
+    def _extract_data_from_file(self):
+        """Extracts the table data. Requires 'table_name' attribute to be set.
+
+        Returns:
+            pd.Dataframe
+                Pandas dataframe object corresponding to the raw data.
         """
 
-        #: :meta hide-value:
-        DROP_FEATURES = [
-            "TrackerDistance",
-            "LoggedActivitiesDistance",
-            "VeryActiveDistance",
-            "ModeratelyActiveDistance",
-            "SedentaryActiveDistance",
-            "LightActiveDistance",
-            "ActivityDate",
-        ]
-
-        #: :meta hide-value:
-        AGGREGATION_FUNCS = ["mean", "std"]
-
-        #: :meta hide-value:
-        AGGREGATION_DEFINITION = {
-            "TotalSteps": AGGREGATION_FUNCS,
-            "TotalDistance": AGGREGATION_FUNCS,
-            "SedentaryMinutes": AGGREGATION_FUNCS,
-            "Calories": AGGREGATION_FUNCS,
-            "ActiveMinutes": AGGREGATION_FUNCS,
-        }
-
-        #: :meta hide-value:
-        PIPELINE = SequenceOperator([
-            DropNAOperator(),
-            CreateFeatureOperator(
-                feature_name="ActiveMinutes",
-                feature_creator=lambda df: df["VeryActiveMinutes"] + df[
-                    "FairlyActiveMinutes"] + df["LightlyActiveMinutes"],
-            ),
-            CreateFeatureOperator(
-                feature_name="Date",
-                feature_creator=lambda df: pd.to_datetime(df["ActivityDate"]),
-            ),
-            DropFeaturesOperator(drop_features=DROP_FEATURES),
-            ComposeOperator([
-                NoopOperator(),
-                AggregateOperator(
-                    groupby_feature_names="Id",
-                    aggregation_definition=AGGREGATION_DEFINITION,
-                ),
-            ]),
-        ])
-
-    def __init__(self, zenodo_folder, pipeline=Default.PIPELINE):
-
+        dataframes = []
         subfolder_1 = "Fitabase Data 3.12.16-4.11.16"
         subfolder_2 = "Fitabase Data 4.12.16-5.12.16"
-        full_path_1 = pathlib.Path(zenodo_folder, subfolder_1)
-        full_path_2 = pathlib.Path(zenodo_folder, subfolder_2)
-
-        day_act1 = pathlib.Path(full_path_1, "dailyActivity_merged.csv")
-        day_act2 = pathlib.Path(full_path_2, "dailyActivity_merged.csv")
-        raw_df1 = pd.read_csv(day_act1)
-        raw_df2 = pd.read_csv(day_act2)
-
-        self.raw_df = pd.concat(
-            [raw_df1, raw_df2],
-            axis=0,
-            ignore_index=False,
-            keys=None,
-            levels=None,
-            names=None,
-            verify_integrity=False,
-            copy=True,
-        )
-
-        self.pipeline = pipeline
-
-        self._process()
-
-    def raw_dataframe(self):
-        """Gets the data frame (without any processing) for the dataset
-
-        Returns:
-            pd.Dataframe
-                Pandas dataframe object representing the data
-        """
-        return self.raw_df
-
-    def processed_dataframe(self):
-        """Gets the processed data frame (after applying the data pipeline) for the dataset
-
-        Returns:
-            pd.Dataframe
-                Pandas dataframe object representing the data
-        """
-        return self.zadf
-
-    def participant_count(self):
-        """Get the number of participants
-
-        Returns:
-            int
-                Number of participants in the dataset
-        """
-
-        return self.zadf["Id"].nunique()
-
-    def grouped_dataframe(self):
-        """Gets the dataframe grouped by participants. The result is a data frames where each row
-        represents exactly one partipant
-
-        Returns:
-            pd.Dataframe
-                Pandas dataframe object representing the data
-        """
-
-        return self.group_df
-
-    def participant_dataframes(self):
-        """Gets and array of individual participant data frames
-
-        Returns:
-            pd.Dataframe[]
-                Array of dataframe objects representing the data from each partipant
-        """
-
-        return [
-            pd.DataFrame(y) for x, y in self.zadf.groupby("Id", as_index=False)
-        ]
-
-    def _process(self):
-        zadf, group_df = self.pipeline.process(self.raw_df)
-        self.zadf, self.group_df = zadf[0], group_df[0]
-
-
-class ZenodoFitbitWeightDataset:
-    """Class that represents the body weight related CSV files of the fitbit dataset published on Zenodo"""
-    class Default:  # pylint: disable=too-few-public-methods
-        """Default parameters used by the class."""
-
-        DROP_COLUMNS = ["Fat", "WeightPounds", "IsManualReport"]
-
-        AGGREGATION_FUNCS = ["mean", "std"]
-        AGGREGATION_DEFINITION = {
-            "WeightKg": AGGREGATION_FUNCS,
-            "BMI": AGGREGATION_FUNCS,
-        }
-
-        PIPELINE = SequenceOperator([
-            DropFeaturesOperator(drop_features=DROP_COLUMNS),
-            ComposeOperator([
-                NoopOperator(),
-                AggregateOperator(
-                    groupby_feature_names="Id",
-                    aggregation_definition=AGGREGATION_DEFINITION,
-                ),
-            ]),
-        ])
-
-    def __init__(self, zenodo_folder, pipeline=Default.PIPELINE):
-
-        self.pipeline = pipeline
-        subfolder_1 = "Fitabase Data 3.12.16-4.11.16"
-        subfolder_2 = "Fitabase Data 4.12.16-5.12.16"
-        full_path_1 = pathlib.Path(zenodo_folder, subfolder_1)
-        full_path_2 = pathlib.Path(zenodo_folder, subfolder_2)
-
-        day_wt1 = pathlib.Path(full_path_1, "weightLogInfo_merged.csv")
-        day_wt2 = pathlib.Path(full_path_2, "weightLogInfo_merged.csv")
-        raw_df1 = pd.read_csv(day_wt1)
-        raw_df2 = pd.read_csv(day_wt2)
-
-        self.raw_df = pd.concat(
-            [raw_df1, raw_df2],
-            axis=0,
-            ignore_index=False,
-            keys=None,
-            levels=None,
-            names=None,
-            verify_integrity=False,
-            copy=True,
-        )
-        self.zwdf = self.raw_df.copy()
-        self._process()
-
-    def raw_dataframe(self):
-        """Gets the data frame (without any processing) for the dataset
-
-        Returns:
-            pd.Dataframe
-                Pandas dataframe object representing the data
-        """
-        return self.raw_df
-
-    def processed_dataframe(self):
-        """Gets the processed data frame (after applying the data pipeline) for the dataset
-
-        Returns:
-            pd.Dataframe
-                Pandas dataframe object representing the data
-        """
-        return self.zwdf
-
-    def participant_dataframes(self):
-        """Gets and array of individual participant data frames
-
-        Returns:
-            pd.Dataframe[]
-                Array of dataframe objects representing the data from each partipant
-        """
-        return [
-            pd.DataFrame(y) for x, y in self.zwdf.groupby("Id", as_index=False)
-        ]
-
-    def grouped_dataframe(self):
-        """Gets the dataframe grouped by participants. The result is a data frames where each row
-        represents exactly one partipant
-
-        Returns:
-            pd.Dataframe
-                Pandas dataframe object representing the data
-        """
-
-        return self.group_df
-
-    def _process(self):
-        zwdf, group_df = self.pipeline.process(self.raw_df)
-        self.zwdf, self.group_df = zwdf[0], group_df[0]
-
-
-class ZenodoFitbitSleepDataset:
-    """Class that represents the sleep related CSV files of the fitbit dataset published on Zenodo"""
-    class Default:  # pylint: disable=too-few-public-methods
-        """Default parameters used by the class."""
-
-        DAILY_AGGREGATION_DEFINITION = {
-            "duration": ["sum"],
-            "date": ["first"],
-            "value": ["mean"],
-        }
-
-        TOTAL_AGGREGATION_DEFINITION = {
-            "logId": ["count"],
-            "total_sleep_seconds": ["mean", "std"],
-            "value_mean": ["mean", "std"],
-        }
-
-        PIPELINE = SequenceOperator([
-            CreateFeatureOperator(
-                feature_name="date",
-                feature_creator=lambda df: pd.to_datetime(df["date"]),
-            ),
-            AddDurationOperator(groupby_feature_names="logId",
-                                timestamp_feature_name="date"),
-            AggregateOperator(
-                groupby_feature_names=["logId", "Id"],
-                aggregation_definition=DAILY_AGGREGATION_DEFINITION,
-            ),
-            ComposeOperator([
-                NoopOperator(),
-                ComposeOperator([
-                    CreateFeatureOperator(
-                        feature_name="total_sleep_seconds",
-                        feature_creator=lambda df: df.duration_sum.
-                        total_seconds(),
-                    ),
-                    AggregateOperator(
-                        groupby_feature_names="Id",
-                        aggregation_definition=TOTAL_AGGREGATION_DEFINITION,
-                    ),
-                ]),
-            ]),
-        ])
-
-    def __init__(self, zenodo_folder, pipeline=Default.PIPELINE):
-
-        subfolder_1 = "Fitabase Data 3.12.16-4.11.16"
-        subfolder_2 = "Fitabase Data 4.12.16-5.12.16"
-        full_path_1 = pathlib.Path(zenodo_folder, subfolder_1)
-        full_path_2 = pathlib.Path(zenodo_folder, subfolder_2)
-
-        day_s1 = pathlib.Path(full_path_1, "minuteSleep_merged.csv")
-        day_s2 = pathlib.Path(full_path_2, "minuteSleep_merged.csv")
-        raw_df1 = pd.read_csv(day_s1)
-        raw_df2 = pd.read_csv(day_s2)
-
-        self.raw_df = pd.concat(
-            [raw_df1, raw_df2],
-            axis=0,
-            ignore_index=False,
-            keys=None,
-            levels=None,
-            names=None,
-            verify_integrity=False,
-            copy=True,
-        )
-        self.zsdf = self.raw_df.copy()
-        self.pipeline = pipeline
-        self._process()
-
-    def raw_dataframe(self):
-        """Gets the data frame (without any processing) for the dataset
-
-        Returns:
-            pd.Dataframe
-                Pandas dataframe object representing the data
-        """
-        return self.raw_df
-
-    def processed_dataframe(self):
-        """Gets the processed data frame (after applying the data pipeline) for the dataset
-
-        Returns:
-            pd.Dataframe
-                Pandas dataframe object representing the data
-        """
-        return self.zsdf
-
-    def participant_dataframes(self):
-        """Gets and array of individual participant data frames
-
-        Returns:
-            pd.Dataframe[]
-                Array of dataframe objects representing the data from each partipant
-        """
-        return [
-            pd.DataFrame(y) for x, y in self.zsdf.groupby("Id", as_index=False)
-        ]
-
-    def grouped_dataframe(self):
-        """Gets and array of individual participant data frames
-
-        Returns:
-            pd.Dataframe[]
-                Array of dataframe objects representing the data from each partipant
-        """
-        return self.group_df
-
-    def _process(self):
-        zsdf, group_df = self.pipeline.process(self.raw_df)
-        self.zsdf, self.group_df = zsdf[0], group_df[1][0]
-
-
-class ZenodoFitbitIntradayCaloriesDataset:
-    """Class that represents the sleep related CSV files of the fitbit dataset published on Zenodo"""
-    class Default:  # pylint: disable=too-few-public-methods
-        """Default parameters used by the class."""
-
-        HOURLY_AGGREGATION_DEFINITION = {"Calories": "sum"}
-
-        TOTAL_AGGREGATION_DEFINITION = {
-            "Calories": ["mean", "std"],
-        }
-
-        PIPELINE = SequenceOperator([
-            SetIndexOperator(["ActivityMinute"]),
-            DropIndexDuplicatesOperator(keep="first"),
-            GroupbyOperator(by="Id"),
-            ResampleOperator(
-                rule="H",
-                aggregation_definition=HOURLY_AGGREGATION_DEFINITION),
-            ResetIndexOperator(),
-            ComposeOperator([
-                NoopOperator(),
-                AggregateOperator(
-                    groupby_feature_names=["Id"],
-                    aggregation_definition=TOTAL_AGGREGATION_DEFINITION,
-                ),
-            ]),
-        ])
-
-    def __init__(self, zenodo_folder, pipeline=Default.PIPELINE):
-
-        subfolder_1 = "Fitabase Data 3.12.16-4.11.16"
-        subfolder_2 = "Fitabase Data 4.12.16-5.12.16"
-        full_path_1 = pathlib.Path(zenodo_folder, subfolder_1)
-        full_path_2 = pathlib.Path(zenodo_folder, subfolder_2)
-
-        day_s1 = pathlib.Path(full_path_1, "minuteCaloriesNarrow_merged.csv")
-        day_s2 = pathlib.Path(full_path_2, "minuteCaloriesNarrow_merged.csv")
-        raw_df1 = pd.read_csv(day_s1)
-        raw_df2 = pd.read_csv(day_s2)
-
-        raw_df1["ActivityMinute"] = pd.to_datetime(
-            raw_df1["ActivityMinute"], format="%m/%d/%Y %I:%M:%S %p")
-        raw_df2["ActivityMinute"] = pd.to_datetime(
-            raw_df2["ActivityMinute"], format="%m/%d/%Y %I:%M:%S %p")
-
-        self.raw_df = pd.concat(
-            [raw_df1, raw_df2],
-            axis=0,
-            ignore_index=False,
-            keys=None,
-            levels=None,
-            names=None,
-            verify_integrity=False,
-            copy=True,
-        )
-        self.zcdf = self.raw_df.copy()
-        self.pipeline = pipeline
-        self._process()
-
-    def raw_dataframe(self):
-        """Gets the data frame (without any processing) for the dataset
-
-        Returns:
-            pd.Dataframe
-                Pandas dataframe object representing the data
-        """
-        return self.raw_df
-
-    def processed_dataframe(self):
-        """Gets the processed data frame (after applying the data pipeline) for the dataset
-
-        Returns:
-            pd.Dataframe
-                Pandas dataframe object representing the data
-        """
-        return self.zcdf
-
-    def participant_dataframes(self):
-        """Gets and array of individual participant data frames
-
-        Returns:
-            pd.Dataframe
-                Array of dataframe objects representing the data from each partipant
-        """
-        return [
-            pd.DataFrame(y) for x, y in self.zcdf.groupby("Id", as_index=False)
-        ]
-
-    def grouped_dataframe(self):
-        """Gets and array of individual participant data frames
-
-        Returns:
-            pd.Dataframe
-                Array of dataframe objects representing the data from each partipant
-        """
-        return self.group_df
-
-    def _process(self):
-        zcdf, group_df = self.pipeline.process(self.raw_df)
-        self.zcdf, self.group_df = zcdf[0], group_df[0]
-
-
-class ZenodoFitbitIntradayIntensitiesDataset:
-    """Class that represents the sleep related CSV files of the fitbit dataset published on Zenodo"""
-    class Default:  # pylint: disable=too-few-public-methods
-        """Default parameters used by the class."""
-
-        HOURLY_AGGREGATION_DEFINITION = {"Intensity": "sum"}
-
-        TOTAL_AGGREGATION_DEFINITION = {
-            "Intensity": ["mean", "std"],
-        }
-
-        PIPELINE = SequenceOperator([
-            SetIndexOperator(["ActivityMinute"]),
-            DropIndexDuplicatesOperator(keep="first"),
-            GroupbyOperator(by="Id"),
-            ResampleOperator(
-                rule="H",
-                aggregation_definition=HOURLY_AGGREGATION_DEFINITION),
-            ResetIndexOperator(),
-            ComposeOperator([
-                NoopOperator(),
-                AggregateOperator(
-                    groupby_feature_names=["Id"],
-                    aggregation_definition=TOTAL_AGGREGATION_DEFINITION,
-                ),
-            ]),
-        ])
-
-    def __init__(self, zenodo_folder, pipeline=Default.PIPELINE):
-
-        subfolder_1 = "Fitabase Data 3.12.16-4.11.16"
-        subfolder_2 = "Fitabase Data 4.12.16-5.12.16"
-        full_path_1 = pathlib.Path(zenodo_folder, subfolder_1)
-        full_path_2 = pathlib.Path(zenodo_folder, subfolder_2)
-
-        day_s1 = pathlib.Path(full_path_1,
-                              "minuteIntensitiesNarrow_merged.csv")
-        day_s2 = pathlib.Path(full_path_2,
-                              "minuteIntensitiesNarrow_merged.csv")
-        raw_df1 = pd.read_csv(day_s1)
-        raw_df2 = pd.read_csv(day_s2)
-
-        raw_df1["ActivityMinute"] = pd.to_datetime(
-            raw_df1["ActivityMinute"], format="%m/%d/%Y %I:%M:%S %p")
-        raw_df2["ActivityMinute"] = pd.to_datetime(
-            raw_df2["ActivityMinute"], format="%m/%d/%Y %I:%M:%S %p")
-
-        self.raw_df = pd.concat(
-            [raw_df1, raw_df2],
-            axis=0,
-            ignore_index=False,
-            keys=None,
-            levels=None,
-            names=None,
-            verify_integrity=False,
-            copy=True,
-        )
-        self.zidf = self.raw_df.copy()
-        self.pipeline = pipeline
-        self._process()
-
-    def raw_dataframe(self):
-        """Gets the data frame (without any processing) for the dataset
-
-        Returns:
-            pd.Dataframe
-                Pandas dataframe object representing the data
-        """
-        return self.raw_df
-
-    def processed_dataframe(self):
-        """Gets the processed data frame (after applying the data pipeline) for the dataset
-
-        Returns:
-            pd.Dataframe
-                Pandas dataframe object representing the data
-        """
-        return self.zidf
-
-    def participant_dataframes(self):
-        """Gets and array of individual participant data frames
-
-        Returns:
-            pd.Datafram
-                Array of dataframe objects representing the data from each partipant
-        """
-        return [
-            pd.DataFrame(y) for x, y in self.zidf.groupby("Id", as_index=False)
-        ]
-
-    def grouped_dataframe(self):
-        """Gets and array of individual participant data frames
-
-        Returns:
-            pd.Dataframe
-                Array of dataframe objects representing the data from each partipant
-        """
-        return self.group_df
-
-    def _process(self):
-        zidf, group_df = self.pipeline.process(self.raw_df)
-        self.zidf, self.group_df = zidf[0], group_df[0]
-
-
-class ZenodoFitbitIntradayMETsDataset:
-    """Class that represents the sleep related CSV files of the fitbit dataset published on Zenodo"""
-    class Default:  # pylint: disable=too-few-public-methods
-        """Default parameters used by the class."""
-
-        HOURLY_AGGREGATION_DEFINITION = {"METs": "sum"}
-
-        TOTAL_AGGREGATION_DEFINITION = {
-            "METs": ["mean", "std"],
-        }
-
-        PIPELINE = SequenceOperator([
-            SetIndexOperator(["ActivityMinute"]),
-            DropIndexDuplicatesOperator(keep="first"),
-            GroupbyOperator(by="Id"),
-            ResampleOperator(
-                rule="H",
-                aggregation_definition=HOURLY_AGGREGATION_DEFINITION),
-            ResetIndexOperator(),
-            ComposeOperator([
-                NoopOperator(),
-                AggregateOperator(
-                    groupby_feature_names=["Id"],
-                    aggregation_definition=TOTAL_AGGREGATION_DEFINITION,
-                ),
-            ]),
-        ])
-
-    def __init__(self, zenodo_folder, pipeline=Default.PIPELINE):
-
-        subfolder_1 = "Fitabase Data 3.12.16-4.11.16"
-        subfolder_2 = "Fitabase Data 4.12.16-5.12.16"
-        full_path_1 = pathlib.Path(zenodo_folder, subfolder_1)
-        full_path_2 = pathlib.Path(zenodo_folder, subfolder_2)
-
-        day_s1 = pathlib.Path(full_path_1, "minuteMETsNarrow_merged.csv")
-        day_s2 = pathlib.Path(full_path_2, "minuteMETsNarrow_merged.csv")
-        raw_df1 = pd.read_csv(day_s1)
-        raw_df2 = pd.read_csv(day_s2)
-
-        raw_df1["ActivityMinute"] = pd.to_datetime(
-            raw_df1["ActivityMinute"], format="%m/%d/%Y %I:%M:%S %p")
-        raw_df2["ActivityMinute"] = pd.to_datetime(
-            raw_df2["ActivityMinute"], format="%m/%d/%Y %I:%M:%S %p")
-
-        self.raw_df = pd.concat(
-            [raw_df1, raw_df2],
-            axis=0,
-            ignore_index=False,
-            keys=None,
-            levels=None,
-            names=None,
-            verify_integrity=False,
-            copy=True,
-        )
-        self.zmetdf = self.raw_df.copy()
-        self.pipeline = pipeline
-        self._process()
-
-    def raw_dataframe(self):
-        """Gets the data frame (without any processing) for the dataset
-
-        Returns:
-            pd.Dataframe
-                Pandas dataframe object representing the data
-        """
-        return self.raw_df
-
-    def processed_dataframe(self):
-        """Gets the processed data frame (after applying the data pipeline) for the dataset
-
-        Returns:
-            pd.Dataframe
-                Pandas dataframe object representing the data
-        """
-        return self.zmetdf
-
-    def participant_dataframes(self):
-        """Gets and array of individual participant data frames
-
-        Returns:
-            pd.Dataframe
-                Array of dataframe objects representing the data from each partipant
-        """
-        return [
-            pd.DataFrame(y)
-            for x, y in self.zmetdf.groupby("Id", as_index=False)
-        ]
-
-    def grouped_dataframe(self):
-        """Gets and array of individual participant data frames
-
-        Returns:
-            pd.Dataframe
-                Array of dataframe objects representing the data from each partipant
-        """
-        return self.group_df
-
-    def _process(self):
-        zmetdf, group_df = self.pipeline.process(self.raw_df)
-        self.zmetdf, self.group_df = zmetdf[0], group_df[0]
-
-
-class ZenodoFitbitIntradayStepsDataset:
-    """Class that represents the sleep related CSV files of the fitbit dataset published on Zenodo"""
-    class Default:  # pylint: disable=too-few-public-methods
-        """Default parameters used by the class."""
-
-        HOURLY_AGGREGATION_DEFINITION = {"Steps": "sum"}
-
-        TOTAL_AGGREGATION_DEFINITION = {
-            "Steps": ["mean", "std"],
-        }
-
-        PIPELINE = SequenceOperator([
-            SetIndexOperator(["ActivityMinute"]),
-            DropIndexDuplicatesOperator(keep="first"),
-            GroupbyOperator(by="Id"),
-            ResampleOperator(
-                rule="H",
-                aggregation_definition=HOURLY_AGGREGATION_DEFINITION),
-            ResetIndexOperator(),
-            ComposeOperator([
-                NoopOperator(),
-                AggregateOperator(
-                    groupby_feature_names=["Id"],
-                    aggregation_definition=TOTAL_AGGREGATION_DEFINITION,
-                ),
-            ]),
-        ])
-
-    def __init__(self, zenodo_folder, pipeline=Default.PIPELINE):
-
-        subfolder_1 = "Fitabase Data 3.12.16-4.11.16"
-        subfolder_2 = "Fitabase Data 4.12.16-5.12.16"
-        full_path_1 = pathlib.Path(zenodo_folder, subfolder_1)
-        full_path_2 = pathlib.Path(zenodo_folder, subfolder_2)
-
-        day_s1 = pathlib.Path(full_path_1, "minuteStepsNarrow_merged.csv")
-        day_s2 = pathlib.Path(full_path_2, "minuteStepsNarrow_merged.csv")
-        raw_df1 = pd.read_csv(day_s1)
-        raw_df2 = pd.read_csv(day_s2)
-
-        raw_df1["ActivityMinute"] = pd.to_datetime(
-            raw_df1["ActivityMinute"], format="%m/%d/%Y %I:%M:%S %p")
-        raw_df2["ActivityMinute"] = pd.to_datetime(
-            raw_df2["ActivityMinute"], format="%m/%d/%Y %I:%M:%S %p")
-
-        self.raw_df = pd.concat(
-            [raw_df1, raw_df2],
-            axis=0,
-            ignore_index=False,
-            keys=None,
-            levels=None,
-            names=None,
-            verify_integrity=False,
-            copy=True,
-        )
-        self.zsdf = self.raw_df.copy()
-        self.pipeline = pipeline
-        self._process()
-
-    def raw_dataframe(self):
-        """Gets the data frame (without any processing) for the dataset
-
-        Returns:
-            pd.Dataframe
-                Pandas dataframe object representing the data
-        """
-        return self.raw_df
-
-    def processed_dataframe(self):
-        """Gets the processed data frame (after applying the data pipeline) for the dataset
-
-        Returns:
-            pd.Dataframe
-                Pandas dataframe object representing the data
-        """
-        return self.zsdf
-
-    def participant_dataframes(self):
-        """Gets and array of individual participant data frames
-
-        Returns:
-            pd.Dataframe
-                Array of dataframe objects representing the data from each partipant
-        """
-        return [
-            pd.DataFrame(y) for x, y in self.zsdf.groupby("Id", as_index=False)
-        ]
-
-    def grouped_dataframe(self):
-        """Gets and array of individual participant data frames
-
-        Returns:
-            pd.Dataframe
-                Array of dataframe objects representing the data from each partipant
-        """
-        return self.group_df
-
-    def _process(self):
-        zsdf, group_df = self.pipeline.process(self.raw_df)
-        self.zsdf, self.group_df = zsdf[0], group_df[0]
+        full_path_1 = pathlib.Path(self.folder, subfolder_1)
+        full_path_2 = pathlib.Path(self.folder, subfolder_2)
+
+        if isinstance(self.table_name, str):
+            self.table_name = [self.table_name]
+
+        for table_name in self.table_name:
+            if table_name == "Activity":
+                day_table1 = pathlib.Path(full_path_1, "dailyActivity_merged.csv")
+                day_table2 = pathlib.Path(full_path_2, "dailyActivity_merged.csv")
+
+            elif table_name == "Weight":
+                day_table1 = pathlib.Path(full_path_1, "weightLogInfo_merged.csv")
+                day_table2 = pathlib.Path(full_path_2, "weightLogInfo_merged.csv")
+
+            elif table_name == "Sleep":
+                day_table1 = pathlib.Path(full_path_1, "minuteSleep_merged.csv")
+                day_table2 = pathlib.Path(full_path_2, "minuteSleep_merged.csv")
+
+            elif table_name == "IntradayCalories":
+                day_table1 = pathlib.Path(full_path_1, "minuteCaloriesNarrow_merged.csv")
+                day_table2 = pathlib.Path(full_path_2, "minuteCaloriesNarrow_merged.csv")
+
+            elif table_name == "IntradayIntensities":
+                day_table1 = pathlib.Path(full_path_1, "minuteIntensitiesNarrow_merged.csv")
+                day_table2 = pathlib.Path(full_path_2, "minuteIntensitiesNarrow_merged.csv")
+
+            elif table_name == "IntradayMETs":
+                day_table1 = pathlib.Path(full_path_1, "minuteMETsNarrow_merged.csv")
+                day_table2 = pathlib.Path(full_path_2, "minuteMETsNarrow_merged.csv")
+
+            elif table_name == "IntradaySteps":
+                day_table1 = pathlib.Path(full_path_1, "minuteStepsNarrow_merged.csv")
+                day_table2 = pathlib.Path(full_path_2, "minuteStepsNarrow_merged.csv")
+
+            raw_df1 = pd.read_csv(day_table1)
+            raw_df2 = pd.read_csv(day_table2)
+            dataframe = pd.concat(
+                            [raw_df1, raw_df2],
+                            axis=0,
+                            ignore_index=False,
+                            keys=None,
+                            levels=None,
+                            names=None,
+                            verify_integrity=False,
+                            copy=True,
+                        )
+
+            dataframes.append(dataframe)
+
+        return dataframes
