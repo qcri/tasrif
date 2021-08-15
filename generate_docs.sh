@@ -1,13 +1,9 @@
-
 #!/bin/bash
 
 # exit when any command fails
 set -e
 
-export MYHEARTCOUNTS_HEALTHKITDATA_CSV_FOLDER_PATH="/path/to/myheartcounts/"
-export MYHEARTCOUNTS_SIXMINUTEWALKACTIVITY_JSON_FOLDER_PATH="/path/to/myheartcounts"
-
-rm -rf docs-generator
+rm -rf docs-generator/*
 sphinx-apidoc -o docs-generator tasrif sphinx-apidoc --full -M -e -H 'Tasrif toolkit' -A 'Qatar Computing Research Institute, HBKU' --templatedir docs/_templates
 
 
@@ -38,8 +34,4 @@ html_logo = '../docs/_static/img/logo.png'
 autodoc_member_order = 'bysource'
 " >> conf.py
 
-
-
 make html
-
-open _build/html/index.html

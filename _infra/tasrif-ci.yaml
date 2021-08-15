@@ -147,4 +147,31 @@ stages:
           publishRunAttachments: true
           testRunTitle: 'Darglint'
         condition: succeededOrFailed()
-
+  - stage: Deploy
+    jobs:
+    - job: PublishTasrifDocs
+      displayName: Publish Tasrif Docs
+      steps:
+      - checkout: none
+      - task: Docker@2
+        displayName: 'Generate Tasrif Docs'
+        inputs:
+          command: run
+          containerRegistry: tasrif-acr
+          arguments: >-
+            -v $(System.DefaultWorkingDirectory)/docs-generator:/home/docs-generator
+            qcriswtasrif.azurecr.io/$(Build.Repository.Name):$(Build.BuildId)
+            /home/generate_docs.sh
+      - task: AzureCLI@2
+        displayName: 'Copy Doc Files to Storage Account'
+        # Copy the generated docs to the storage account only on builds from master
+        condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
+        inputs:
+          azureSubscription: tasrif-rg
+          scriptType: bash
+          scriptLocation: inlineScript
+          inlineScript: >-
+            az storage blob upload-batch
+            -s $(System.DefaultWorkingDirectory)/docs-generator/_build/html/
+            -d '$web'
+            --account-name tasrifweb

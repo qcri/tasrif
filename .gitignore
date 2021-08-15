@@ -14,3 +14,4 @@ app/static/.DS_Store
 .vscode/
 tasrif.egg-info/
 .ipynb_checkpoints/
+docs-generator
