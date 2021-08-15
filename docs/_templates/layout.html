@@ -1,0 +1,27 @@
+{% extends '!layout.html' %}
+
+{% block footer %}
+        <!-- your html code here -->      
+        <footer class="footer mt-5 mt-md-0">
+                <div class="container">
+                        @ Copyright {{ copyright }}
+                        <img src="_static/img/logo.png" alt="QCRI logo" width="150px" style="float:right; padding-right: 20px">
+                </div>
+        </footer>
+
+
+        <style type="text/css">
+
+        footer {
+
+                width: 100%;
+                border-top: 1px solid #ccc;
+                padding: 10px;
+
+                .footer-item p {
+                        margin-bottom: 0;
+                }
+        }
+
+        </style>
+{% endblock %}
