@@ -78,9 +78,6 @@ stages:
           ${{ if ne(variables['Build.SourceBranchName'], 'master') }}:
             tags: |
               $(Build.BuildId)
-          tags: latest
-
-
 
   - stage: Test
     jobs:
