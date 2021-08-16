@@ -17,7 +17,7 @@
 import numpy as np
 import pandas as pd
 
-from tasrif.processing_pipeline.custom import CalculateTimeseriesPropertiesOperator
+from tasrif.processing_pipeline.kats import CalculateTimeseriesPropertiesOperator
 
 
 dates = pd.date_range('2016-12-31', '2020-01-08', freq='D').to_series()
