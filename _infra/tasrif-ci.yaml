@@ -16,6 +16,7 @@ stages:
       steps:
         - bash: |
             #!/bin/bash
+            echo "##vso[task.setvariable variable=testvar;]testvalue"
             PATH_FILTER="tasrif/processing_pipeline/kats"
             CHANGED_FILES=$(git diff --name-only -- tasrif/processing_pipeline/kats/)
 
