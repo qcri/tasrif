@@ -20,15 +20,38 @@ pool: tasrif-pool
 stages:
   - stage: Build
     jobs:
+    - job: CheckChanges
+      displayName: 'Check changes'
+      steps:
+        - bash: |
+          #!/bin/bash
+          PATH_FILTER="tasrif/processing_pipeline/kats"
+          CHANGED_FILES=$(git diff --name-only -- tasrif/processing_pipeline/kats/)
+
+          for FILE in $CHANGED_FILES
+          do
+            PARENT_DIR=$(dirname ${FILE})
+            if [[ $PARENT_DIR == *$PATH_FILTER* ]]; then
+              echo "${FILE} changed"
+              echo "##vso[task.setvariable variable=SOURCE_CODE_CHANGED;isOutput=true]true"
+              exit 0
+            fi
+          done
+
+          echo "##vso[task.setvariable variable=SOURCE_CODE_CHANGED;isOutput=true]false"
+        name: check_changes
+        displayName: 'Check changed files'
+
     - job: BuildTasrif
       displayName: Build Tasrif
+      dependsOn: CheckChanges # <- Important: Mark previous job as dependency
       steps:
       - checkout: self
         clean: ${{ parameters.clean }}
       - task: Docker@2
-        displayName: 'Build and push image'
+        displayName: 'Build Tasrif'
         inputs:
-          command: buildAndPush
+          command: build
           repository: $(Build.Repository.Name)
           containerRegistry: tasrif-acr
           # Set tag to 'latest' only on builds from master branch
@@ -39,6 +62,26 @@ stages:
           ${{ if ne(variables['Build.SourceBranchName'], 'master') }}:
             tags: |
               $(Build.BuildId)
+          arguments: --build-arg optional_code_changed=dependencies.CheckChanges.outputs['check_changes.SOURCE_CODE_CHANGED']
+
+      - task: Docker@2
+        displayName: 'Push Tasrif' 
+        inputs:
+          command: push
+          repository: $(Build.Repository.Name)
+          containerRegistry: tasrif-acr
+          # Set tag to 'latest' only on builds from master branch
+          ${{ if eq(variables['Build.SourceBranchName'], 'master') }}:
+            tags: |
+              $(Build.BuildId)
+              latest
+          ${{ if ne(variables['Build.SourceBranchName'], 'master') }}:
+            tags: |
+              $(Build.BuildId)
+          tags: latest
+
+
+
   - stage: Test
     jobs:
     - job: RunPylint
