@@ -14,7 +14,7 @@
 
 # %%
 from tasrif.processing_pipeline import ProcessingOperator
-from tasrif.processing_pipeline.iterate_operator import IterateOperator
+from tasrif.processing_pipeline import IterateOperator
 
 class StreamOperator(ProcessingOperator):
     def process(self, stream):
