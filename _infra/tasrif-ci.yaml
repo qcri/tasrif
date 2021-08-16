@@ -15,13 +15,7 @@ stages:
       displayName: 'Check changes'
       steps:
         - bash: |
-            echo "This is job Foo."
-            echo "##vso[task.setvariable variable=doThing;isOutput=true]Yes" #set variable doThing to Yes
-          name: DetermineResult
-        - bash: |
-            asdnadsn
-            #!/bin/bash
-            echo "##vso[task.setvariable variable=testvar;]testvalue"
+            echo "Checking files.."
             PATH_FILTER="tasrif/processing_pipeline/kats"
             CHANGED_FILES=$(git diff --name-only -- tasrif/processing_pipeline/kats/)
 
@@ -36,6 +30,8 @@ stages:
             done
 
             echo "##vso[task.setvariable variable=SOURCE_CODE_CHANGED;isOutput=true]false"
+            echo "Checking files done."
+            echo "Source code was changed: $SOURCE_CODE_CHANGED"
           name: check_changes
           displayName: 'Check changed files'
 
