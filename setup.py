@@ -16,7 +16,7 @@ setup(
         'numpy >= 1.19.5',
         'pyjq >= 2.5.1',
         'ummalqura>=2.0.1',
-        'scikit-learn>=0.22.1'
+        'scikit-learn>=0.22.1',
         'matplotlib >= 3.0.0',
     ],
     # numpy also needs to be specified in setup_requires,
