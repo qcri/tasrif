@@ -26,6 +26,7 @@ stages:
         - bash: |
             echo "Checking files.."
             PATH_FILTER="tasrif/processing_pipeline/kats"
+            CHANGED=false
             CHANGED_FILES=$(git diff --name-only -- tasrif/processing_pipeline/kats/)
 
             for FILE in $CHANGED_FILES
