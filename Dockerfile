@@ -15,6 +15,10 @@ RUN pip3 install --user -r qa-requirements.txt
 COPY requirements.txt /home/requirements.txt
 RUN pip3 install --user -r requirements.txt
 
+ARG optional_code_changed
+RUN if [[ "$optional_code_changed" == 'true' ]] ; then echo $optional_code_changed ; else echo Argument is $optional_code_changed ; fi
+
+
 # install tasrif and its dependencies in editable mode
 COPY setup.py /home/setup.py
 RUN pip install --user -e .
