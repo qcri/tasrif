@@ -22,5 +22,8 @@ setup(
     # see https://github.com/numpy/numpy/issues/2434#issuecomment-65252402
     setup_requires=[
         'numpy >= 1.19.5',
-    ]
+    ],
+    extras_require={
+        "Kats":  ["kats==0.1.0"]
+    }
 )
