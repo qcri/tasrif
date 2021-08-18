@@ -1,0 +1,33 @@
+"""Example on how to read calories data from SIHA
+"""
+import os
+from tasrif.processing_pipeline import (
+    ProcessingPipeline,
+)
+
+from tasrif.data_readers.siha_dataset import SihaDataset
+from tasrif.processing_pipeline.custom import JqOperator
+from tasrif.processing_pipeline.pandas import (
+    JsonNormalizeOperator,
+    SetIndexOperator,
+    ConvertToDatetimeOperator,
+    AsTypeOperator,
+)
+
+siha_folder_path = os.environ['SIHA_PATH']
+
+pipeline = ProcessingPipeline([
+    SihaDataset(folder=siha_folder_path, table_name="Calories"),
+    JqOperator(
+        'map({patientID} + .data.activities_tracker_calories[].data."activities-tracker-calories"[0])'
+    ),
+    JsonNormalizeOperator(),
+    ConvertToDatetimeOperator(feature_names=["dateTime"],
+                              infer_datetime_format=True),
+    SetIndexOperator("dateTime"),
+    AsTypeOperator({"value": "float32"}),
+])
+
+df = pipeline.process()
+
+print(df)
