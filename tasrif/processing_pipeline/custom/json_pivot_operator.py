@@ -54,7 +54,9 @@ class JsonPivotOperator(ProcessingOperator):
         output = []
         for data_frame in data_frames:
             for column in self.columns:
+                data_frame[column] = data_frame[column].fillna('{}')
                 data_frame[column] = data_frame[column].apply(json.loads)
                 temp_df = pd.DataFrame(data_frame[column].values.tolist())
                 data_frame = pd.concat([data_frame.drop(column, axis=1), temp_df], axis=1)
+            output.append(data_frame)
         return output

@@ -14,60 +14,59 @@
 
 # %%
 import os
-import pandas as pd
-import numpy as np
-import pathlib
-import datetime
-from tasrif.data_readers.withings_dataset import WithingsStepsIntradayDataset, WithingsSleepDataset, WithingsVerticalRadiusIntradayDataset, WithingsSleepStateIntradayDataset, WithingsQualityScoreIntradayDataset, WithingsLatLongIntradayDataset,\
-WithingsAltitudeIntradayDataset, WithingsCaloriesIntradayDataset, WithingsDistanceIntradayDataset, WithingsHeartRateIntradayDataset,\
-WithingsWeightDataset, WithingsHeightDataset, WithingsActivitiesDataset
+from tasrif.data_readers.withings_dataset import WithingsDataset
+from tasrif.processing_pipeline import ProcessingPipeline
+from tasrif.data_readers.withings_dataset import WithingsDataset
+from tasrif.processing_pipeline.pandas import ConvertToDatetimeOperator, SetIndexOperator, AsTypeOperator, FillNAOperator
+from tasrif.processing_pipeline.custom import JsonPivotOperator
 
 # %%
-ds = WithingsStepsIntradayDataset(folder=os.environ['WITHINGS_PATH'])
-df_steps_raw = ds.raw_dataframe()
-df_steps = ds.processed_dataframe()
-df_steps
+steps_pipeline = ProcessingPipeline([
+    WithingsDataset(os.environ['WITHINGS_PATH']+'raw_tracker_steps.csv', table_name="Steps"),
+    ConvertToDatetimeOperator(feature_names=["from", "to"], infer_datetime_format=True, utc=True),
+    SetIndexOperator("from"),
+    AsTypeOperator({"steps": "int32"})
+])
+
+steps_pipeline.process()
 
 # %%
-ds = WithingsQualityScoreIntradayDataset(os.environ['WITHINGS_PATH'])
-df_qs_raw = ds.raw_dataframe()
-df_qs = ds.processed_dataframe()
-df_qs
+height_pipeline = ProcessingPipeline([
+    WithingsDataset(os.environ['WITHINGS_PATH']+'height.csv', table_name="Height"),
+    ConvertToDatetimeOperator(feature_names=["Date"], infer_datetime_format=True),
+    SetIndexOperator("Date"),
+    AsTypeOperator({"height": "float32"})
+])
+
+height_pipeline.process()
 
 # %%
-ds = WithingsHeartRateIntradayDataset(os.environ['WITHINGS_PATH'])
-df_hr_raw = ds.raw_dataframe()
-df_hr = ds.processed_dataframe()
-df_hr
+activities_pipeline = ProcessingPipeline([
+    WithingsDataset(os.environ['WITHINGS_PATH']+'activities.csv', table_name="Activities"),
+    JsonPivotOperator(["Data", "GPS"]),
+    ConvertToDatetimeOperator(feature_names=["from", "to"], infer_datetime_format=True, utc=True),
+    SetIndexOperator("from")
+])
+
+activities_pipeline.process()
 
 # %%
-ds = WithingsLatLongIntradayDataset(os.environ['WITHINGS_PATH'])
-df_latlong_raw = ds.raw_dataframe()
-df_latlong = ds.processed_dataframe()
-df_latlong
+bp_pipeline = ProcessingPipeline([
+    WithingsDataset(os.environ['WITHINGS_PATH']+'bp.csv', table_name="Blood_Pressure"),
+    ConvertToDatetimeOperator(feature_names=["Date"], infer_datetime_format=True),
+    SetIndexOperator("Date"),
+    AsTypeOperator({"Heart rate": "int32", "Systolic": "float32", "Diastolic": "float32"})
+])
+
+bp_pipeline.process()
 
 # %%
-ds = WithingsAltitudeIntradayDataset(os.environ['WITHINGS_PATH'])
-df_altitude_raw = ds.raw_dataframe()
-df_altitude = ds.processed_dataframe()
-df_altitude
+latlong_pipeline = ProcessingPipeline([
+    WithingsDataset([os.environ['WITHINGS_PATH']+'raw_tracker_latitude.csv', os.environ['WITHINGS_PATH']+'raw_tracker_longitude.csv'], table_name="Lat_Long"),
+    ConvertToDatetimeOperator(feature_names=["from", "to"], infer_datetime_format=True, utc=True),
+    SetIndexOperator("from"),
+    AsTypeOperator({"latitude": "float32", "longitude": "float32"})
+])
 
-# %%
-ds = WithingsWeightDataset(os.environ['WITHINGS_PATH'])
-df_weight = ds.processed_dataframe()
-df_weight
+latlong_pipeline.process()
 
-# %%
-ds = WithingsHeightDataset(os.environ['WITHINGS_PATH'])
-df_height = ds.processed_dataframe()
-df_height
-
-# %%
-ds = WithingsSleepDataset(os.environ['WITHINGS_PATH'])
-df_sleep = ds.processed_dataframe()
-df_sleep
-
-# %%
-ds = WithingsActivitiesDataset(os.environ['WITHINGS_PATH'])
-df_activities = ds.processed_dataframe()
-df_activities
