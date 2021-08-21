@@ -14,7 +14,6 @@ class ProcessDataframeOperator(ProcessingOperator):
             index: int or list[int]
                 index of dataframe to process the processing_operators on.
                 Dataframes not in the index will be passed.
-
             processing_operators : list[ProcessingOperator]
                 Python list of processing operators
 
@@ -51,9 +50,9 @@ class ProcessDataframeOperator(ProcessingOperator):
         >>> #     feature_creator,
         >>> #     feature_creator,
         >>> # ])
-        >>> 
+        >>>
         >>> feature_creator = CreateFeatureOperator("name_age", lambda df: df["name"] + "_" + str(df["age"]))
-        >>> 
+        >>>
         >>> ProcessDataframeOperator(index=[1, 2], processing_operators=[feature_creator]).process(df0, df1, df2)
         [   logId            timestamp  sleep_level
          0      1  2020-05-01 00:00:00            1
@@ -106,7 +105,7 @@ class ProcessDataframeOperator(ProcessingOperator):
 
         data_frames = list(data_frames)
         for dataframe_index in self.index:
-            for operator in self.processing_operators:        
+            for operator in self.processing_operators:
                 data_frames[dataframe_index] = operator.process(data_frames[dataframe_index])
 
         return data_frames
