@@ -10,3 +10,4 @@ from tasrif.processing_pipeline.generator_processing_operator import GeneratorPr
 from tasrif.processing_pipeline.split_join_operator import SplitJoinOperator
 from tasrif.processing_pipeline.map_processing_operator import MapProcessingOperator
 from tasrif.processing_pipeline.reduce_processing_operator import ReduceProcessingOperator
+from tasrif.processing_pipeline.process_dataframe_operator import ProcessDataframeOperator
