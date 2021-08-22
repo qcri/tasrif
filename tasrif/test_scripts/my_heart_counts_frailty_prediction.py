@@ -16,24 +16,41 @@
 import os
 import pandas as pd
 from tasrif.data_readers.my_heart_counts import MyHeartCountsDataset
-from tasrif.processing_pipeline import ProcessingPipeline
+from tasrif.processing_pipeline import ProcessingPipeline, MapProcessingOperator, ReduceProcessingOperator
 from tasrif.processing_pipeline.pandas import DropNAOperator, ConvertToDatetimeOperator, DropFeaturesOperator, \
                                               SetIndexOperator, PivotResetColumnsOperator, ConcatOperator, \
                                               MergeOperator, AsTypeOperator, JsonNormalizeOperator
 from tasrif.processing_pipeline.custom import CreateFeatureOperator, AggregateOperator, FilterOperator, \
-                                              IterateCsvOperator, IterateJsonOperator
+                                              IterateCsvOperator, IterateJsonOperator, FlattenOperator
 import warnings
 warnings.filterwarnings("ignore")
 
 # %%
-# Extract SixMinuteWalkActivity step count for each participant.
+# First, we extract six minute walk activity step count for each participant. Note that
+# participants are idenitified by a unique healthCode and may have participated in
+# multiple six minute walk activities.
 smwa_file_path = os.environ['MYHEARTCOUNTS_SIXMINUTEWALKACTIVITY_PATH']
 json_folder_path = os.environ['MYHEARTCOUNTS_SIXMINUTEWALKACTIVITY_JSON_FOLDER_PATH']
+
+# To do this, we create a custom operator to emit some data from the SMWA rows and json files.
+class EmitHealthCodeSMWAStepsOperator(MapProcessingOperator):
+    def processing_function(self, generator):
+        data = []
+
+        for row, smwa_data in generator:
+            if smwa_data is None:
+                continue
+            healthCode = row.healthCode
+            smwaSteps = smwa_data.iloc[-1]['numberOfSteps']
+            data.append([healthCode, smwaSteps])
+
+        return pd.DataFrame(data, columns=['healthCode', 'smwaSteps'])
 
 json_pipeline = ProcessingPipeline([
     JsonNormalizeOperator()
 ])
 
+# Use the custom operator along with some built-in operators to get the data we want.
 smwa_pipeline = ProcessingPipeline([
     MyHeartCountsDataset(smwa_file_path),
     CreateFeatureOperator(
@@ -44,29 +61,38 @@ smwa_pipeline = ProcessingPipeline([
         folder_path=json_folder_path,
         field='file_name',
         pipeline=json_pipeline),
+    EmitHealthCodeSMWAStepsOperator(),
+    AggregateOperator(
+        groupby_feature_names=["healthCode"],
+        aggregation_definition={'smwaSteps': 'max'}
+    )
 ])
 
-smwa = MyHeartCountsDataset(smwa_file_path)
-participant_smwa_steps = { 'healthCode': [], 'smwaSteps': [] }
-
-for row, smwa_data in smwa_pipeline.process()[0]:
-    if smwa_data is None:
-        continue
-    participant_smwa_steps['healthCode'].append(row.healthCode)
-    participant_smwa_steps['smwaSteps'].append(smwa_data.iloc[-1]['numberOfSteps'])
-
-participant_smwa_steps = pd.DataFrame.from_dict(participant_smwa_steps)
-
-# Take highest recorded steps for each healthCode across multiple six minute walk activites.
-agg_operator = AggregateOperator(groupby_feature_names=["healthCode"], aggregation_definition={'smwaSteps': 'max'})
-participant_smwa_steps = agg_operator.process(participant_smwa_steps)[0]
+# We now have the highest recorded steps taken in a six minute walk activity
+# for each participant.
+participant_smwa_steps = smwa_pipeline.process()[0]
 
 # %%
-# Extract the highest daily step count for each participant.
+# Next, we extract the highest daily step count for each participant.
 hkd_file_path = os.environ['MYHEARTCOUNTS_HEALTHKITDATA_PATH']
 csv_folder_path = os.environ['MYHEARTCOUNTS_HEALTHKITDATA_CSV_FOLDER_PATH']
 
-# Modify the CSV pipeline to filter step counts from a singular source.
+# Before that, we need a custom operator that enhances HealthKitData csv
+# dataframes with the healthCode from their corresponding rows.
+class AppendHealthCodeOperator(MapProcessingOperator):
+    def processing_function(self, generator):
+        data = []
+
+        for row, hkd_data in generator:
+            if hkd_data is None:
+                continue
+            hkd_data['healthCode'] = hkd_data.apply(lambda df: row.healthCode, axis=1)
+            data.append(hkd_data)
+
+        return data
+
+# Now, create a pipeline that filters the HealthKitData csv dataframes to return
+# daily steps counts from a single source (in this case, an Apple phone).
 csv_pipeline = ProcessingPipeline([
             ConvertToDatetimeOperator(
                 feature_names=["endTime"],
@@ -90,6 +116,8 @@ csv_pipeline = ProcessingPipeline([
             PivotResetColumnsOperator(level=1, columns='type')
 ])
 
+# We then use the custom operator from above to attach healthCodes to the csv data.
+# Then, we aggregate all the daily steps taken by each user, and take the highest.
 hkd_pipeline = ProcessingPipeline([
             MyHeartCountsDataset(hkd_file_path),
             CreateFeatureOperator(
@@ -99,47 +127,41 @@ hkd_pipeline = ProcessingPipeline([
                 folder_path=csv_folder_path,
                 field='file_name',
                 pipeline=csv_pipeline),
+            AppendHealthCodeOperator(),
+            FlattenOperator(),
+            ConcatOperator(),
+            AggregateOperator(
+                groupby_feature_names=["healthCode"],
+                aggregation_definition={'HKQuantityTypeIdentifierStepCount': 'max'})
 ])
 
-# Append healthCode to each processed dataframe
-participant_daily_steps = []
-for row, hkd_data in hkd_pipeline.process()[0]:
-    if hkd_data is None:
-        continue
-    hkd_data['healthCode'] = hkd_data.apply(lambda df: row.healthCode, axis=1)
-    participant_daily_steps.append(hkd_data)
+participant_most_steps_in_a_day = hkd_pipeline.process()[0]
 
-# Grab the max steps taken by each participant in a day.
-pipeline = ProcessingPipeline([
-    ConcatOperator(),
-    AggregateOperator(
-        groupby_feature_names=["healthCode"],
-        aggregation_definition={'HKQuantityTypeIdentifierStepCount': 'max'})
-])
-participant_max_steps_in_a_day = pipeline.process(*participant_daily_steps)[0]
-
-# Merge SixMinuteWalkActivity steps with max steps taken in a day.
-merge_operator = MergeOperator(on='healthCode')
-participant_smwa_steps_vs_max_steps_in_a_day = merge_operator.process(
+# %%
+# For each participant, merge his six minute walk activity steps with his most steps taken in a day.
+participant_smwa_steps_vs_most_steps_in_a_day = MergeOperator(on='healthCode').process(
     participant_smwa_steps,
-    participant_max_steps_in_a_day
+    participant_most_steps_in_a_day
 )
 
 # %%
-participant_smwa_steps_vs_max_steps_in_a_day
+# We finally have a dataframe that tells us, for each participant:
+# - The number of steps taken in the six minute walk activity
+# - The most steps taken in a day
+participant_smwa_steps_vs_most_steps_in_a_day
 
 # %%
 import matplotlib.pyplot as plt
 
 # Prune outliers with max steps > 20,000
-data = participant_smwa_steps_vs_max_steps_in_a_day
+data = participant_smwa_steps_vs_most_steps_in_a_day
 data = data[data['HKQuantityTypeIdentifierStepCount_max'] < 20000]
 
 plt.scatter(data['HKQuantityTypeIdentifierStepCount_max'], data['smwaSteps_max'], alpha=0.5)
-plt.xlabel("Maximum steps taken in a day")
+plt.xlabel("Most steps taken in a day")
 plt.ylabel("Six Minute Walk Activity steps")
 
 # The plot shows that there seems to be no significant correlation between
-# the maximum steps taken in a day vs the steps walked in a Six Minute Walk Activity
+# the most steps taken in a day vs the steps walked in a six minute walk activity
 # for a participant.
 plt.show()

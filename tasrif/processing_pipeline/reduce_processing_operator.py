@@ -78,8 +78,7 @@ class ReduceProcessingOperator(ProcessingOperator):
             output = list_of_inputs[0]
             start_index = 1
 
-        for index in range(start_index, len(list_of_inputs)):
-            element = list_of_inputs[index]
+        for element in list_of_inputs[start_index:]:
             output = self.processing_function(element, output)
 
         return output
