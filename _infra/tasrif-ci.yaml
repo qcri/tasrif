@@ -70,7 +70,7 @@ stages:
           arguments: --build-arg optional_code_changed=dependencies.CheckChanges.outputs['check_changes.SOURCE_CODE_CHANGED']
 
       - task: Docker@2
-        displayName: 'Push image' 
+        displayName: 'Push image'
         inputs:
           command: push
           repository: $(Build.Repository.Name)
@@ -204,9 +204,10 @@ stages:
           command: run
           containerRegistry: tasrif-acr
           arguments: >-
-            -v $(System.DefaultWorkingDirectory)/docs-generator:/home/docs-generator
+            --entrypoint "/bin/bash"
+            -v $(System.DefaultWorkingDirectory)/docs/build:/home/docs/build
             qcriswtasrif.azurecr.io/$(Build.Repository.Name):$(Build.BuildId)
-            /home/generate_docs.sh
+            -c "cd docs; make html"
       - task: AzureCLI@2
         displayName: 'Copy Doc Files to Storage Account'
         # Copy the generated docs to the storage account only on builds from master
@@ -217,6 +218,6 @@ stages:
           scriptLocation: inlineScript
           inlineScript: >-
             az storage blob upload-batch
-            -s $(System.DefaultWorkingDirectory)/docs-generator/_build/html/
+            -s $(System.DefaultWorkingDirectory)/docs/build/html
             -d '$web'
             --account-name tasrifweb
