@@ -35,18 +35,21 @@ class ResampleOperator(ProcessingOperator):
     2020-05-02     1.000000]
 
     """
-    def __init__(self, rule, aggregation_definition):
+    def __init__(self, rule, aggregation_definition, **resample_args):
         """Creates a new instance of ResampleOperator
 
         Args:
             rule (ruleDateOffset, Timedelta, str):
                 The offset string or object representing target conversion.
             aggregation_definition (dict, str):
-                - Dictionary containing feature to aggregation functions mapping.
-                - function defining the aggregation behavior ('sum', 'mean', 'ffill', etc.)
+                Dictionary containing feature to aggregation functions mapping.
+                function defining the aggregation behavior ('sum', 'mean', 'ffill', etc.)
+            **resample_args:
+                key word arguments passed to pandas DataFrame.resample method
         """
         self.rule = rule
         self.aggregation_definition = aggregation_definition
+        self.resample_args = resample_args
 
     def process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.
@@ -58,12 +61,12 @@ class ResampleOperator(ProcessingOperator):
         Returns:
             pd.DataFrame -or- list[pd.DataFrame]
                 Processed dataframe(s) resulting from applying the operator
+
         """
 
         processed = []
         for data_frame in data_frames:
-            # data_frame = data_frame[~data_frame.index.duplicated(keep='first')]
-            resampler = data_frame.resample(self.rule)
+            resampler = data_frame.resample(self.rule, **self.resample_args)
             if isinstance(self.aggregation_definition, dict):
 
                 data_frame = resampler.agg(self.aggregation_definition)

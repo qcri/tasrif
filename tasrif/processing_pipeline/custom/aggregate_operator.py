@@ -39,7 +39,10 @@ class AggregateOperator(ProcessingOperator):
 
         Args:
             groupby_feature_names (str):
-                Name of the feature to base the grouping on
+                Name of the feature to base the grouping on.
+                In case groupby_feature_names includes non string
+                such as a function call like pd.Grouper(),
+                the column is not shown in the result.
             aggregation_definition (dict):
                 Dictionary containing feature to aggregation functions mapping.
 
@@ -63,6 +66,11 @@ class AggregateOperator(ProcessingOperator):
         columns = self.groupby_feature_names.copy() if isinstance(
             self.groupby_feature_names,
             list) else [self.groupby_feature_names]
+
+        for idx, col in enumerate(columns):
+            if not isinstance(col, str):
+                del columns[idx]
+
         for key, value in self.aggregation_definition.items():
             if isinstance(value, list):
                 for i in value:

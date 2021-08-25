@@ -9,6 +9,7 @@ class ReplaceOperator(ProcessingOperator):
 
     Examples
     --------
+
     >>> df = pd.DataFrame({'id': [1, 2, 3], 'colors': ['red', 'white', 'blue'], "importance": [1, 3, 2]})
     >>> df = ReplaceOperator(to_replace="red", value="green").process(df)[0]
     >>> df
@@ -39,6 +40,7 @@ class ReplaceOperator(ProcessingOperator):
         Returns:
             data_frames (list of pd.DataFrame):
                 Resulting dataframes after applying the replace function.
+
         """
         # Gets one single
         processed = []

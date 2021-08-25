@@ -9,11 +9,6 @@ from tasrif.processing_pipeline import ProcessingOperator
 
 class FilterOperator(ProcessingOperator):
     """
-    Parameters
-    ----------
-
-    Raises
-    ------
 
     Examples
     --------
@@ -72,7 +67,7 @@ class FilterOperator(ProcessingOperator):
             self,
             participant_id_column="id",
             ts_column="time",
-            epoch_filter="",
+            epoch_filter=None,
             day_filter=None,
             filter_type="include"):
         """
@@ -132,6 +127,9 @@ class FilterOperator(ProcessingOperator):
                 filtered pandas DataFrame
 
         """
+        if not self.epoch_filter:
+            return data_frame
+
         if isinstance(self.epoch_filter, str):
             if self.filter_type == "include":
                 processed_df = data_frame.query(self.epoch_filter)

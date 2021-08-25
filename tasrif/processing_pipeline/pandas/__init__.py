@@ -20,3 +20,8 @@ from tasrif.processing_pipeline.pandas.pivot_reset_columns_operator import Pivot
 from tasrif.processing_pipeline.pandas.cut_operator import CutOperator
 from tasrif.processing_pipeline.pandas.qcut_operator import QCutOperator
 from tasrif.processing_pipeline.pandas.read_csv_operator import ReadCsvOperator
+from tasrif.processing_pipeline.pandas.rename_operator import RenameOperator
+from tasrif.processing_pipeline.pandas.mean_operator import MeanOperator
+from tasrif.processing_pipeline.pandas.corr_operator import CorrOperator
+from tasrif.processing_pipeline.pandas.rolling_operator import RollingOperator
+from tasrif.processing_pipeline.pandas.sum_operator import SumOperator

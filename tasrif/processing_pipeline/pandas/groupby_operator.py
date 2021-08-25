@@ -53,13 +53,18 @@ class GroupbyOperator(ProcessingOperator):
 
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, selector=None, **kwargs):
         """Creates a new instance of GroupbyOperator
 
         Args:
-            **kwargs: Arguments to pandas pd.groupby function
+            selector:
+                selects the columns of a groupby object
+            **kwargs:
+                Arguments to pandas pd.groupby function
 
         """
+
+        self.selector = selector
         self.kwargs = kwargs
         super().__init__()
 
@@ -77,7 +82,11 @@ class GroupbyOperator(ProcessingOperator):
 
         processed = []
         for data_frame in data_frames:
-            data_frame = data_frame.groupby(**self.kwargs)
+            if self.selector:
+                data_frame = data_frame.groupby(**self.kwargs)[self.selector]
+            else:
+                data_frame = data_frame.groupby(**self.kwargs)
+
             processed.append(data_frame)
 
         return processed
