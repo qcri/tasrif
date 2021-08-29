@@ -16,3 +16,4 @@ tasrif.egg-info/
 .ipynb_checkpoints/
 docs/build
 docs/source/tasrif.*.rst
+docs/_build/

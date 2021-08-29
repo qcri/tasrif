@@ -8,9 +8,6 @@ Welcome to Tasrif's documentation!
 
 **Date**: |today| **Version**: |release|
 
-Introduction
-============
-
 Tasrif is a library for processing of eHealth data. It provides:
 
 * DataReaders for reading eHealth datasets such as `MyHeartCounts`_, `SleepHealth`_
@@ -21,6 +18,19 @@ Tasrif is a library for processing of eHealth data. It provides:
 .. _MyHeartCounts: https://www.synapse.org/?source=post_page-------------------
   --------#!Synapse:syn11269541/wiki/
 .. _SleepHealth: https://www.synapse.org/#!Synapse:syn18492837/wiki/
+
+Tutorial
+========
+
+.. toctree::
+    :maxdepth: 1
+
+    introduction
+    operators
+    pipelines
+    built-in-operators
+    custom-operators
+    datareaders
 
 Packages
 ========
