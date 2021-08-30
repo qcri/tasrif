@@ -7,42 +7,42 @@ processing workflow.
 Each Operator in a Pipeline is executed sequentially, with the output from one
 Operator becoming the input for the next.
 
-As a follow up to the previous example, let's replace all instances of
-:code:`red` with :code:`blue`, concatenate both DataFrames and then group rows
-by their colors, all using Tasrif Operators wrapped in a Pipeline:
+As a follow up to the previous example, let's do the following using Tasrif
+Operators wrapped in a Pipeline:
+
+1. Drop all rows with missing values
+2. Concatenate both DataFrames
+3. Get the mean step count
 
 .. code-block:: python
 
     >>> import pandas as pd
-    >>> from tasrif.processing_pipeline.pandas import ReplaceOperator, \
+    >>> from tasrif.processing_pipeline.pandas import DropNAOperator, \
     ...                                               ConcatOperator, \
-    ...                                               GroupbyOperator
+    ...                                               MeanOperator
     >>> from tasrif.processing_pipeline import ProcessingPipeline
 
     >>> df1 = pd.DataFrame({
-    ...     'id':     [1,     2,        3     ],
-    ...     'colors': ['red', 'white', 'green']
+    ...     'Date':   ['05-06-2021', '06-06-2021', '07-06-2021', '08-06-2021'],
+    ...     'Steps':  [        4500,         None,         5690,         6780]
     ... })
 
     >>> df2 = pd.DataFrame({
-    ...     'names': ['Fred', 'George', 'Harry'],
-    ...     'colors': ['red', 'white', 'green']
+    ...     'Date':   ['12-07-2021', '13-07-2021', '14-07-2021', '15-07-2021'],
+    ...     'Steps':  [        2100,         None,         None,         5400]
     ... })
 
     >>> pipeline = ProcessingPipeline([
-    ...        ReplaceOperator(
-    ...            to_replace='red',
-    ...            value='blue'
-    ...        ),
+    ...        DropNAOperator(),
     ...        ConcatOperator(),
-    ...        GroupbyOperator(by='colors')
+    ...        MeanOperator()
     ... ])
 
-    >>> groups = pipeline.process(df1, df2)
-    >>> groups.get_group('blue')
-        id colors names
-    0  1.0   blue   NaN
-    0  NaN   blue  Fred
+    >>> results = pipeline.process(df1, df2)
+    >>> results[0]
+    Steps    4894.0
+    dtype: float64
+
 
 As before, we instantiate all Operators with their appropriate parameters,
 except this time, they are grouped together within the
