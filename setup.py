@@ -24,6 +24,6 @@ setup(
         'numpy >= 1.19.5',
     ],
     extras_require={
-        "Kats":  ["kats==0.1.0"]
+        "full":  ["kats==0.1.0", "tsfresh==0.18.0"]
     }
 )
