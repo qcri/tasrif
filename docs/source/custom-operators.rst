@@ -58,7 +58,8 @@ For example, let's use the :code:`MapProcessingOperator` to build the
     from tasrif.processing_pipeline import MapProcessingOperator
 
     class RowCountOperator(MapProcessingOperator):
-        return len(df.index)
+        def processing_function(self, df):
+            return len(df.index)
 
 As you can see, these convenience classes are a quick way of creating simple,
 custom Operators.
