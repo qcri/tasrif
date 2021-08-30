@@ -22,3 +22,4 @@ from tasrif.processing_pipeline.custom.normalize_transform_operator import Norma
 from tasrif.processing_pipeline.custom.categorize_duration_operator import CategorizeDurationOperator
 from tasrif.processing_pipeline.custom.json_pivot_operator import JsonPivotOperator
 from tasrif.processing_pipeline.custom.flatten_operator import FlattenOperator
+from tasrif.processing_pipeline.custom.sliding_window_operator import SlidingWindowOperator
