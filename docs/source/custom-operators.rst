@@ -33,17 +33,17 @@ Let's test our new Operator:
 .. code-block:: python
 
     >>> df1 = pd.DataFrame({
-    ...     'id':     [1,     2,       3      ],
-    ...     'colors': ['red', 'white', 'green']
+    ...     'Date':   ['05-06-2021', '06-06-2021', '07-06-2021', '08-06-2021'],
+    ...     'Steps':  [        4500,         None,         5690,         6780]
     ... })
 
     >>> df2 = pd.DataFrame({
-    ...     'names': ['Fred', 'George', 'Harry'],
-    ...     'colors': ['red', 'white', 'green']
+    ...     'Date':   ['12-07-2021', '13-07-2021', '14-07-2021', '15-07-2021'],
+    ...     'Steps':  [        2100,         None,         None,         5400]
     ... })
 
     >>> RowCountOperator().process(df1, df2)
-    [3, 3]
+    [4, 4]
 
 To ease the creation of custom Operators, we have created two convenience
 classes: :code:`MapProcessingOperator` and :code:`ReduceProcessingOperator`. As
