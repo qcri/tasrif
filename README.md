@@ -7,9 +7,9 @@ Tasrif is a library for processing of eHealth data. It provides:
 - DataReaders for reading eHealth datasets such as
   [MyHeartCounts](https://www.synapse.org/?source=post_page---------------------------#!Synapse:syn11269541/wiki/), [SleepHealth](https://www.synapse.org/#!Synapse:syn18492837/wiki/) and data from FitBit devices.
 
-# Features
+## Features
 
-## Pipeline DSL
+### Pipeline DSL
 
 Tasrif provies a variety of processing operators that can be chained together in a pipeline. The
 operators themselves take as input and output [Pandas](https://pandas.pydata.org/)
@@ -73,7 +73,7 @@ sequential processing of data:
 1 2021-07-16   Doha        17        50      33.5]
 ```
 
-## DataReaders
+### DataReaders
 
 Tasrif also comes with DataReader classes for importing various eHealth datasets into pipelines.
 These readers preprocess the raw data and convert them into a DataFrame for downstream processing in a pipeline.
@@ -104,3 +104,16 @@ pipeline = Pipeline([
 pipeline.process()
 ```
 
+## Documentation
+
+Tasrif's official documentation is hosted here: [https://tasrif.qcri.org](https://tasrif.qcri.org)
+
+You can build the docs locally after installing the dependencies in `setup.py` and
+`requirements.txt` by:
+
+```
+cd docs
+make html
+```
+
+You can then browse through them by opening `docs/build/html/index.html` in a browser.
