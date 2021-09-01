@@ -8,42 +8,41 @@ processing workflows.
 Operators take as input and return as output `Pandas DataFrames`_. Operators can
 also process multiple DataFrames at the same time.
 
-As an example, consider the :code:`ReplaceOperator` that can be used to replace
-specific values in input DataFrames:
+As an example, consider the :code:`DropNAOperator` that can be used to drop rows
+with missing values in input DataFrames:
 
 .. code-block:: python
 
     >>> import pandas as pd
-    >>> from tasrif.processing_pipeline.pandas import ReplaceOperator
+    >>> from tasrif.processing_pipeline.pandas import DropNAOperator
 
     >>> df1 = pd.DataFrame({
-    ...     'id':     [1,     2,       3      ],
-    ...     'colors': ['red', 'white', 'green']
+    ...     'Date':   ['05-06-2021', '06-06-2021', '07-06-2021', '08-06-2021'],
+    ...     'Steps':  [        4500,         None,         5690,         6780]
     ... })
 
     >>> df2 = pd.DataFrame({
-    ...     'names': ['Fred', 'George', 'Harry'],
-    ...     'colors': ['red', 'white', 'green']
+    ...     'Date':   ['12-07-2021', '13-07-2021', '14-07-2021', '15-07-2021'],
+    ...     'Steps':  [        2100,         None,         None,         5400]
     ... })
 
-    >>> operator = ReplaceOperator(to_replace="red", value="blue")
+    >>> operator = DropNAOperator()
     >>> dfs = operator.process(df1, df2)
 
     >>> dfs[0]
-        id colors
-    0   1   blue
-    1   2  white
-    2   3  green
+            Date   Steps
+    0  05-06-2021  4500.0
+    2  07-06-2021  5690.0
+    3  08-06-2021  6780.0
 
     >>> dfs[1]
-        names colors
-    0    Fred   blue
-    1  George  white
-    2   Harry  green
+            Date   Steps
+    0  12-07-2021  2100.0
+    3  15-07-2021  5400.0
 
 To use an Operator, we first instantiate it with its appropriate parameters.
-Since the :code:`ReplaceOperator` is built on top of
-`pandas.DataFrame.replace`_, the same parameters can also be passed in.
+Since the :code:`DropNAOperator` is built on top of
+`pandas.DataFrame.dropna`_, the same parameters can also be passed in.
 
 Next, we call the :code:`.process` method on the newly created Operator, and
 then pass in the input DataFrames. The Operator replaces all instances of :code:`red`
@@ -56,5 +55,6 @@ Operators to form a processing **Pipeline**.
 .. _Pandas DataFrames: https://pandas.pydata.org/pandas-docs/
     stable/user_guide/dsintro.html#dataframe
 
-.. _pandas.DataFrame.replace:
-    https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.replace.html
+.. _pandas.DataFrame.dropna:
+    https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.dropna.html
+
