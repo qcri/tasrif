@@ -9,6 +9,10 @@ os.system("export MINIMAL=1")
 
 print(find_packages(), file=sys.stderr)
 
+# Due to a dependency conflict with a package used by tsfresh, the numpy
+# version has to be below <= 1.20.
+NUMPY_VERSION='numpy <= 1.20'
+
 setup(
     name='tasrif',
     version='0.1',
@@ -16,7 +20,7 @@ setup(
     python_requires='>= 3.7',
     install_requires=[
         'pandas >= 1.1.1',
-        'numpy >= 1.19.5',
+        NUMPY_VERSION,
         'pyjq >= 2.5.1',
         'ummalqura >= 2.0.1',
         'scikit-learn >= 0.22.1',
@@ -27,6 +31,6 @@ setup(
     # numpy also needs to be specified in setup_requires,
     # see https://github.com/numpy/numpy/issues/2434#issuecomment-65252402
     setup_requires=[
-        'numpy >= 1.19.5',
+        NUMPY_VERSION,
     ],
 )
