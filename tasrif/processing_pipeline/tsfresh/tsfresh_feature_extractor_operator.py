@@ -106,7 +106,7 @@ class TSFreshFeatureExtractorOperator(ProcessingOperator):
                  seq_id_col="seq_id",
                  time_col="time",
                  value_col="Steps",
-                 features=Defaults.TSFREASH_FEATURES):
+                 features=Defaults.TSFRESH_FEATURES):
         """Creates a new instance of TSFreshFeatureExtractorOperator
 
         Args:
