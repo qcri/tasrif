@@ -3,7 +3,7 @@
 import abc
 from tasrif.processing_pipeline.processing_operator import ProcessingOperator
 
-class ReduceProcessingOperator(ProcessingOperator):
+class ReduceProcessingOperator(ProcessingOperator, metaclass=abc.ABCMeta):
     """
     The ReduceProcessingOperator is a specialized ProcessingOperator, where a
     reduce function is applied on each element of a list of inputs. Users can
@@ -53,8 +53,6 @@ class ReduceProcessingOperator(ProcessingOperator):
 
 
     """
-    __metaclass__ = abc.ABCMeta
-
     initial = None
 
     @abc.abstractmethod

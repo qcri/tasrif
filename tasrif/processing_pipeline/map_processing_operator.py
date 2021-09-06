@@ -3,7 +3,7 @@
 import abc
 from tasrif.processing_pipeline.processing_operator import ProcessingOperator
 
-class MapProcessingOperator(ProcessingOperator):
+class MapProcessingOperator(ProcessingOperator, metaclass=abc.ABCMeta):
     """
     The MapProcessingOperator is a specialized ProcessingOperator, where a map
     function is applied on each element of a list of inputs. Users can inherit
@@ -34,8 +34,6 @@ class MapProcessingOperator(ProcessingOperator):
     [15, 8]
 
     """
-    __metaclass__ = abc.ABCMeta
-
     @abc.abstractmethod
     def processing_function(self, element):
         """
