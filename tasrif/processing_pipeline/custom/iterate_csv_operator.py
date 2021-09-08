@@ -6,7 +6,7 @@ import pathlib
 import pandas as pd
 
 from tasrif.processing_pipeline import ProcessingOperator
-from tasrif.processing_pipeline import ProcessingPipeline
+from tasrif.processing_pipeline import SequenceOperator
 
 class IterateCsvOperator(ProcessingOperator):
     """
@@ -73,7 +73,7 @@ class IterateCsvOperator(ProcessingOperator):
 
 	"""
 
-    def __init__(self, folder_path, field, pipeline: ProcessingPipeline = None):
+    def __init__(self, folder_path, field, pipeline: SequenceOperator = None):
         """Creates a new instance of IterateCsvOperator
 
         Args:
@@ -81,7 +81,7 @@ class IterateCsvOperator(ProcessingOperator):
                 path to csv files
             field (str):
                 column that contains the csv file names
-            pipeline (ProcessingPipeline):
+            pipeline (SequenceOperator):
                 pipeline to apply on dataframe record before yielding it
         """
 

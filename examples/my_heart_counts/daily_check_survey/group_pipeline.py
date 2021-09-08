@@ -1,5 +1,5 @@
 import os
-from tasrif.processing_pipeline import ProcessingPipeline
+from tasrif.processing_pipeline import SequenceOperator
 from tasrif.processing_pipeline.pandas import DropFeaturesOperator
 from tasrif.processing_pipeline.custom import AggregateOperator
 from tasrif.data_readers.my_heart_counts import MyHeartCountsDataset
@@ -19,7 +19,7 @@ Steps:
         - get the standard deviation of activity1_intensity, activity1_time
         - repeat for activity2_option
 '''
-pipeline = ProcessingPipeline([
+pipeline = SequenceOperator([
     MyHeartCountsDataset(dcs_file_path),
     DropFeaturesOperator(["recordId"]),
     AggregateOperator(

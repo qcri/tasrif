@@ -5,7 +5,7 @@ import pathlib
 import json
 
 from tasrif.processing_pipeline import ProcessingOperator
-from tasrif.processing_pipeline import ProcessingPipeline
+from tasrif.processing_pipeline import SequenceOperator
 
 class IterateJsonOperator(ProcessingOperator):
     """
@@ -50,7 +50,7 @@ class IterateJsonOperator(ProcessingOperator):
     \\============================
 
     """
-    def __init__(self, folder_path, field, pipeline: ProcessingPipeline):
+    def __init__(self, folder_path, field, pipeline: SequenceOperator):
         """Creates a new instance of IterateJsonOperator
 
         Args:
@@ -58,7 +58,7 @@ class IterateJsonOperator(ProcessingOperator):
                 path to csv files
             field (str):
                 column that contains the csv file names
-            pipeline (ProcessingPipeline):
+            pipeline (SequenceOperator):
                 pipeline to apply on dataframe record before yielding it
         """
 

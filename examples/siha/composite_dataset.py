@@ -19,7 +19,7 @@
 import os
 
 from tasrif.processing_pipeline import (
-    ProcessingPipeline,
+    SequenceOperator,
     ProcessingOperator,
     ComposeOperator,
     NoopOperator,
@@ -60,7 +60,7 @@ class RenameOperator(ProcessingOperator):
 
 # %%
 # base_datasets = ["EMR", "CGM", "Steps", "Distance", "Calories"]
-base_datasets = ProcessingPipeline([
+base_datasets = SequenceOperator([
     SihaDataset(folder=siha_folder_path, table_name="EMR"),
     ComposeOperator([
         JqOperator("map({patientID} + .data.emr[])"), # EMR
@@ -90,7 +90,7 @@ df
 
 # %%
 # intraday_datasets = ["HeartRateIntraday", "CaloriesIntraday", "StepsIntraday", "DistanceIntraday"]
-intraday_datasets = ProcessingPipeline([
+intraday_datasets = SequenceOperator([
     SihaDataset(folder=siha_folder_path, table_name="HeartRateIntraday"),
     ComposeOperator([
         JqOperator(

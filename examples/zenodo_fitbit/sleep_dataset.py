@@ -3,7 +3,7 @@ import os
 import pandas as pd
 
 from tasrif.processing_pipeline import (
-    ProcessingPipeline,
+    SequenceOperator,
     ComposeOperator,
     NoopOperator,
 )
@@ -29,7 +29,7 @@ TOTAL_AGGREGATION_DEFINITION = {
     "value_mean": ["mean", "std"],
 }
 
-pipeline = ProcessingPipeline([
+pipeline = SequenceOperator([
     ZenodoFitbitDataset(zenodo_folder_path, table_name="Sleep"),
     CreateFeatureOperator(
         feature_name="date",

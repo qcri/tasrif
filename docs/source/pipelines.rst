@@ -20,7 +20,7 @@ Operators wrapped in a Pipeline:
     >>> from tasrif.processing_pipeline.pandas import DropNAOperator, \
     ...                                               ConcatOperator, \
     ...                                               MeanOperator
-    >>> from tasrif.processing_pipeline import ProcessingPipeline
+    >>> from tasrif.processing_pipeline import SequenceOperator
 
     >>> df1 = pd.DataFrame({
     ...     'Date':   ['05-06-2021', '06-06-2021', '07-06-2021', '08-06-2021'],
@@ -32,7 +32,7 @@ Operators wrapped in a Pipeline:
     ...     'Steps':  [        2100,         None,         None,         5400]
     ... })
 
-    >>> pipeline = ProcessingPipeline([
+    >>> pipeline = SequenceOperator([
     ...        DropNAOperator(),
     ...        ConcatOperator(),
     ...        MeanOperator()
@@ -46,7 +46,7 @@ Operators wrapped in a Pipeline:
 
 As before, we instantiate all Operators with their appropriate parameters,
 except this time, they are grouped together within the
-:code:`ProcessingPipeline`.
+:code:`SequenceOperator`.
 
 Finally, the :code:`.process` method is called on the pipeline instead of the
 operators. This causes the pipeline to execute the operators in sequential

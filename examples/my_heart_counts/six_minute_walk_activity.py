@@ -1,17 +1,17 @@
 import os
 from tasrif.processing_pipeline.pandas import JsonNormalizeOperator
-from tasrif.processing_pipeline import ProcessingPipeline
+from tasrif.processing_pipeline import SequenceOperator
 from tasrif.data_readers.my_heart_counts import MyHeartCountsDataset
 from tasrif.processing_pipeline.custom import CreateFeatureOperator, IterateJsonOperator
 
 smwa_file_path = os.environ['MYHEARTCOUNTS_SIXMINUTEWALKACTIVITY_PATH']
 json_folder_path = os.environ['MYHEARTCOUNTS_SIXMINUTEWALKACTIVITY_JSON_FOLDER_PATH']
 
-json_pipeline = ProcessingPipeline([
+json_pipeline = SequenceOperator([
     JsonNormalizeOperator()
 ])
 
-pipeline = ProcessingPipeline([
+pipeline = SequenceOperator([
     MyHeartCountsDataset(smwa_file_path),
     CreateFeatureOperator(
         feature_name='file_name',

@@ -1,12 +1,12 @@
 import os
-from tasrif.processing_pipeline import ProcessingPipeline
+from tasrif.processing_pipeline import SequenceOperator
 from tasrif.data_readers.withings_dataset import WithingsDataset
 from tasrif.processing_pipeline.custom import CreateFeatureOperator, AggregateOperator
 from tasrif.processing_pipeline.pandas import ConvertToDatetimeOperator, SetIndexOperator
 
 withings_data_filename = os.environ['WITHINGS_PATH']+'sleep.csv'
 
-pipeline = ProcessingPipeline([
+pipeline = SequenceOperator([
     WithingsDataset(withings_data_filename, table_name="Sleep"),
     ConvertToDatetimeOperator(feature_names=["from", "to"],
                               infer_datetime_format=True),

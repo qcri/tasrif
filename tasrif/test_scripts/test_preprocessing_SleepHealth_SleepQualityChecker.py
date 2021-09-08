@@ -18,7 +18,7 @@ from tasrif.processing_pipeline.custom import AggregateOperator, AddDurationOper
 # %load_ext autoreload
 # %autoreload 2
 
-from tasrif.processing_pipeline import ProcessingPipeline
+from tasrif.processing_pipeline import SequenceOperator
 from tasrif.processing_pipeline.pandas import ConvertToDatetimeOperator, SortOperator
 from tasrif.processing_pipeline.custom import CreateFeatureOperator
 
@@ -47,7 +47,7 @@ df0
 
 # %% pycharm={"name": "#%%\n"}
 # Full SleepQualityCheckerDataset
-pipeline = ProcessingPipeline([
+pipeline = SequenceOperator([
     SortOperator(by=["participantId", "timestamp"]),
     AggregateOperator(groupby_feature_names="participantId",
                       aggregation_definition= {

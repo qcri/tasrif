@@ -1,11 +1,11 @@
 import os
-from tasrif.processing_pipeline import ProcessingPipeline, ComposeOperator
+from tasrif.processing_pipeline import SequenceOperator, ComposeOperator
 from tasrif.data_readers.fitbit_intraday_dataset import FitbitIntradayDataset
 from tasrif.processing_pipeline.pandas import ConvertToDatetimeOperator, SetIndexOperator, JsonNormalizeOperator, AsTypeOperator, MergeOperator
 
 fitbit_intraday_data_folder = os.environ['FITBIT_INTRADAY_PATH']
 
-composite_pipeline = ProcessingPipeline([
+composite_pipeline = SequenceOperator([
     ComposeOperator([FitbitIntradayDataset(fitbit_intraday_data_folder,
                                            table_name="Very_Active_Minutes"),
                      FitbitIntradayDataset(fitbit_intraday_data_folder,

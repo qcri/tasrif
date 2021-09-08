@@ -1,12 +1,12 @@
 import os
-from tasrif.processing_pipeline import ProcessingPipeline
+from tasrif.processing_pipeline import SequenceOperator
 from tasrif.data_readers.fitbit_interday_dataset import FitbitInterdayDataset
 from tasrif.processing_pipeline.pandas import ConvertToDatetimeOperator, SetIndexOperator
 from tasrif.processing_pipeline.custom import CreateFeatureOperator, AggregateOperator
 
 interday_folder_path = os.environ['FITBIT_INTERDAY_PATH']
 
-pipeline = ProcessingPipeline([
+pipeline = SequenceOperator([
     FitbitInterdayDataset(interday_folder_path, table_name="Sleep"),
     ConvertToDatetimeOperator(feature_names=['Start Time', 'End Time'],
                                 infer_datetime_format=True),

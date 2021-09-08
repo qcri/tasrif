@@ -16,7 +16,7 @@
 import os
 import pandas as pd
 from tasrif.data_readers.my_heart_counts import MyHeartCountsDataset
-from tasrif.processing_pipeline import ProcessingPipeline, MapProcessingOperator, ReduceProcessingOperator
+from tasrif.processing_pipeline import SequenceOperator, MapProcessingOperator, ReduceProcessingOperator
 from tasrif.processing_pipeline.pandas import DropNAOperator, ConvertToDatetimeOperator, DropFeaturesOperator, \
                                               SetIndexOperator, PivotResetColumnsOperator, ConcatOperator, \
                                               MergeOperator, AsTypeOperator, JsonNormalizeOperator
@@ -46,12 +46,12 @@ class EmitHealthCodeSMWAStepsOperator(MapProcessingOperator):
 
         return pd.DataFrame(data, columns=['healthCode', 'smwaSteps'])
 
-json_pipeline = ProcessingPipeline([
+json_pipeline = SequenceOperator([
     JsonNormalizeOperator()
 ])
 
 # Use the custom operator along with some built-in operators to get the data we want.
-smwa_pipeline = ProcessingPipeline([
+smwa_pipeline = SequenceOperator([
     MyHeartCountsDataset(smwa_file_path),
     CreateFeatureOperator(
         feature_name='file_name',
@@ -93,7 +93,7 @@ class AppendHealthCodeOperator(MapProcessingOperator):
 
 # Now, create a pipeline that filters the HealthKitData csv dataframes to return
 # daily steps counts from a single source (in this case, an Apple phone).
-csv_pipeline = ProcessingPipeline([
+csv_pipeline = SequenceOperator([
             ConvertToDatetimeOperator(
                 feature_names=["endTime"],
                 errors='coerce'),
@@ -118,7 +118,7 @@ csv_pipeline = ProcessingPipeline([
 
 # We then use the custom operator from above to attach healthCodes to the csv data.
 # Then, we aggregate all the daily steps taken by each user, and take the highest.
-hkd_pipeline = ProcessingPipeline([
+hkd_pipeline = SequenceOperator([
             MyHeartCountsDataset(hkd_file_path),
             CreateFeatureOperator(
                 feature_name='file_name',

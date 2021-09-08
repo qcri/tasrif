@@ -2,7 +2,7 @@
 """
 import os
 from tasrif.processing_pipeline import (
-    ProcessingPipeline,
+    SequenceOperator,
 )
 
 from tasrif.data_readers.siha_dataset import SihaDataset
@@ -18,7 +18,7 @@ from tasrif.processing_pipeline.pandas import (
 
 siha_folder_path = os.environ['SIHA_PATH']
 
-pipeline = ProcessingPipeline([
+pipeline = SequenceOperator([
     SihaDataset(siha_folder_path, table_name="CaloriesIntraday"),
     JqOperator(
         "map({patientID} + .data.activities_calories_intraday[].data as $item  |"

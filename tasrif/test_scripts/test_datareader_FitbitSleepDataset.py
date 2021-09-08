@@ -15,7 +15,7 @@
 # %%
 import os
 from tasrif.data_readers.fitbit_intraday_dataset import FitbitIntradayDataset
-from tasrif.processing_pipeline import ProcessingPipeline, ComposeOperator
+from tasrif.processing_pipeline import SequenceOperator, ComposeOperator
 from tasrif.processing_pipeline.pandas import ConvertToDatetimeOperator, SetIndexOperator, JsonNormalizeOperator, AsTypeOperator, MergeOperator
 from tasrif.processing_pipeline.custom import DistributedUpsampleOperator, DropIndexDuplicatesOperator, ResampleOperator, SetFeaturesValueOperator, FlattenOperator 
 
@@ -23,7 +23,7 @@ from tasrif.processing_pipeline.custom import DistributedUpsampleOperator, DropI
 fitbit_intraday_data_folder = os.environ['FITBIT_INTRADAY_PATH']
 
 # %%
-distance_pipeline = ProcessingPipeline([
+distance_pipeline = SequenceOperator([
     FitbitIntradayDataset(fitbit_intraday_data_folder, table_name="Distance"),
     JsonNormalizeOperator(),
     ConvertToDatetimeOperator(feature_names=["dateTime"],
@@ -35,7 +35,7 @@ distance_pipeline = ProcessingPipeline([
 distance_pipeline.process()
 
 # %%
-sleep_pipeline = ProcessingPipeline([
+sleep_pipeline = SequenceOperator([
     FitbitIntradayDataset(fitbit_intraday_data_folder, table_name="Sleep"),
     JsonNormalizeOperator(
         record_path=["levels", "data"],
@@ -78,7 +78,7 @@ sleep_pipeline = ProcessingPipeline([
 sleep_df = sleep_pipeline.process()
 
 # %%
-heart_rate_zones_pipeline = ProcessingPipeline([
+heart_rate_zones_pipeline = SequenceOperator([
     FitbitIntradayDataset(fitbit_intraday_data_folder,
                           table_name="Time_in_Heart_Rate_Zones"),
     JsonNormalizeOperator(),
@@ -99,7 +99,7 @@ heart_rate_zones_pipeline = ProcessingPipeline([
 heart_rate_zones_pipeline.process()
 
 # %%
-very_active_pipeline = ProcessingPipeline([
+very_active_pipeline = SequenceOperator([
     FitbitIntradayDataset(fitbit_intraday_data_folder,
                           table_name="Very_Active_Minutes"),
     JsonNormalizeOperator(),
@@ -111,7 +111,7 @@ very_active_pipeline = ProcessingPipeline([
 very_active_df = very_active_pipeline.process()
 
 # %%
-composite_pipeline = ProcessingPipeline([
+composite_pipeline = SequenceOperator([
     ComposeOperator([FitbitIntradayDataset(fitbit_intraday_data_folder,
                           table_name="Very_Active_Minutes"),
                     FitbitIntradayDataset(fitbit_intraday_data_folder,

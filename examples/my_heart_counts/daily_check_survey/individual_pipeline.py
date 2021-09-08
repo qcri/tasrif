@@ -1,6 +1,6 @@
 import os
 import pandas as pd
-from tasrif.processing_pipeline import ProcessingPipeline
+from tasrif.processing_pipeline import SequenceOperator
 from tasrif.processing_pipeline.pandas import DropFeaturesOperator
 from tasrif.processing_pipeline.custom import CreateFeatureOperator, SetFeaturesValueOperator
 from tasrif.data_readers.my_heart_counts import MyHeartCountsDataset
@@ -24,7 +24,7 @@ Steps:
     - average the intensities if self.merge_activity_features is true, set it to column 'activity_intensity'
     - average the time if self.merge_activity_features is true, set it to column 'activity_time'
 '''
-pipeline = ProcessingPipeline([
+pipeline = SequenceOperator([
     MyHeartCountsDataset(dcs_file_path),
     DropFeaturesOperator([
         "appVersion",

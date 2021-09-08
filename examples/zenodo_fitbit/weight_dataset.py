@@ -2,7 +2,7 @@
 import os
 
 from tasrif.processing_pipeline import (
-    ProcessingPipeline,
+    SequenceOperator,
     ComposeOperator,
     NoopOperator,
 )
@@ -22,7 +22,7 @@ AGGREGATION_DEFINITION = {
     "BMI": AGGREGATION_FUNCS,
 }
 
-pipeline = ProcessingPipeline([
+pipeline = SequenceOperator([
     ZenodoFitbitDataset(zenodo_folder_path, table_name="Weight"),
     DropFeaturesOperator(drop_features=DROP_COLUMNS),
     ComposeOperator([

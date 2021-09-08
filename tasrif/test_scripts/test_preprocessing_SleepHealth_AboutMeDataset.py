@@ -18,7 +18,7 @@
 
 import os
 from tasrif.data_readers.sleep_health import AboutMeDataset
-from tasrif.processing_pipeline import ProcessingPipeline
+from tasrif.processing_pipeline import SequenceOperator
 from tasrif.processing_pipeline.pandas import DropNAOperator
 from tasrif.processing_pipeline.pandas import DropDuplicatesOperator
 
@@ -37,7 +37,7 @@ print("Default Shape:", df_default.shape)
 # %% pycharm={"name": "#%%\n"}
 for key in df_full.keys():
     aboutMe_tmp = AboutMeDataset(os.environ['SLEEPHEALTH_ABOUTME_PATH'],
-                             pipeline=ProcessingPipeline([
+                             pipeline=SequenceOperator([
                                  DropNAOperator(subset=[key])
                              ])
                             )
@@ -48,7 +48,7 @@ for key in df_full.keys():
 
 # %% pycharm={"name": "#%%\n"}
 aboutMe_dropdup = AboutMeDataset(os.environ['SLEEPHEALTH_ABOUTME_PATH'],
-                              pipeline=ProcessingPipeline([
+                              pipeline=SequenceOperator([
                                 DropDuplicatesOperator(subset='participantId',
                                                        keep='last')
                                   ])

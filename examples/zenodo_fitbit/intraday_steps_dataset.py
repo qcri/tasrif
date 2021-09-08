@@ -2,7 +2,7 @@
 import os
 
 from tasrif.processing_pipeline import (
-    ProcessingPipeline,
+    SequenceOperator,
     ComposeOperator,
     NoopOperator,
 )
@@ -27,7 +27,7 @@ TOTAL_AGGREGATION_DEFINITION = {
     "Steps": ["mean", "std"],
 }
 
-pipeline = ProcessingPipeline([
+pipeline = SequenceOperator([
     ZenodoFitbitDataset(zenodo_folder_path, table_name="IntradaySteps"),
     ConvertToDatetimeOperator(feature_names=["ActivityMinute"], format="%m/%d/%Y %I:%M:%S %p"),
     SetIndexOperator(["ActivityMinute"]),

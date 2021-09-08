@@ -10,14 +10,14 @@ Some important stats:
 """
 
 import os
-from tasrif.processing_pipeline import ProcessingPipeline
+from tasrif.processing_pipeline import SequenceOperator
 from tasrif.data_readers.sleep_health import SleepHealthDataset
 from tasrif.processing_pipeline.pandas import ConvertToDatetimeOperator, SortOperator
 from tasrif.processing_pipeline.custom import CreateFeatureOperator, AggregateOperator
 
 sqc_file_path = os.environ['SLEEPHEALTH_QUALITY_CHECKER_PATH']
 
-pipeline = ProcessingPipeline([
+pipeline = SequenceOperator([
     SleepHealthDataset(sqc_file_path),
     SortOperator(by=["participantId", "timestamp"]),
     AggregateOperator(

@@ -18,7 +18,7 @@
 import os
 import numpy as np
 
-from tasrif.processing_pipeline import ProcessingPipeline
+from tasrif.processing_pipeline import SequenceOperator
 from tasrif.processing_pipeline.pandas import ConvertToDatetimeOperator, SortOperator, ReplaceOperator
 from tasrif.processing_pipeline.pandas import DropDuplicatesOperator, DropNAOperator, DropFeaturesOperator
 from tasrif.processing_pipeline.custom import OneHotEncoderOperator
@@ -48,7 +48,7 @@ col_stats(df)
 
 # %% pycharm={"name": "#%%\n"}
 # Default Pipeline SleepQualityCheckerDataset
-pipeline = ProcessingPipeline([
+pipeline = SequenceOperator([
     ConvertToDatetimeOperator(feature_names="timestamp", format="%Y-%m-%dT%H:%M:%S%z", utc=True),
     SortOperator(by=["participantId", "timestamp"]),
     DropDuplicatesOperator(subset="participantId", keep="last"),

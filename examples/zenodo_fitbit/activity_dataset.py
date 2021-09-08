@@ -4,7 +4,7 @@ import os
 import pandas as pd
 
 from tasrif.processing_pipeline import (
-    ProcessingPipeline,
+    SequenceOperator,
     ComposeOperator,
     NoopOperator,
 )
@@ -42,7 +42,7 @@ AGGREGATION_DEFINITION = {
     "ActiveMinutes": AGGREGATION_FUNCS,
 }
 
-pipeline = ProcessingPipeline([
+pipeline = SequenceOperator([
     ZenodoFitbitDataset(zenodo_folder_path, table_name="Activity"),
     DropNAOperator(),
     CreateFeatureOperator(

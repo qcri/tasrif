@@ -46,7 +46,7 @@ sequential processing of data:
 
 ```python
 >>> import pandas as pd
->>> from tasrif.processing_pipeline import ProcessingPipeline
+>>> from tasrif.processing_pipeline import SequenceOperator
 >>> from tasrif.processing_pipeline.custom import AggregateOperator, CreateFeatureOperator
 >>> from tasrif.processing_pipeline.pandas import ConvertToDatetimeOperator, SortOperator
 
@@ -57,7 +57,7 @@ sequential processing of data:
         ['16-07-2021', 'Dubai', 21, 42]],
         columns=['date', 'city', 'min_temp', 'max_temp'])
 
->>> pipeline = ProcessingPipeline([
+>>> pipeline = SequenceOperator([
         ConvertToDatetimeOperator(feature_names=["date"]),
         CreateFeatureOperator(
             feature_name='avg_temp',
@@ -89,7 +89,7 @@ Supported datasets include:
 DataReaders can be used by treating them as source operators in a pipeline:
 
 ```python
-from tasrif.processing_pipeline import ProcessingPipeline
+from tasrif.processing_pipeline import SequenceOperator
 from tasrif.data_readers.my_heart_counts import DayOneSurveyDataset
 from tasrif.processing_pipeline import DropNAOperator
 

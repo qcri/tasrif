@@ -37,7 +37,7 @@ Some important stats:
 
 import os
 import numpy as np
-from tasrif.processing_pipeline import ProcessingPipeline
+from tasrif.processing_pipeline import SequenceOperator
 from tasrif.data_readers.sleep_health import SleepHealthDataset
 from tasrif.processing_pipeline.pandas import (
     ConvertToDatetimeOperator, 
@@ -49,7 +49,7 @@ from tasrif.processing_pipeline.custom import OneHotEncoderOperator
 
 pmc_file_path = os.environ['SLEEPHEALTH_PMCHECKIN_PATH']
 
-pipeline = ProcessingPipeline([
+pipeline = SequenceOperator([
     SleepHealthDataset(pmc_file_path),
     ConvertToDatetimeOperator(feature_names=["timestamp"],
                               format="%Y-%m-%dT%H:%M:%S%z",

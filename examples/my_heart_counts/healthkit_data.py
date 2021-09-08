@@ -1,5 +1,5 @@
 import os
-from tasrif.processing_pipeline import ProcessingPipeline
+from tasrif.processing_pipeline import SequenceOperator
 from tasrif.data_readers.my_heart_counts import MyHeartCountsDataset
 from tasrif.processing_pipeline.custom import CreateFeatureOperator, IterateCsvOperator, \
                                               AggregateOperator
@@ -10,7 +10,7 @@ from tasrif.processing_pipeline.pandas import ConvertToDatetimeOperator, DropNAO
 hkd_file_path = os.environ['MYHEARTCOUNTS_HEALTHKITDATA_PATH']
 csv_folder_path = os.environ['MYHEARTCOUNTS_HEALTHKITDATA_CSV_FOLDER_PATH']
 
-csv_pipeline = ProcessingPipeline([
+csv_pipeline = SequenceOperator([
     DropNAOperator(),
     ConvertToDatetimeOperator(
         feature_names=["endTime"],
@@ -26,7 +26,7 @@ csv_pipeline = ProcessingPipeline([
     PivotResetColumnsOperator(level=1, columns='type')
 ])
 
-pipeline = ProcessingPipeline([
+pipeline = SequenceOperator([
     MyHeartCountsDataset(hkd_file_path),
     CreateFeatureOperator(
         feature_name='file_name',

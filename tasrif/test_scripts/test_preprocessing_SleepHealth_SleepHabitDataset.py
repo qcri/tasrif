@@ -20,7 +20,7 @@ import os
 import numpy as np
 from tasrif.data_readers.sleep_health import SleepHabitDataset
 
-from tasrif.processing_pipeline import ProcessingPipeline
+from tasrif.processing_pipeline import SequenceOperator
 from tasrif.processing_pipeline.pandas import DropNAOperator
 from tasrif.processing_pipeline.pandas import ReplaceOperator
 from tasrif.processing_pipeline.custom import OneHotEncoderOperator

@@ -16,7 +16,7 @@
 # %load_ext autoreload
 # %autoreload 2
 import os
-from tasrif.processing_pipeline import ProcessingPipeline
+from tasrif.processing_pipeline import SequenceOperator
 from tasrif.processing_pipeline.pandas import ReplaceOperator, DropNAOperator
 from tasrif.data_readers.sleep_health import OnboardingDemographicsDataset
 import pandas as pd
@@ -41,7 +41,7 @@ df[(df["height_inches"] == "CENSORED") & (df["weight_pounds"] == "CENSORED")] # 
 df[(df["height_inches"] == "CENSORED") | (df["weight_pounds"] == "CENSORED")] # 514 (6.3%)
 
 # %% pycharm={"name": "#%%\n"}
-pipeline = ProcessingPipeline([
+pipeline = SequenceOperator([
     ReplaceOperator(to_replace="CENSORED", value=np.nan),
     DropNAOperator()
     ])
