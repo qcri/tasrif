@@ -35,19 +35,19 @@ class ZenodoFitbitDataset(ProcessingOperator):
         "IntradaySteps",
     ]
 
-    def __init__(self, folder, table_name):
+    def __init__(self, folder_path, table_name):
         """Initializes an interday dataset reader with the input parameters.
 
         Args:
-            folder (str):
-                Path to the Zenodo export folder containing data.
+            folder_path (str):
+                Path to the Zenodo export folder_path containing data.
             table_name (str):
                 The table to extract data from.
         """
         # Abort if table_name isn't valid
         self._validate_table_name(table_name)
 
-        self.folder = folder
+        self.folder_path = folder_path
         self.table_name = table_name
 
     def process(self, *data_frames):
@@ -78,10 +78,10 @@ class ZenodoFitbitDataset(ProcessingOperator):
         """
 
         dataframes = []
-        subfolder_1 = "Fitabase Data 3.12.16-4.11.16"
-        subfolder_2 = "Fitabase Data 4.12.16-5.12.16"
-        full_path_1 = pathlib.Path(self.folder, subfolder_1)
-        full_path_2 = pathlib.Path(self.folder, subfolder_2)
+        subfolder_path_1 = "Fitabase Data 3.12.16-4.11.16"
+        subfolder_path_2 = "Fitabase Data 4.12.16-5.12.16"
+        full_path_1 = pathlib.Path(self.folder_path, subfolder_path_1)
+        full_path_2 = pathlib.Path(self.folder_path, subfolder_path_2)
 
         if isinstance(self.table_name, str):
             self.table_name = [self.table_name]

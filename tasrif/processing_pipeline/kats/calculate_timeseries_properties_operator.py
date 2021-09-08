@@ -35,7 +35,7 @@ class CalculateTimeseriesPropertiesOperator(ProcessingOperator):
     2020-01-07  2020-01-07  5577    2821
     2020-01-08  2020-01-08  10435   1830
 
-    >>> operator = ExtractTimeseriesFeaturesOperator(timeseries_column="Date", value_column='Steps')
+    >>> operator = ExtractTimeseriesFeaturesOperator(date_feature_name="Date", value_column='Steps')
     >>> features = operator.process(df)[0]
     >>> features
     {'length': 1104,
@@ -80,11 +80,11 @@ class CalculateTimeseriesPropertiesOperator(ProcessingOperator):
      'hw_gamma': 0.03427295918367347}
 
     """
-    def __init__(self, timeseries_column="time", value_column='value', method='kats', **kwargs):
+    def __init__(self, date_feature_name="time", value_column='value', method='kats', **kwargs):
         """Creates a new instance of ExtractTimeseriesFeaturesOperator
 
         Args:
-            timeseries_column : str
+            date_feature_name : str
                 Name of the datetime column
             value_column : str
                 Name of the column that contains values per date
@@ -94,7 +94,7 @@ class CalculateTimeseriesPropertiesOperator(ProcessingOperator):
                 key word arguments passed to method's parameters
         """
 
-        self.timeseries_column = timeseries_column
+        self.date_feature_name = date_feature_name
         self.value_column = value_column
         self.method = method
         self.kwargs = kwargs
@@ -116,8 +116,8 @@ class CalculateTimeseriesPropertiesOperator(ProcessingOperator):
 
             if self.method == 'kats':
                 # convert to TimeSeriesData object
-                timeseries_data = data_frame[[self.timeseries_column, self.value_column]]
-                timeseries_data = TimeSeriesData(timeseries_data, time_col_name=self.timeseries_column)
+                timeseries_data = data_frame[[self.date_feature_name, self.value_column]]
+                timeseries_data = TimeSeriesData(timeseries_data, time_col_name=self.date_feature_name)
 
                 # calculate the TsFeatures
                 features = TsFeatures(**self.kwargs).transform(timeseries_data)

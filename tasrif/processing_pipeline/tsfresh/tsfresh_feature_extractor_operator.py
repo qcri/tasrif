@@ -48,7 +48,8 @@ class TSFreshFeatureExtractorOperator(ProcessingOperator):
         >>> df['dateTime'] = pd.to_datetime(df['dateTime'])
         >>> df
         >>>
-        >>> operator = TSFreshFeatureExtractorOperator(seq_id_col="seq_id", time_col='dateTime', value_col='Steps')
+        >>> operator = TSFreshFeatureExtractorOperator(seq_id_col="seq_id", date_feature_name='dateTime',
+        >>>                                            value_col='Steps')
         >>> features = operator.process(df)[0]
         >>> features[features.columns[2:4]]
         Steps__agg_linear_trend__attr_"slope"__chunk_len_5__f_agg_"max"
@@ -104,7 +105,7 @@ class TSFreshFeatureExtractorOperator(ProcessingOperator):
 
     def __init__(self,  # pylint: disable=too-many-arguments
                  seq_id_col="seq_id",
-                 time_col="time",
+                 date_feature_name="time",
                  value_col="Steps",
                  features=Defaults.TSFRESH_FEATURES):
         """Creates a new instance of TSFreshFeatureExtractorOperator
@@ -112,7 +113,7 @@ class TSFreshFeatureExtractorOperator(ProcessingOperator):
         Args:
             seq_id_col (str):
                 label column in the dataframe
-            time_col (str):
+            date_feature_name (str):
                 time column in the dataframe
             value_col (str or list):
                 column(s) to extract features from
@@ -122,7 +123,7 @@ class TSFreshFeatureExtractorOperator(ProcessingOperator):
                 more details
 
         """
-        self.time_col = time_col
+        self.date_feature_name = date_feature_name
         self.seq_id_col = seq_id_col
         self.value_col = value_col
         self.features = features
@@ -162,7 +163,7 @@ class TSFreshFeatureExtractorOperator(ProcessingOperator):
         for data_frame in data_frames:
             tsfresh_features = extract_features(data_frame,
                                                column_id=self.seq_id_col,
-                                               column_sort=self.time_col,
+                                               column_sort=self.date_feature_name,
                                                kind_to_fc_parameters=kind_to_fc_parameters)
             processed.append(tsfresh_features)
 

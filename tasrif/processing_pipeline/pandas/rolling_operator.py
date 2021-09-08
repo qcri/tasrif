@@ -27,11 +27,11 @@ class RollingOperator(ProcessingOperator):
     4   7.0
 
     """
-    def __init__(self, window, selector=None, **kwargs):
+    def __init__(self, winsize, selector=None, **kwargs):
         """Creates a new instance of RollingOperator
 
         Args:
-            window (int):
+            winsize (int):
                 offset or BaseIndexer subclass
             selector:
                 select the columns of a groupby object
@@ -40,7 +40,7 @@ class RollingOperator(ProcessingOperator):
 
         """
 
-        self.window = window
+        self.winsize = winsize
         self.selector = selector
         self.kwargs = kwargs
         super().__init__()
@@ -61,10 +61,10 @@ class RollingOperator(ProcessingOperator):
         processed = []
         for data_frame in data_frames:
             if self.selector:
-                data_frame = data_frame.rolling(self.window,
+                data_frame = data_frame.rolling(self.winsize,
                                                 **self.kwargs)[self.selector]
             else:
-                data_frame = data_frame.rolling(self.window, **self.kwargs)
+                data_frame = data_frame.rolling(self.winsize, **self.kwargs)
             processed.append(data_frame)
 
         return processed

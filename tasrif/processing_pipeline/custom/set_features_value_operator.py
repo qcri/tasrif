@@ -1,5 +1,5 @@
 """
-Operator to select column features with the option to set values for the selected data frame
+Operator to select column feature_names with the option to set values for the selected data frame
 """
 from tasrif.processing_pipeline import ProcessingOperator
 
@@ -53,7 +53,7 @@ class SetFeaturesValueOperator(ProcessingOperator):
     >>> print('=================================================')
     >>> print('select rows where age >= 13 and set their ages to 15')
     >>> operator = SetFeaturesValueOperator(selector=lambda df: df.age >= 13,
-    ...                                     features=['age'],
+    ...                                     feature_names=['age'],
     ...                                     value=15)
     >>> df0, df1 = operator.process(df0, df1)
     >>> print(df0)
@@ -71,19 +71,19 @@ class SetFeaturesValueOperator(ProcessingOperator):
 
     """
 
-    def __init__(self, features: list = None, selector: callable = None, value=None):
+    def __init__(self, feature_names: list = None, selector: callable = None, value=None):
         """Creates a new instance of CreateFeatureOperator
 
         Args:
-            features (list):
-                list of features to select
+            feature_names (list):
+                list of feature_names to select
             selector (callable):
                 lambda function that result in pandas row indexing dataframe
                 (a dataframe of trues and falses), see example.
             value (int, optional):
                 value to replace the selected rows.
         """
-        self.features = features
+        self.feature_names = feature_names
         self.selector = selector
         self.value = value
         self.raw_data_frames = None
@@ -104,14 +104,14 @@ class SetFeaturesValueOperator(ProcessingOperator):
 
         processed = []
         for data_frame, raw_data_frame in zip(data_frames, self.raw_data_frames):
-            if self.selector and self.features:
+            if self.selector and self.feature_names:
                 filtered_result = self.selector(data_frame)
-                data_frame = data_frame.loc[filtered_result, self.features]
-            elif self.selector and (not self.features):
+                data_frame = data_frame.loc[filtered_result, self.feature_names]
+            elif self.selector and (not self.feature_names):
                 filtered_result = self.selector(data_frame)
                 data_frame = data_frame.loc[filtered_result]
-            elif (not self.selector) and self.features:
-                data_frame = data_frame[self.features]
+            elif (not self.selector) and self.feature_names:
+                data_frame = data_frame[self.feature_names]
 
             if self.value is not None:
                 raw_data_frame.loc[data_frame.index, data_frame.columns] = self.value

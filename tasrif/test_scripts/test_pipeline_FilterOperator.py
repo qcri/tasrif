@@ -41,8 +41,8 @@ id_10_indices = df.loc[df.Id == 10].index.values[:-5]
 df = df[~df.index.isin(id_10_indices)]
 # -
 
-operator = FilterOperator(participant_id_column="Id",
-                          ts_column="Hours",
+operator = FilterOperator(participant_identifier="Id",
+                          date_feature_name="Hours",
                           epoch_filter=lambda df: df['Steps'] > 10,
                           day_filter={
                               "column": "Hours",

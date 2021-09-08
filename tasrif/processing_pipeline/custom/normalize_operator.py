@@ -8,12 +8,14 @@ from sklearn.preprocessing import MaxAbsScaler
 from sklearn.preprocessing import RobustScaler
 from tasrif.processing_pipeline import ProcessingOperator
 
+
 class NormalizeOperator(ProcessingOperator):
     """
 
-    Normalizes the values for the supplied columns using the specified algorithm.
+    Normalizes the values for the supplied feature_names using the specified algorithm.
     This operator works on a 2D data frames where the
-    columns represent the features. The returned data frame contains normalized values in the specified columns
+    feature_names represent the features. The returned data frame contains normalized values
+    in the specified feature_names
 
     Examples
     --------
@@ -38,13 +40,16 @@ class NormalizeOperator(ProcessingOperator):
     2020-05-02     1.000000]
 
     """
-    def __init__(self, columns='all', method='zscore', normalization_parameters=None):
+    def __init__(self,
+                 feature_names='all',
+                 method='zscore',
+                 normalization_parameters=None):
         """
         Creates a new instance of NormalizeOperator
 
         Args:
-            columns (list, str):
-                Columns in the given dataframe to normalize
+            feature_names (list, str):
+                feature_names in the given dataframe to normalize
             method (str):
                 The normalization method ('zscore', 'minmax', 'maxabs', 'robust') to be used
             normalization_parameters (dict):
@@ -64,7 +69,7 @@ class NormalizeOperator(ProcessingOperator):
             ValueError: parameter method unknown.
 
         """
-        self.columns = columns
+        self.feature_names = feature_names
         if not normalization_parameters:
             normalization_parameters = {}
 
@@ -78,7 +83,8 @@ class NormalizeOperator(ProcessingOperator):
             else:
                 self.scaler = RobustScaler(**normalization_parameters)
         else:
-            raise ValueError("Incorrect method specified for the NormalizationOperator!")
+            raise ValueError(
+                "Incorrect method specified for the NormalizationOperator!")
 
     def _process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.
@@ -96,12 +102,15 @@ class NormalizeOperator(ProcessingOperator):
         processed = []
         for data_frame in data_frames:
 
-            data_frame_columns = data_frame
-            if isinstance(self.columns, list):
-                data_frame_columns = data_frame[self.columns]
+            data_frame_feature_names = data_frame
+            if isinstance(self.feature_names, list):
+                data_frame = data_frame[self.feature_names]
             else:
-                data_frame_columns = data_frame[data_frame.select_dtypes(include=np.number).columns.tolist()]
+                data_frame_feature_names = data_frame[data_frame.select_dtypes(
+                    include=np.number).columns.tolist()]
 
-            processed.append((self.scaler.fit_transform(data_frame_columns), self.scaler.fit(data_frame_columns)))
+            processed.append(
+                (self.scaler.fit_transform(data_frame_feature_names),
+                 self.scaler.fit(data_frame_feature_names)))
 
         return processed

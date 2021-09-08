@@ -41,19 +41,19 @@ class SihaDataset(ProcessingOperator):
         "VeryActiveMinutes",
     ]
 
-    def __init__(self, folder, table_name):
+    def __init__(self, folder_path, table_name):
         """Initializes a dataset reader with the input parameters.
 
         Args:
-            folder (str):
-                Path to the SIHA export folder containing data.
+            folder_path (str):
+                Path to the SIHA export folder_path containing data.
             table_name (str):
                 The table to extract data from.
         """
         # Abort if table_name isn't valid
         self._validate_table_name(table_name)
 
-        self.folder = folder
+        self.folder_path = folder_path
         self.table_name = table_name
 
     def _validate_table_name(self, table_name):
@@ -63,7 +63,7 @@ class SihaDataset(ProcessingOperator):
     def process(self, *data_frames):
 
         jsons = []
-        for file_path in pathlib.Path(self.folder).glob("data*.json"):
+        for file_path in pathlib.Path(self.folder_path).glob("data*.json"):
             with open(str(file_path)) as json_file:
                 jsons.append(json.load(json_file))
 

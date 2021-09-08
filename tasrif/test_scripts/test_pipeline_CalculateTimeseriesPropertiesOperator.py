@@ -29,6 +29,6 @@ df['Calories'] = np.random.randint(1800,3000, size=len(df))
 
 df
 
-operator = CalculateTimeseriesPropertiesOperator(timeseries_column="Date", value_column='Steps')
+operator = CalculateTimeseriesPropertiesOperator(date_feature_name="Date", value_column='Steps')
 features = operator.process(df)[0]
 features

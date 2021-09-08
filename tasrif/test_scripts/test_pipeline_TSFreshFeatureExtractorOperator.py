@@ -49,6 +49,6 @@ df['dateTime'] = pd.to_datetime(df['dateTime'])
 
 df
 
-operator = TSFreshFeatureExtractorOperator(seq_id_col="seq_id", time_col='dateTime', value_col='Steps')
+operator = TSFreshFeatureExtractorOperator(seq_id_col="seq_id", date_feature_name='dateTime', value_col='Steps')
 features = operator.process(df)[0]
 features[features.columns[2:4]]

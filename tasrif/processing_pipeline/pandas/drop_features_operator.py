@@ -22,7 +22,7 @@ class DropFeaturesOperator(ProcessingOperator):
       >>>                   "born": [pd.NaT, pd.Timestamp("1940-04-25"),
       >>>                            pd.NaT]})
       >>>
-      >>> operator = DropFeaturesOperator(drop_features=['name'])
+      >>> operator = DropFeaturesOperator(feature_names=['name'])
       >>> df0, df1 = operator.process(df0, df1)
       >>>
       >>> print(df0)
@@ -38,16 +38,16 @@ class DropFeaturesOperator(ProcessingOperator):
 
     """
 
-    def __init__(self, drop_features: list):
+    def __init__(self, feature_names: list):
         """
         Initializes the operator
 
         Args:
-            drop_features:
+            feature_names:
               features (columns) to drop from each dataframe
 
         """
-        self.drop_features = drop_features
+        self.feature_names = feature_names
         super().__init__()
 
     def __str__(self):
@@ -66,18 +66,18 @@ class DropFeaturesOperator(ProcessingOperator):
                 Processed data frames
 
         Raises:
-            ValueError: Occurs when one of the objects in drop_features is not a column within
+            ValueError: Occurs when one of the objects in feature_names is not a column within
                 *data_frames
 
         """
 
         processed = []
         for dataframe in data_frames:
-            for col in self.drop_features:
+            for col in self.feature_names:
                 if col not in dataframe.columns:
                     raise ValueError(str(col) + ' not in columns')
 
-            dataframe = dataframe.drop(self.drop_features, axis=1)
+            dataframe = dataframe.drop(self.feature_names, axis=1)
             processed.append(dataframe)
 
         return tuple(processed)

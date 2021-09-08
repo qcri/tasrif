@@ -37,7 +37,7 @@ print()
 print('=================================================')
 print('select rows where age >= 13 and set their ages to 15')
 operator = SetFeaturesValueOperator(selector=lambda df: df.age >= 13, 
-                                    features=['age'],
+                                    feature_names=['age'],
                                     value=15)
 df0, df1 = operator.process(df0, df1)
 print(df0)

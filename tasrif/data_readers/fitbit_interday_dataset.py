@@ -11,26 +11,26 @@ class FitbitInterdayDataset(ProcessingOperator):
     """
     valid_table_names = ["Activities", "Body", "Food Log", "Foods", "Sleep"]
 
-    def __init__(self, folder, table_name):
+    def __init__(self, folder_path, table_name):
         """Initializes an interday dataset reader with the input parameters.
 
         Args:
-            folder (str):
-                Path to the fitbit export folder containing interday data.
+            folder_path (str):
+                Path to the fitbit export folder_path containing interday data.
             table_name (str):
                 The table to extract data from.
         """
         # Abort if table_name isn't valid
         self._validate_table_name(table_name)
 
-        self.folder = folder
+        self.folder_path = folder_path
         self.table_name = table_name
 
     def process(self, *data_frames):
         # Accumulate dataframes from all files and concat them all at once
         dfs = []
         for export_file in pathlib.Path(
-                self.folder).glob('fitbit_export_*.csv'):
+                self.folder_path).glob('fitbit_export_*.csv'):
             dfs.append(self._extract_data_from_file(export_file))
         return [pd.concat(dfs)]
 

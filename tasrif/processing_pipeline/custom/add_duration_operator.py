@@ -26,7 +26,7 @@ class AddDurationOperator(ProcessingOperator):
       >>>
       >>> operator = AddDurationOperator(
       >>>    groupby_feature_names="logId",
-      >>>    timestamp_feature_name="timestamp",
+      >>>    date_feature_name="timestamp",
       >>>    duration_feature_name="duration")
       >>> df0 = operator.process(df0)
       >>>
@@ -41,21 +41,21 @@ class AddDurationOperator(ProcessingOperator):
     """
     def __init__(self,
                  groupby_feature_names,
-                 timestamp_feature_name="timestamp",
+                 date_feature_name="timestamp",
                  duration_feature_name="duration"):
         """Creates a new instance of AddDurationOperator
 
         Args:
             groupby_feature_names (str):
                 Name of the feature to identify related timestamp series
-            timestamp_feature_name (str):
+            date_feature_name (str):
                 Name of the feature respresenting the timestamp
             duration_feature_name (str):
                 Name of the feature representing the duration
 
         """
         self.groupby_feature_names = groupby_feature_names
-        self.timestamp_feature_name = timestamp_feature_name
+        self.date_feature_name = date_feature_name
         self.duration_feature_name = duration_feature_name
 
     def _process(self, *data_frames):
@@ -74,8 +74,8 @@ class AddDurationOperator(ProcessingOperator):
         processed = []
         for data_frame in data_frames:
             data_frame[self.duration_feature_name] = data_frame[
-                self.timestamp_feature_name].sub(
-                    data_frame[self.timestamp_feature_name].shift())
+                self.date_feature_name].sub(
+                    data_frame[self.date_feature_name].shift())
             now = datetime.now()
             zero_duration = now - now
             # Change the duration of the first entry of every sleep log  group to zero

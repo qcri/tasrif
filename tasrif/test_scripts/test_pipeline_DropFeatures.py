@@ -29,7 +29,7 @@ df1 = pd.DataFrame({"name": ['Alfred', 'Batman', 'Catwoman'],
 print(df0)
 print(df1)
 
-operator = DropFeaturesOperator(drop_features=[])
+operator = DropFeaturesOperator(feature_names=[])
 df0, df1 = operator.process(df0, df1)
 
 print(df0)

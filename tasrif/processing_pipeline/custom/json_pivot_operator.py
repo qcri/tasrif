@@ -8,7 +8,7 @@ from tasrif.processing_pipeline import ProcessingOperator
 
 class JsonPivotOperator(ProcessingOperator):
     """
-    Operator that converts column with structured json data into dataframe multiple columns
+    Operator that converts column with structured json data into dataframe multiple feature_names
 
     Example
     -------
@@ -30,15 +30,15 @@ class JsonPivotOperator(ProcessingOperator):
     2   3      1000         5      2
 
     """
-    def __init__(self, columns):
+    def __init__(self, feature_names):
         """Creates a new instance of JsonPivotOperator
 
         Args:
-            columns (list of str):
-              The columns which contains Json data
+            feature_names (list of str):
+              The feature_names which contains Json data
         """
 
-        self.columns = columns
+        self.feature_names = feature_names
 
     def _process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.
@@ -53,7 +53,7 @@ class JsonPivotOperator(ProcessingOperator):
         """
         output = []
         for data_frame in data_frames:
-            for column in self.columns:
+            for column in self.feature_names:
                 data_frame[column] = data_frame[column].fillna('{}')
                 data_frame[column] = data_frame[column].apply(json.loads)
                 temp_df = pd.DataFrame(data_frame[column].values.tolist())

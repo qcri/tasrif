@@ -12,9 +12,10 @@ from tasrif.processing_pipeline import ProcessingOperator
 class NormalizeTransformOperator(ProcessingOperator):
     """
 
-    Normalizes the values for the supplied columns using the supplied model.
+    Normalizes the values for the supplied feature_names using the supplied model.
     This operator works on a 2D data frames where the
-    columns represent the features. The returned data frame contains normalized values in the specified columns.
+    feature_names represent the features. The returned data frame contains normalized
+    values in the specified feature_names.
     This will be used when splitting the dataset into training and testing set and then using the model generated
     from the testing set on the testing set.
 
@@ -60,13 +61,13 @@ class NormalizeTransformOperator(ProcessingOperator):
 
     """
 
-    def __init__(self, columns='all', model=None):
+    def __init__(self, feature_names='all', model=None):
         """
         Creates a new instance of NormalizeTransformOperator
 
         Args:
-            columns (list, str):
-                Columns in the given dataframe to normalize
+            feature_names (list, str):
+                feature_names in the given dataframe to normalize
             model (StandardScaler / MinMaxScaler / MaxAbsScaler / RobustScaler):
                 Model with normalization method ('zscore', 'minmax', 'maxabs', 'robust')
 
@@ -74,7 +75,7 @@ class NormalizeTransformOperator(ProcessingOperator):
             ValueError: parameter method unknown.
 
         """
-        self.columns = columns
+        self.feature_names = feature_names
 
         if not model:
             raise ValueError(
@@ -110,14 +111,14 @@ class NormalizeTransformOperator(ProcessingOperator):
         processed = []
         for data_frame in data_frames:
 
-            data_frame_columns = data_frame
-            if isinstance(self.columns, list):
-                data_frame_columns = data_frame[self.columns]
+            data_frame_feature_names = data_frame
+            if isinstance(self.feature_names, list):
+                data_frame_feature_names = data_frame[self.feature_names]
             else:
-                data_frame_columns = data_frame[data_frame.select_dtypes(
+                data_frame_feature_names = data_frame[data_frame.select_dtypes(
                     include=np.number).columns.tolist()]
 
             processed.append(self.model.transform(
-                data_frame_columns))
+                data_frame_feature_names))
 
         return processed

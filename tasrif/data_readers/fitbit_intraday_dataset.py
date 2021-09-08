@@ -21,12 +21,12 @@ class FitbitIntradayDataset(ProcessingOperator):
                          "Very_Active_Minutes", "Lightly_Active_Minutes", "Moderately_Active_Minutes",
                          "Sedentary_Minutes"]
 
-    def __init__(self, folder, table_name):
+    def __init__(self, folder_path, table_name):
         """Initializes a dataset reader with the input parameters.
 
         Args:
-            folder (str):
-                Path to the Fitbit Intraday folder containing data.
+            folder_path (str):
+                Path to the Fitbit Intraday folder_path containing data.
             table_name (str):
                 The table to extract data from.
 
@@ -34,7 +34,7 @@ class FitbitIntradayDataset(ProcessingOperator):
         # Abort if table_name isn't valid
         self._validate_table_name(table_name)
 
-        self.folder = folder
+        self.folder_path = folder_path
         self.table_name = table_name
 
     def process(self, *data_frames):
@@ -42,9 +42,9 @@ class FitbitIntradayDataset(ProcessingOperator):
         data_frame = []
 
         if self.table_name in ["Sleep"]:
-            full_path = pathlib.Path(self.folder, "Sleep")
+            full_path = pathlib.Path(self.folder_path, "Sleep")
         else:
-            full_path = pathlib.Path(self.folder, "Physical Activity")
+            full_path = pathlib.Path(self.folder_path, "Physical Activity")
 
         file_paths = []
         for file_path in pathlib.Path(str(full_path)).glob(self.table_name.lower() + "*.json"):
