@@ -42,7 +42,7 @@ class PivotOperator(ProcessingOperator):
         self.kwargs = kwargs
 
 
-    def process(self, *data_frames):
+    def _process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.
 
         Args:

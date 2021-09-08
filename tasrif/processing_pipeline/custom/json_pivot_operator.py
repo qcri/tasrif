@@ -40,7 +40,7 @@ class JsonPivotOperator(ProcessingOperator):
 
         self.columns = columns
 
-    def process(self, *data_frames):
+    def _process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.
 
         Args:

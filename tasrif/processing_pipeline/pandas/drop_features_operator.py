@@ -53,7 +53,7 @@ class DropFeaturesOperator(ProcessingOperator):
     def __str__(self):
         return self.__class__.__name__
 
-    def process(self, *data_frames):
+    def _process(self, *data_frames):
         """Process the passed data using the processing configuration specified
         in the constructor
 

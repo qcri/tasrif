@@ -31,6 +31,6 @@ class ReadCsvOperator(ProcessingOperator):
         self.args = args
         self.kwargs = kwargs
 
-    def process(self, *data_frames):
+    def _process(self, *data_frames):
         csv_dataframe = pd.read_csv(*self.args, **self.kwargs)
         return [csv_dataframe]

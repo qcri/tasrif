@@ -101,7 +101,7 @@ class ParticipationOverviewOperator(ProcessingOperator):
         self.filter_features = filter_features
         self.overview_type = overview_type
 
-    def process(self, *data_frames):
+    def _process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.
 
         Args:

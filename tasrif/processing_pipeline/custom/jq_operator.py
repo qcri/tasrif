@@ -84,7 +84,7 @@ class JqOperator(ProcessingOperator):
         self.expression = expression
 
 
-    def process(self, *data_frames):
+    def _process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.
 
         Args:

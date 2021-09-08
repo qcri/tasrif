@@ -48,7 +48,7 @@ class CreateFeatureOperator(ProcessingOperator):
         self.feature_creator = feature_creator
 
 
-    def process(self, *data_frames):
+    def _process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.
 
         Args:

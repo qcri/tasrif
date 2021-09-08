@@ -51,7 +51,7 @@ class ResampleOperator(ProcessingOperator):
         self.aggregation_definition = aggregation_definition
         self.resample_args = resample_args
 
-    def process(self, *data_frames):
+    def _process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.
 
         Args:

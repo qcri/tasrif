@@ -42,7 +42,7 @@ class SequenceOperator(ProcessingOperator):
         self.processing_operators = processing_operators
 
 
-    def process(self, *args):
+    def _process(self, *args):
         """Processes a list of processing operators. Input of an operator is received from the
         previous operator. The input for the first operator is passed to this function.
         The final result is the output of the final operation in the chain.

@@ -6,7 +6,7 @@ class IncorrectMapProcessingOperator(MapProcessingOperator):
 
 class CorrectMapProcessingOperator(MapProcessingOperator):
     # This will be replaced with a mock later.
-    def processing_function(self, element):
+    def _processing_function(self, element):
         return element
 
 def test_raises_an_error_if_processing_function_is_not_defined(mocker):
@@ -16,17 +16,17 @@ def test_raises_an_error_if_processing_function_is_not_defined(mocker):
 def test_processing_function_is_called_correctly(mocker):
     operator = CorrectMapProcessingOperator()
 
-    # Substitute the processing_function with a stub that returns values.
+    # Substitute the _processing_function with a stub that returns values.
     return_values = [mocker.Mock(), mocker.Mock()]
-    operator.processing_function = mocker.stub()
-    operator.processing_function.side_effect = return_values
+    operator._processing_function = mocker.stub()
+    operator._processing_function.side_effect = return_values
 
     args = [mocker.Mock(), mocker.Mock()]
     output = operator.process(*args)
 
     # Assert that the processing function was called with each of the individual
     # args.
-    operator.processing_function.assert_has_calls([
+    operator._processing_function.assert_has_calls([
         mocker.call(args[0]),
         mocker.call(args[1])
     ])

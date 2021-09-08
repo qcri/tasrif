@@ -41,7 +41,7 @@ class FillNAOperator(ProcessingOperator):
         self.kwargs = kwargs
         super().__init__()
 
-    def process(self, *data_frames):
+    def _process(self, *data_frames):
         """Process the passed data using the processing configuration specified
         in the constructor
 

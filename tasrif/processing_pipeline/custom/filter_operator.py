@@ -92,7 +92,7 @@ class FilterOperator(ProcessingOperator):
         self.day_filter = day_filter
         self.filter_type = filter_type
 
-    def process(self, *data_frames):
+    def _process(self, *data_frames):
         """Process the passed data using the processing configuration specified
         in the constructor
 

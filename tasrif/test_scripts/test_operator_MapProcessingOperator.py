@@ -29,7 +29,7 @@ df1 = pd.DataFrame([['tom', 10],
                     columns=['name', 'age'])
 
 class SizeOperator(MapProcessingOperator):
-    def processing_function(self, df):
+    def _processing_function(self, df):
         return df.size
 
 SizeOperator().process(df0, df1)

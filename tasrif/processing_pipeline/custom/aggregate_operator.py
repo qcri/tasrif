@@ -50,7 +50,7 @@ class AggregateOperator(ProcessingOperator):
         self.groupby_feature_names = groupby_feature_names
         self.aggregation_definition = aggregation_definition
 
-    def process(self, *data_frames):
+    def _process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.
 
         Args:

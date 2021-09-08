@@ -93,7 +93,7 @@ class CategorizeDurationOperator(ProcessingOperator):
         self.duration_feature_name = duration_feature_name
         self.category_definition = category_definition
 
-    def process(self, *data_frames):
+    def _process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.
 
         Args:

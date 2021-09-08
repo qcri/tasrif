@@ -43,7 +43,7 @@ class ConcatOperator(ProcessingOperator):
         self.kwargs = kwargs
         super().__init__()
 
-    def process(self, *data_frames):
+    def _process(self, *data_frames):
         """Concatenate multiple datasets.
 
         Args:

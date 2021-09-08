@@ -34,7 +34,7 @@ json_folder_path = os.environ['MYHEARTCOUNTS_SIXMINUTEWALKACTIVITY_JSON_FOLDER_P
 
 # To do this, we create a custom operator to emit some data from the SMWA rows and json files.
 class EmitHealthCodeSMWAStepsOperator(MapProcessingOperator):
-    def processing_function(self, generator):
+    def _processing_function(self, generator):
         data = []
 
         for row, smwa_data in generator:
@@ -80,7 +80,7 @@ csv_folder_path = os.environ['MYHEARTCOUNTS_HEALTHKITDATA_CSV_FOLDER_PATH']
 # Before that, we need a custom operator that enhances HealthKitData csv
 # dataframes with the healthCode from their corresponding rows.
 class AppendHealthCodeOperator(MapProcessingOperator):
-    def processing_function(self, generator):
+    def _processing_function(self, generator):
         data = []
 
         for row, hkd_data in generator:

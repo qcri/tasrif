@@ -65,7 +65,7 @@ class StatisticsOperator(ProcessingOperator):
         self.date_feature_name = date_feature_name
         self.filter_features = filter_features
 
-    def process(self, *data_frames):
+    def _process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.
 
         Args:

@@ -24,7 +24,7 @@ class NoopOperator(ProcessingOperator):
 
         """
 
-    def process(self, *args): #pylint: disable=no-self-use
+    def _process(self, *args): #pylint: disable=no-self-use
         """This function returned the received input without any changes (unmutated).
 
         Args:

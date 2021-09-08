@@ -30,7 +30,7 @@ class MergeOperator(ProcessingOperator):
         self.kwargs = kwargs
         super().__init__()
 
-    def process(self, *data_frames):
+    def _process(self, *data_frames):
         """Merge multiple datasets on a common feature defined on the constructor method.
 
         Args:

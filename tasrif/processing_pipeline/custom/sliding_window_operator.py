@@ -110,7 +110,7 @@ class SlidingWindowOperator(ProcessingOperator):
         self.label_col = label_col
         self.pid_col = pid_col
 
-    def process(self, *data_frames):
+    def _process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.
 
         Args:

@@ -30,7 +30,7 @@ class ReplaceOperator(ProcessingOperator):
         self.kwargs = kwargs
         super().__init__()
 
-    def process(self, *data_frames):
+    def _process(self, *data_frames):
         """Replaces values in multiple datasets using the Pandas function `replace`.
 
         Args:

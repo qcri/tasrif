@@ -16,5 +16,5 @@ class FlattenOperator(ReduceProcessingOperator):
     [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
     """
-    def processing_function(self, list_to_flatten, flattened):
+    def _processing_function(self, list_to_flatten, flattened):
         return flattened + list_to_flatten

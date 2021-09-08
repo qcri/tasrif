@@ -27,7 +27,7 @@ class MapProcessingOperator(ProcessingOperator, metaclass=abc.ABCMeta):
     >>>                     columns=['name', 'age'])
     >>>
     >>> class SizeOperator(MapProcessingOperator):
-    >>>     def processing_function(self, df):
+    >>>     def _processing_function(self, df):
     >>>         return df.size
     >>>
     >>> SizeOperator().process(df0, df1)
@@ -35,7 +35,7 @@ class MapProcessingOperator(ProcessingOperator, metaclass=abc.ABCMeta):
 
     """
     @abc.abstractmethod
-    def processing_function(self, element):
+    def _processing_function(self, element):
         """
         Map function to be applied to each element of a list of inputs.
 
@@ -44,9 +44,9 @@ class MapProcessingOperator(ProcessingOperator, metaclass=abc.ABCMeta):
                 The element of the list the processing function acts on.
         """
 
-    def process(self, *list_of_inputs):
+    def _process(self, *list_of_inputs):
         output = []
         for element in list_of_inputs:
-            result = self.processing_function(element)
+            result = self._processing_function(element)
             output.append(result)
         return output

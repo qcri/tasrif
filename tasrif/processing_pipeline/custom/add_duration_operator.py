@@ -58,7 +58,7 @@ class AddDurationOperator(ProcessingOperator):
         self.timestamp_feature_name = timestamp_feature_name
         self.duration_feature_name = duration_feature_name
 
-    def process(self, *data_frames):
+    def _process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.
 
         Args:

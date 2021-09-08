@@ -68,7 +68,7 @@ class EncodeCyclicalFeaturesOperator(ProcessingOperator):
         self.date_feature_name = date_feature_name
         self.category_definition = category_definition
 
-    def process(self, *data_frames):
+    def _process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.
 
         Args:

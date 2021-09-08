@@ -35,7 +35,7 @@ class ReduceProcessingOperator(ProcessingOperator, metaclass=abc.ABCMeta):
     >>>     initial = pd.DataFrame([["Harry", "2020-05-01 00:00:00"]],
     >>>                             columns=["name", "timestamp"])
     >>>
-    >>>     def processing_function(self, df_to_append, dfs):
+    >>>     def _processing_function(self, df_to_append, dfs):
     >>>         return dfs.append(df_to_append)
     >>>
     >>> AppendOperator().process(df0, df1)
@@ -56,7 +56,7 @@ class ReduceProcessingOperator(ProcessingOperator, metaclass=abc.ABCMeta):
     initial = None
 
     @abc.abstractmethod
-    def processing_function(self, element, accumulated):
+    def _processing_function(self, element, accumulated):
         """
         Reduce function to be applied to each element of a list of inputs.
 
@@ -68,7 +68,7 @@ class ReduceProcessingOperator(ProcessingOperator, metaclass=abc.ABCMeta):
                 running processing_function on the list of inputs.
         """
 
-    def process(self, *list_of_inputs):
+    def _process(self, *list_of_inputs):
         if self.initial is not None:
             output = self.initial
             start_index = 0
@@ -77,6 +77,6 @@ class ReduceProcessingOperator(ProcessingOperator, metaclass=abc.ABCMeta):
             start_index = 1
 
         for element in list_of_inputs[start_index:]:
-            output = self.processing_function(element, output)
+            output = self._processing_function(element, output)
 
         return output

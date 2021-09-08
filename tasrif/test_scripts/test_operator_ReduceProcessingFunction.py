@@ -32,7 +32,7 @@ class AppendOperator(ReduceProcessingOperator):
     initial = pd.DataFrame([["Harry", "2020-05-01 00:00:00"]],
                             columns=["name", "timestamp"])
 
-    def processing_function(self, df_to_append, dfs):
+    def _processing_function(self, df_to_append, dfs):
         return dfs.append(df_to_append)
 
 AppendOperator().process(df0, df1)
