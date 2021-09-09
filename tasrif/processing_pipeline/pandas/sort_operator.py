@@ -2,9 +2,10 @@
 Sort multiple dataframes based on some keys
 """
 from tasrif.processing_pipeline import ProcessingOperator
+from tasrif.processing_pipeline.validators import InputsAreDataFramesValidatorMixin
 
 
-class SortOperator(ProcessingOperator):
+class SortOperator(InputsAreDataFramesValidatorMixin, ProcessingOperator):
     """Sort datasets based on Pandas `sort_values` method.
 
     Examples

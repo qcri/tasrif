@@ -2,9 +2,10 @@
 Rolling Operator
 """
 from tasrif.processing_pipeline import ProcessingOperator
+from tasrif.processing_pipeline.validators import InputsAreDataFramesValidatorMixin
 
 
-class RollingOperator(ProcessingOperator):
+class RollingOperator(InputsAreDataFramesValidatorMixin, ProcessingOperator):
     """
 
     Examples

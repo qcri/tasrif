@@ -3,9 +3,10 @@ Operator to convert a continuous variable to a categorical variable, useful for 
 """
 import pandas as pd
 from tasrif.processing_pipeline import ProcessingOperator
+from tasrif.processing_pipeline.validators import InputsAreDataFramesValidatorMixin
 
 
-class QCutOperator(ProcessingOperator):
+class QCutOperator(InputsAreDataFramesValidatorMixin, ProcessingOperator):
     """
 
       Quantile-based discretization function using Pandas ``qcut``

@@ -2,10 +2,10 @@
 Cast a pandas object to a specified dtype dtype.
 """
 from tasrif.processing_pipeline import ProcessingOperator
+from tasrif.processing_pipeline.validators import InputsAreDataFramesValidatorMixin
 
-class AsTypeOperator(ProcessingOperator):
+class AsTypeOperator(InputsAreDataFramesValidatorMixin, ProcessingOperator):
     """
-
     Cast a pandas object to a specified dtype dtype.
 
     Examples

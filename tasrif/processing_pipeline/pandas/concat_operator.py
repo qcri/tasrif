@@ -3,9 +3,9 @@ Concatenate multiple dataframes into a single one.
 """
 import pandas as pd
 from tasrif.processing_pipeline import ProcessingOperator
+from tasrif.processing_pipeline.validators import InputsAreDataFramesValidatorMixin
 
-
-class ConcatOperator(ProcessingOperator):
+class ConcatOperator(InputsAreDataFramesValidatorMixin, ProcessingOperator):
     """Concatenate different datasets based on Pandas concat method.
 
     Examples

@@ -3,9 +3,10 @@ Operator to convert a continuous variable to a categorical variable, useful for 
 """
 import pandas as pd
 from tasrif.processing_pipeline import ProcessingOperator
+from tasrif.processing_pipeline.validators import InputsAreDataFramesValidatorMixin
 
 
-class CutOperator(ProcessingOperator):
+class CutOperator(InputsAreDataFramesValidatorMixin, ProcessingOperator):
     """
 
       Bin values into discrete intervals using Pandas ``cut``

@@ -2,9 +2,10 @@
 Replaces values in multiple dataframes based on Pandas `replace` method.
 """
 from tasrif.processing_pipeline import ProcessingOperator
+from tasrif.processing_pipeline.validators import InputsAreDataFramesValidatorMixin
 
 
-class ReplaceOperator(ProcessingOperator):
+class ReplaceOperator(InputsAreDataFramesValidatorMixin, ProcessingOperator):
     """Replaces a value by another on the datasets based on Pandas `replace` method.
 
     Examples

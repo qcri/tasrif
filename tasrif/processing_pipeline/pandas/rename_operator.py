@@ -3,9 +3,10 @@ Renames dataframe elements (rows, columns) using Pandas rename method.
 
 """
 from tasrif.processing_pipeline import ProcessingOperator
+from tasrif.processing_pipeline.validators import InputsAreDataFramesValidatorMixin
 
 
-class RenameOperator(ProcessingOperator):
+class RenameOperator(InputsAreDataFramesValidatorMixin, ProcessingOperator):
     """
 
     Examples

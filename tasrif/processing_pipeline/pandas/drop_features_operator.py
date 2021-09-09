@@ -2,9 +2,10 @@
 Remove missing values from one or more dataframes.
 """
 from tasrif.processing_pipeline import ProcessingOperator
+from tasrif.processing_pipeline.validators import InputsAreDataFramesValidatorMixin
 
 
-class DropFeaturesOperator(ProcessingOperator):
+class DropFeaturesOperator(InputsAreDataFramesValidatorMixin, ProcessingOperator):
     """
 
       Examples

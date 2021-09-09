@@ -3,9 +3,10 @@
 Remove duplicate values from one or more dataframes.
 """
 from tasrif.processing_pipeline import ProcessingOperator
+from tasrif.processing_pipeline.validators import InputsAreDataFramesValidatorMixin
 
 
-class DropDuplicatesOperator(ProcessingOperator):
+class DropDuplicatesOperator(InputsAreDataFramesValidatorMixin, ProcessingOperator):
     """
     Remove duplicate rows from one or more dataframes.
 

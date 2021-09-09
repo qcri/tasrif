@@ -2,9 +2,10 @@
 Merge multiple dataframes into a single one.
 """
 from tasrif.processing_pipeline import ProcessingOperator
+from tasrif.processing_pipeline.validators import InputsAreDataFramesValidatorMixin
 
 
-class MergeOperator(ProcessingOperator):
+class MergeOperator(InputsAreDataFramesValidatorMixin, ProcessingOperator):
     """Merge different datasets based on Pandas merge method.
 
     Examples

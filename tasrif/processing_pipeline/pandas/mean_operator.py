@@ -2,9 +2,10 @@
 Mean operator
 """
 from tasrif.processing_pipeline import ProcessingOperator
+from tasrif.processing_pipeline.validators import InputsAreDataFramesValidatorMixin
 
 
-class MeanOperator(ProcessingOperator):
+class MeanOperator(InputsAreDataFramesValidatorMixin, ProcessingOperator):
     """
 
       Mean operator

@@ -5,9 +5,10 @@ Set the DataFrame index (row labels) using one or more existing columns or array
 The index can replace the existing index or expand on it.
 """
 from tasrif.processing_pipeline import ProcessingOperator
+from tasrif.processing_pipeline.validators import InputsAreDataFramesValidatorMixin
 
 
-class SetIndexOperator(ProcessingOperator):
+class SetIndexOperator(InputsAreDataFramesValidatorMixin, ProcessingOperator):
     """
     Parameters
     ----------

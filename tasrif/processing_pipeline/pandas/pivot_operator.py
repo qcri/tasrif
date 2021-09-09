@@ -2,8 +2,9 @@
 Pivots a dataframe
 """
 from tasrif.processing_pipeline import ProcessingOperator
+from tasrif.processing_pipeline.validators import InputsAreDataFramesValidatorMixin
 
-class PivotOperator(ProcessingOperator):
+class PivotOperator(InputsAreDataFramesValidatorMixin, ProcessingOperator):
     """
     Pivots a dataframe.
 

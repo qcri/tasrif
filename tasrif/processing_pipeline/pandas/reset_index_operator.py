@@ -3,9 +3,10 @@ Resets the DataFrame index.
 
 """
 from tasrif.processing_pipeline import ProcessingOperator
+from tasrif.processing_pipeline.validators import InputsAreDataFramesValidatorMixin
 
 
-class ResetIndexOperator(ProcessingOperator):
+class ResetIndexOperator(InputsAreDataFramesValidatorMixin, ProcessingOperator):
     """
 
     Examples

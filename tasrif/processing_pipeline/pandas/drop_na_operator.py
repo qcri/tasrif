@@ -2,9 +2,10 @@
 Drop NaN values from one or more dataframes
 """
 from tasrif.processing_pipeline import ProcessingOperator
+from tasrif.processing_pipeline.validators import InputsAreDataFramesValidatorMixin
 
 
-class DropNAOperator(ProcessingOperator):
+class DropNAOperator(InputsAreDataFramesValidatorMixin, ProcessingOperator):
     """
     Examples
     --------

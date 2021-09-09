@@ -2,9 +2,10 @@
 Corr operator
 """
 from tasrif.processing_pipeline import ProcessingOperator
+from tasrif.processing_pipeline.validators import InputsAreDataFramesValidatorMixin
 
 
-class CorrOperator(ProcessingOperator):
+class CorrOperator(InputsAreDataFramesValidatorMixin, ProcessingOperator):
     """
 
       Corr operator

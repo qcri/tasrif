@@ -2,10 +2,10 @@
 Sum operator
 
 """
-
 from tasrif.processing_pipeline import ProcessingOperator
+from tasrif.processing_pipeline.validators import InputsAreDataFramesValidatorMixin
 
-class SumOperator(ProcessingOperator):
+class SumOperator(InputsAreDataFramesValidatorMixin, ProcessingOperator):
     """
 
     Sum operator

@@ -2,9 +2,10 @@
 Fill NaN values for one or more dataframes
 """
 from tasrif.processing_pipeline import ProcessingOperator
+from tasrif.processing_pipeline.validators import InputsAreDataFramesValidatorMixin
 
 
-class FillNAOperator(ProcessingOperator):
+class FillNAOperator(InputsAreDataFramesValidatorMixin, ProcessingOperator):
     """
 
     Examples

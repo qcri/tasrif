@@ -3,9 +3,10 @@ Operator to convert a column feature from string to datetime
 """
 import pandas as pd
 from tasrif.processing_pipeline import ProcessingOperator
+from tasrif.processing_pipeline.validators import InputsAreDataFramesValidatorMixin
 
 
-class ConvertToDatetimeOperator(ProcessingOperator):
+class ConvertToDatetimeOperator(InputsAreDataFramesValidatorMixin, ProcessingOperator):
     """
 
     Converts a set of (string) features to datetime using Pandas ``to_datetime``

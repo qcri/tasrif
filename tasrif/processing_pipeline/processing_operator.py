@@ -1,9 +1,5 @@
 """Module that defines the ProcessingOperator class
 """
-class ValidationError(Exception):
-    """
-    Raise when a validation fails in the validate hook of an Operator.
-    """
 
 class ProcessingOperator:
     """Interface specification of a processing operator
@@ -24,7 +20,6 @@ class ProcessingOperator:
         Raises:
             ValidationError: If any validation fails. # noqa: DAR402
         """
-
 
     def _process(self, *data_frames):
         """Process the passed data using the processing configuration specified

@@ -2,8 +2,9 @@
 Pivots a dataframe and realigns its columns to remove any multi-indices.
 """
 from tasrif.processing_pipeline import ProcessingOperator
+from tasrif.processing_pipeline.validators import InputsAreDataFramesValidatorMixin
 
-class PivotResetColumnsOperator(ProcessingOperator):
+class PivotResetColumnsOperator(InputsAreDataFramesValidatorMixin, ProcessingOperator):
     """
     Pivots a dataframe and realigns its columns to remove any multi-indices.
     """
