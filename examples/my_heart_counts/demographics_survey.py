@@ -11,6 +11,6 @@ pipeline = SequenceOperator([
     DropDuplicatesOperator(subset=["healthCode"], keep="last")
 ])
 
-df = pipeline.process()
-
-print(df)
+if __name__=='__main__':
+    df = pipeline.process()
+    print(df)
