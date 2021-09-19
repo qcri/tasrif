@@ -8,14 +8,14 @@ class SequenceOperator(ProcessingOperator):
     Data flows from one operator to another in a chained fashion.
     """
 
-    observers = []
-
     def __init__(self, processing_operators, observers=None):
         """Constructs a sequence operator from a list of operators
 
         Args:
             processing_operators (list[ProcessingOperator]):
                 Python list of processing operators
+            observers (list[Observer]):
+                Python list of observers
 
         Raises:
             ValueError: Occurs when one of the objects in the specified list is not a ProcessingOperator
@@ -36,6 +36,7 @@ class SequenceOperator(ProcessingOperator):
 
         """
         super().__init__()
+        self._observers = []
         for operator in processing_operators:
 
             if not isinstance(operator, ProcessingOperator):
@@ -46,9 +47,9 @@ class SequenceOperator(ProcessingOperator):
 
     def set_observers(self, observers):
         if observers:
-            self.observers = observers
+            self._observers = observers
             for operator in self.processing_operators:
-                operator.set_observers(self.observers)
+                operator.set_observers(self._observers)
 
     def _process(self, *args):
         """Processes a list of processing operators. Input of an operator is received from the

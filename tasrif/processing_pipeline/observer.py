@@ -9,12 +9,15 @@ class Observer:
     processed is passed to the process method.
     """
 
-    def observe(self, *data_frames):
+    def observe(self, operator, *data_frames):
         """
         Observe the passed data using the processing configuration specified
         in the constructor
 
         Args:
+            operator (ProcessingOperator):
+              Processing operator which is observed
+
             *data_frames (list of pd.DataFrame):
               Variable number of pandas dataframes to be observed
         """

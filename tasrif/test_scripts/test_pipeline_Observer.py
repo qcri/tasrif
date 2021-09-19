@@ -26,14 +26,14 @@ df = pd.DataFrame({'id': [1, 2, 3], 'colors': ['red', 'white', 'blue'], "importa
 
 # %% pycharm={"name": "#%%\n"}
 class PrintHead(Observer):
-    def observe(dfs):
+    def observe(operator, dfs):
         for df in dfs:
             print(df.head())
             
-class Print5(Observer):
-    def observe(dfs):
+class PrintFirstRow(Observer):
+    def observe(operator, dfs):
         for df in dfs:
-            print(5) 
+            print(df.iloc[0]) 
 
 
 # %%
@@ -42,7 +42,7 @@ df = ReplaceOperator(to_replace="red", value="green", observers=[PrintHead]).pro
 df
 
 # %% pycharm={"name": "#%%\n"}
-pipeline = SequenceOperator([ReplaceOperator(to_replace="green", value="red", observers=[Print5]), ReplaceOperator(to_replace="red", value="green", observers=[Print5, PrintHead])], observers=[PrintHead])
+pipeline = SequenceOperator([ReplaceOperator(to_replace="green", value="red", observers=[PrintFirstRow]), ReplaceOperator(to_replace="red", value="green", observers=[PrintFirstRow, PrintHead])], observers=[PrintHead])
 result = pipeline.process(df)
 
 

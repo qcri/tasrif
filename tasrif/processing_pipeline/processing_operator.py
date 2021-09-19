@@ -9,9 +9,14 @@ class ProcessingOperator:
     processed is passed to the process method.
     """
 
-    observers = []
-
     def __init__(self, observers=None):
+        """Base processing operator class
+
+        Args:
+            observers (list[Observer]):
+                Python list of observers
+        """
+        self._observers = []
         if observers:
             self.set_observers(observers)
 
@@ -23,8 +28,8 @@ class ProcessingOperator:
             observers (list of Observer):
               Observer objects that observe the operator
         """
-        if observers and not self.observers:
-            self.observers = observers
+        if observers and not self._observers:
+            self._observers = observers
 
     def _observe(self, *data_frames):
         """
@@ -34,8 +39,8 @@ class ProcessingOperator:
             *data_frames (list of pd.DataFrame):
               Variable number of pandas dataframes to be observed
         """
-        for observer in self.observers:
-            observer.observe(*data_frames)
+        for observer in self._observers:
+            observer.observe(self, *data_frames)
 
     def _validate(self, *data_frames):
         """
@@ -58,6 +63,9 @@ class ProcessingOperator:
         Args:
             *data_frames (list of pd.DataFrame):
               Variable number of pandas dataframes to be processed
+
+        Returns:
+            Output of _process method
         """
         return data_frames
 
