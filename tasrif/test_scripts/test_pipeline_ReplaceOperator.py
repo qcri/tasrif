@@ -17,7 +17,6 @@
 # %autoreload 2
 import pandas as pd
 from tasrif.processing_pipeline.pandas import ReplaceOperator
-from tasrif.processing_pipeline import Observer
 
 # %%
 # Full
