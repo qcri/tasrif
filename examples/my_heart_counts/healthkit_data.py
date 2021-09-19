@@ -18,7 +18,7 @@ csv_pipeline = SequenceOperator([
     CreateFeatureOperator(
         feature_name='Date',
         feature_creator=lambda df: df['endTime'].date()),
-    DropFeaturesOperator(drop_features=['startTime', 'endTime']),
+    DropFeaturesOperator(feature_names=['startTime', 'endTime']),
     AggregateOperator(
         groupby_feature_names=["Date", "type"],
         aggregation_definition={'value': 'sum'}),
@@ -38,7 +38,7 @@ pipeline = SequenceOperator([
 
 ])
 
-# Returns a generator
-record, csv_df = next(pipeline.process()[0])
-print(record)
-print(csv_df)
+if __name__=='__main__':
+    record, csv_df = next(pipeline.process()[0])
+    print(record)
+    print(csv_df)

@@ -79,7 +79,7 @@ stages:
             --env PYTHONPATH=/home/ --entrypoint "/bin/bash"
             -v $(System.DefaultWorkingDirectory):/home/
             qcriswtasrif.azurecr.io/$(Build.Repository.Name):$(Build.BuildId)
-            -c "pytest -v --ignore=/home/tasrif/test_scripts
+            -c "pytest -v --ignore=/home/tasrif/test_scripts --ignore=/home/examples
             --cov=tasrif --cov-report=xml --junitxml=/home/unit-tests.xml
       - task: PublishTestResults@2
         displayName: 'Publish unit tests results'

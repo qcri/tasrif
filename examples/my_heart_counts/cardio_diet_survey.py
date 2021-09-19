@@ -8,6 +8,6 @@ pipeline = SequenceOperator([
     MyHeartCountsDataset(cds_file_path)
 ])
 
-df = pipeline.process()
-
-print(df)
+if __name__=='__main__':
+    df = pipeline.process()
+    print(df)

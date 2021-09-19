@@ -23,7 +23,7 @@ pipeline = SequenceOperator([
         pipeline=json_pipeline),
 ])
 
-# Returns a generator
-record, csv_df = next(pipeline.process()[0])
-print(record)
-print(csv_df)
+if __name__=='__main__':
+    record, csv_df = next(pipeline.process()[0])
+    print(record)
+    print(csv_df)
