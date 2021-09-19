@@ -104,6 +104,7 @@ class SlidingWindowOperator(ProcessingOperator):
                 patient id column in the dataframe
 
         """
+        super().__init__()
         self.winsize = winsize
         self.period = period
         self.time_col = time_col

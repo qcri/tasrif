@@ -35,6 +35,7 @@ class SequenceOperator(ProcessingOperator):
          1  Batman  Batmobile 1940-04-25,)
 
         """
+        super().__init__()
         for operator in processing_operators:
 
             if not isinstance(operator, ProcessingOperator):

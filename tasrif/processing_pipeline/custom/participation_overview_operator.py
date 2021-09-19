@@ -96,6 +96,7 @@ class ParticipationOverviewOperator(ProcessingOperator):
                 then a default selection of non-zero or non-empty values is applied.
 
         """
+        super().__init__()
         self.participant_identifier = participant_identifier
         self.date_feature_name = date_feature_name
         self.filter_features = filter_features

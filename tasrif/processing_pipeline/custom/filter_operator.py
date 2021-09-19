@@ -85,7 +85,7 @@ class FilterOperator(ProcessingOperator):
             filter_type (str):
                 include the filtered epochs, and days, or exclude them.
         """
-
+        super().__init__()
         self.participant_identifier = participant_identifier
         self.date_feature_name = date_feature_name
         self.epoch_filter = epoch_filter

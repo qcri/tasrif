@@ -98,6 +98,7 @@ class CalculateTimeseriesPropertiesOperator(ProcessingOperator):
         self.value_column = value_column
         self.method = method
         self.kwargs = kwargs
+        super().__init__()
 
     def _process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.

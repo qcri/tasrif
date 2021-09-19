@@ -70,6 +70,7 @@ class SplitOperator(ProcessingOperator):
 
         self.split_operators = split_operators
         self.bind_list = bind_list
+        super().__init__()
 
     def _process(self, *args):
         """Processes a list of processing operators. Input of an operator is received from the

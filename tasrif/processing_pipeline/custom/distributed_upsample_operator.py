@@ -61,6 +61,7 @@ class DistributedUpsampleOperator(ProcessingOperator):
                 The offset string or object representing target conversion.
 
         """
+        super().__init__()
         self.rule = rule
 
     def _process(self, *data_frames):

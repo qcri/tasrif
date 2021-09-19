@@ -81,6 +81,7 @@ class JqOperator(ProcessingOperator):
                 JQ expression to process the incoming JSON datasets (see https://stedolan.github.io/jq/manual/) for
                 more details
         """
+        super().__init__()
         self.expression = expression
 
 

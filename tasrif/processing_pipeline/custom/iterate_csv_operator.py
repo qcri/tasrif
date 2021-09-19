@@ -84,7 +84,7 @@ class IterateCsvOperator(ProcessingOperator):
             pipeline (SequenceOperator):
                 pipeline to apply on dataframe record before yielding it
         """
-
+        super().__init__()
         self.folder_path = pathlib.Path(folder_path)
         self.field = field
         self.pipeline = pipeline

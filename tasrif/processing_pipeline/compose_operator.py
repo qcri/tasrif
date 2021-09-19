@@ -46,7 +46,7 @@ class ComposeOperator(ProcessingOperator):
                 raise ValueError("All operators in a pipeline must derive from ProcessingOperator!")
 
         self.processing_operators = processing_operators
-
+        super().__init__()
 
     def _process(self, *args):
         """Processes a list of processing operators. Input of an operator is received from the

@@ -90,7 +90,7 @@ class CategorizeTimeOperator(ProcessingOperator):
                         { "month": "winter", "values": [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1] }
                     ]
         """
-
+        super().__init__()
         self.date_feature_name = date_feature_name
         self.category_definition = category_definition
 

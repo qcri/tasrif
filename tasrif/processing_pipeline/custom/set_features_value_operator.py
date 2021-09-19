@@ -83,6 +83,7 @@ class SetFeaturesValueOperator(ProcessingOperator):
             value (int, optional):
                 value to replace the selected rows.
         """
+        super().__init__()
         self.feature_names = feature_names
         self.selector = selector
         self.value = value

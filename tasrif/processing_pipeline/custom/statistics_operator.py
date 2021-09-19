@@ -61,6 +61,7 @@ class StatisticsOperator(ProcessingOperator):
                 Note that if a column or feature name is omitted then a default
                 selection of non-zero or non-empty values is applied.
         """
+        super().__init__()
         self.participant_identifier = participant_identifier
         self.date_feature_name = date_feature_name
         self.filter_features = filter_features
