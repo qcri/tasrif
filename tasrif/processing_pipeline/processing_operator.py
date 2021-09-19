@@ -12,13 +12,28 @@ class ProcessingOperator:
     observers = []
 
     def __init__(self, observers=None):
-        self._set_observers(observers)
+        if observers:
+            self.set_observers(observers)
 
-    def _set_observers(self, observers):
-        if not self.observers:
+    def set_observers(self, observers):
+        """
+        Function to store the observers for the given operator.
+
+        Args:
+            observers (list of Observer):
+              Observer objects that observe the operator
+        """
+        if observers and not self.observers:
             self.observers = observers
 
     def _observe(self, *data_frames):
+        """
+        Function that runs the observe method for each observer for the given operator
+
+        Args:
+            *data_frames (list of pd.DataFrame):
+              Variable number of pandas dataframes to be observed
+        """
         for observer in self.observers:
             observer.observe(*data_frames)
 
@@ -35,6 +50,7 @@ class ProcessingOperator:
             ValidationError: If any validation fails. # noqa: DAR402
         """
 
+    #pylint: disable=no-self-use
     def _process(self, *data_frames):
         """Process the passed data using the processing configuration specified
         in the constructor

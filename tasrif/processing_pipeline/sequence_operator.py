@@ -35,19 +35,20 @@ class SequenceOperator(ProcessingOperator):
          1  Batman  Batmobile 1940-04-25,)
 
         """
-        super().__init__()
         for operator in processing_operators:
 
             if not isinstance(operator, ProcessingOperator):
                 raise ValueError("All operators in a pipeline must derive from ProcessingOperator!")
 
         self.processing_operators = processing_operators
-        self._set_observers(observers)
+        self.set_observers(observers)
+        super().__init__()
 
-    def _set_observers(self, observers):
-        self.observers = observers
-        for operator in self.processing_operators:
-            operator._set_observers(self.observers)
+    def set_observers(self, observers):
+        if observers:
+            self.observers = observers
+            for operator in self.processing_operators:
+                operator.set_observers(self.observers)
 
     def _process(self, *args):
         """Processes a list of processing operators. Input of an operator is received from the
