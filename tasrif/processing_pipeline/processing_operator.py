@@ -43,6 +43,7 @@ class ProcessingOperator:
             *data_frames (list of pd.DataFrame):
               Variable number of pandas dataframes to be processed
         """
+        return data_frames
 
     def process(self, *data_frames):
         """
