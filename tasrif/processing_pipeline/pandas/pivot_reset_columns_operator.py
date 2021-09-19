@@ -1,10 +1,10 @@
 """
 Pivots a dataframe and realigns its columns to remove any multi-indices.
 """
-from tasrif.processing_pipeline import ProcessingOperator
+from tasrif.processing_pipeline import PandasOperator
 from tasrif.processing_pipeline.validators import InputsAreDataFramesValidatorMixin
 
-class PivotResetColumnsOperator(InputsAreDataFramesValidatorMixin, ProcessingOperator):
+class PivotResetColumnsOperator(InputsAreDataFramesValidatorMixin, PandasOperator):
     """
     Pivots a dataframe and realigns its columns to remove any multi-indices.
     """
@@ -43,6 +43,7 @@ class PivotResetColumnsOperator(InputsAreDataFramesValidatorMixin, ProcessingOpe
             **kwargs: Arguments to pandas pivot function
         """
         self.level = level
+        super().__init__(kwargs)
         self.kwargs = kwargs
 
     def _process(self, *data_frames):

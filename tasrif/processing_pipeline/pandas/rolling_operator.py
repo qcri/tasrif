@@ -1,11 +1,11 @@
 """
 Rolling Operator
 """
-from tasrif.processing_pipeline import ProcessingOperator
+from tasrif.processing_pipeline import PandasOperator
 from tasrif.processing_pipeline.validators import InputsAreDataFramesValidatorMixin
 
 
-class RollingOperator(InputsAreDataFramesValidatorMixin, ProcessingOperator):
+class RollingOperator(InputsAreDataFramesValidatorMixin, PandasOperator):
     """
 
     Examples
@@ -43,8 +43,8 @@ class RollingOperator(InputsAreDataFramesValidatorMixin, ProcessingOperator):
 
         self.winsize = winsize
         self.selector = selector
+        super().__init__(kwargs)
         self.kwargs = kwargs
-        super().__init__()
 
     def _process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.

@@ -8,7 +8,7 @@ class SplitOperator(ProcessingOperator):
     multiple branches represented by split operators that are passed in the constructor.
     """
 
-    def __init__(self, split_operators, bind_list=None):
+    def __init__(self, split_operators, bind_list=None, observers=None):
         """Constructs a split operator using the provided arguments
 
         Args:

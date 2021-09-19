@@ -1,8 +1,8 @@
 # pylint: disable=missing-module-docstring
 import pandas as pd
-from tasrif.processing_pipeline import ProcessingOperator
+from tasrif.processing_pipeline import PandasOperator
 
-class ReadCsvOperator(ProcessingOperator):
+class ReadCsvOperator(PandasOperator):
     """
     Operator that takes a path to a csv file and reads it into a dataframe.
     Uses the ``pandas.read_csv`` method underneath.
@@ -29,6 +29,7 @@ class ReadCsvOperator(ProcessingOperator):
 
     def __init__(self, *args, **kwargs):
         self.args = args
+        super().__init__(kwargs)
         self.kwargs = kwargs
 
     def _process(self, *data_frames):

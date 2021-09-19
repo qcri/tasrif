@@ -1,12 +1,26 @@
 """Module that defines the ProcessingOperator class
 """
 
+
 class ProcessingOperator:
     """Interface specification of a processing operator
     The constructor of a concrete operator will provide options to configure the
     operation. The processing is invoked via the process method and the data to be
     processed is passed to the process method.
     """
+
+    observers = []
+
+    def __init__(self, observers=None):
+        self._set_observers(observers)
+
+    def _set_observers(self, observers):
+        if not self.observers:
+            self.observers = observers
+
+    def _observe(self, *data_frames):
+        for observer in self.observers:
+            observer.observe(*data_frames)
 
     def _validate(self, *data_frames):
         """
@@ -42,4 +56,6 @@ class ProcessingOperator:
             Output of _process method
         """
         self._validate(*data_frames)
-        return self._process(*data_frames)
+        result = self._process(*data_frames)
+        self._observe(result)
+        return result

@@ -2,11 +2,11 @@
 Operator to convert a continuous variable to a categorical variable, useful for binning data
 """
 import pandas as pd
-from tasrif.processing_pipeline import ProcessingOperator
+from tasrif.processing_pipeline import PandasOperator
 from tasrif.processing_pipeline.validators import InputsAreDataFramesValidatorMixin
 
 
-class QCutOperator(InputsAreDataFramesValidatorMixin, ProcessingOperator):
+class QCutOperator(InputsAreDataFramesValidatorMixin, PandasOperator):
     """
 
       Quantile-based discretization function using Pandas ``qcut``
@@ -125,8 +125,8 @@ class QCutOperator(InputsAreDataFramesValidatorMixin, ProcessingOperator):
         self.cut_column_name = cut_column_name
         self.bin_column_name = bin_column_name
         self.quantile = quantile
+        super().__init__(kwargs)
         self.kwargs = kwargs
-        super().__init__()
 
     def _process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.

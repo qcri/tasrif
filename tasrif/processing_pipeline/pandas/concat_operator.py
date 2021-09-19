@@ -2,10 +2,10 @@
 Concatenate multiple dataframes into a single one.
 """
 import pandas as pd
-from tasrif.processing_pipeline import ProcessingOperator
+from tasrif.processing_pipeline import PandasOperator
 from tasrif.processing_pipeline.validators import InputsAreDataFramesValidatorMixin
 
-class ConcatOperator(InputsAreDataFramesValidatorMixin, ProcessingOperator):
+class ConcatOperator(InputsAreDataFramesValidatorMixin, PandasOperator):
     """Concatenate different datasets based on Pandas concat method.
 
     Examples
@@ -40,8 +40,8 @@ class ConcatOperator(InputsAreDataFramesValidatorMixin, ProcessingOperator):
 
 
         """
+        super().__init__(kwargs)
         self.kwargs = kwargs
-        super().__init__()
 
     def _process(self, *data_frames):
         """Concatenate multiple datasets.

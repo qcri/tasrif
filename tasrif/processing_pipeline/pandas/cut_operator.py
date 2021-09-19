@@ -2,11 +2,11 @@
 Operator to convert a continuous variable to a categorical variable, useful for binning data
 """
 import pandas as pd
-from tasrif.processing_pipeline import ProcessingOperator
+from tasrif.processing_pipeline import PandasOperator
 from tasrif.processing_pipeline.validators import InputsAreDataFramesValidatorMixin
 
 
-class CutOperator(InputsAreDataFramesValidatorMixin, ProcessingOperator):
+class CutOperator(InputsAreDataFramesValidatorMixin, PandasOperator):
     """
 
       Bin values into discrete intervals using Pandas ``cut``
@@ -127,8 +127,8 @@ class CutOperator(InputsAreDataFramesValidatorMixin, ProcessingOperator):
         self.cut_column_name = cut_column_name
         self.bin_column_name = bin_column_name
         self.bins = bins
+        super().__init__(kwargs)
         self.kwargs = kwargs
-        super().__init__()
 
     def _process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.

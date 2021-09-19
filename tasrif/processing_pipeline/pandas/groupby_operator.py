@@ -1,11 +1,11 @@
 """
 Groupby Operator
 """
-from tasrif.processing_pipeline import ProcessingOperator
+from tasrif.processing_pipeline import PandasOperator
 from tasrif.processing_pipeline.validators import InputsAreDataFramesValidatorMixin
 
 
-class GroupbyOperator(InputsAreDataFramesValidatorMixin, ProcessingOperator):
+class GroupbyOperator(InputsAreDataFramesValidatorMixin, PandasOperator):
     """
 
     Examples
@@ -66,8 +66,8 @@ class GroupbyOperator(InputsAreDataFramesValidatorMixin, ProcessingOperator):
         """
 
         self.selector = selector
+        super().__init__(kwargs)
         self.kwargs = kwargs
-        super().__init__()
 
     def _process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.

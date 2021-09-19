@@ -1,11 +1,11 @@
 """
 Fill NaN values for one or more dataframes
 """
-from tasrif.processing_pipeline import ProcessingOperator
+from tasrif.processing_pipeline import PandasOperator
 from tasrif.processing_pipeline.validators import InputsAreDataFramesValidatorMixin
 
 
-class FillNAOperator(InputsAreDataFramesValidatorMixin, ProcessingOperator):
+class FillNAOperator(InputsAreDataFramesValidatorMixin, PandasOperator):
     """
 
     Examples
@@ -39,8 +39,8 @@ class FillNAOperator(InputsAreDataFramesValidatorMixin, ProcessingOperator):
             **kwargs:
               key word arguments passed to pandas DataFrame.dropna method
         """
+        super().__init__(kwargs)
         self.kwargs = kwargs
-        super().__init__()
 
     def _process(self, *data_frames):
         """Process the passed data using the processing configuration specified

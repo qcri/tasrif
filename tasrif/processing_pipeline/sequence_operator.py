@@ -1,6 +1,5 @@
 """Module that defines the SequenceOperator class
 """
-
 from tasrif.processing_pipeline.processing_operator import ProcessingOperator
 
 class SequenceOperator(ProcessingOperator):
@@ -9,7 +8,9 @@ class SequenceOperator(ProcessingOperator):
     Data flows from one operator to another in a chained fashion.
     """
 
-    def __init__(self, processing_operators):
+    observers = []
+
+    def __init__(self, processing_operators, observers=None):
         """Constructs a sequence operator from a list of operators
 
         Args:
@@ -40,7 +41,12 @@ class SequenceOperator(ProcessingOperator):
                 raise ValueError("All operators in a pipeline must derive from ProcessingOperator!")
 
         self.processing_operators = processing_operators
+        self._set_observers(observers)
 
+    def _set_observers(self, observers):
+        self.observers = observers
+        for operator in self.processing_operators:
+            operator._set_observers(self.observers)
 
     def _process(self, *args):
         """Processes a list of processing operators. Input of an operator is received from the

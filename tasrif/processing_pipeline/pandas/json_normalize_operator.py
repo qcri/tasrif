@@ -2,9 +2,9 @@
 Normalize semi-structured JSON data into a flat table.
 """
 import pandas as pd
-from tasrif.processing_pipeline import ProcessingOperator
+from tasrif.processing_pipeline import PandasOperator
 
-class JsonNormalizeOperator(ProcessingOperator):
+class JsonNormalizeOperator(PandasOperator):
     """
 
     Examples
@@ -97,8 +97,8 @@ class JsonNormalizeOperator(ProcessingOperator):
             **kwargs:
               key word arguments passed to pandas DataFrame.dropna method
         """
+        super().__init__(kwargs)
         self.kwargs = kwargs
-        super().__init__()
 
     def _process(self, *data_frames):
         """Process the passed data using the processing configuration specified

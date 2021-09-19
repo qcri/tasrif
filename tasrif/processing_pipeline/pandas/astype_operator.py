@@ -1,10 +1,10 @@
 """
 Cast a pandas object to a specified dtype dtype.
 """
-from tasrif.processing_pipeline import ProcessingOperator
+from tasrif.processing_pipeline import PandasOperator
 from tasrif.processing_pipeline.validators import InputsAreDataFramesValidatorMixin
 
-class AsTypeOperator(InputsAreDataFramesValidatorMixin, ProcessingOperator):
+class AsTypeOperator(InputsAreDataFramesValidatorMixin, PandasOperator):
     """
     Cast a pandas object to a specified dtype dtype.
 
@@ -50,8 +50,8 @@ class AsTypeOperator(InputsAreDataFramesValidatorMixin, ProcessingOperator):
 
         """
         self.dtype = dtype
+        super().__init__(kwargs)
         self.kwargs = kwargs
-
 
     def _process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.

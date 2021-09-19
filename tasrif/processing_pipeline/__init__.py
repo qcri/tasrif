@@ -8,3 +8,5 @@ from tasrif.processing_pipeline.noop_operator import NoopOperator
 from tasrif.processing_pipeline.split_operator import SplitOperator
 from tasrif.processing_pipeline.map_processing_operator import MapProcessingOperator
 from tasrif.processing_pipeline.reduce_processing_operator import ReduceProcessingOperator
+from tasrif.processing_pipeline.pandas_operator import PandasOperator
+from tasrif.processing_pipeline.observer import Observer

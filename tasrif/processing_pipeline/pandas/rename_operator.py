@@ -2,11 +2,10 @@
 Renames dataframe elements (rows, columns) using Pandas rename method.
 
 """
-from tasrif.processing_pipeline import ProcessingOperator
+from tasrif.processing_pipeline import PandasOperator
 from tasrif.processing_pipeline.validators import InputsAreDataFramesValidatorMixin
 
-
-class RenameOperator(InputsAreDataFramesValidatorMixin, ProcessingOperator):
+class RenameOperator(InputsAreDataFramesValidatorMixin, PandasOperator):
     """
 
     Examples
@@ -61,9 +60,8 @@ class RenameOperator(InputsAreDataFramesValidatorMixin, ProcessingOperator):
                 key word arguments passed to pandas DataFrame.rename method
 
         """
-
+        super().__init__(kwargs)
         self.kwargs = kwargs
-        super().__init__()
 
     def _process(self, *data_frames):
         """Process the passed data using the processing configuration specified

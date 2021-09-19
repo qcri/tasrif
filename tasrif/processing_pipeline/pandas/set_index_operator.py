@@ -4,11 +4,11 @@ Set the DataFrame index using existing columns.
 Set the DataFrame index (row labels) using one or more existing columns or arrays (of the correct length).
 The index can replace the existing index or expand on it.
 """
-from tasrif.processing_pipeline import ProcessingOperator
+from tasrif.processing_pipeline import PandasOperator
 from tasrif.processing_pipeline.validators import InputsAreDataFramesValidatorMixin
 
 
-class SetIndexOperator(InputsAreDataFramesValidatorMixin, ProcessingOperator):
+class SetIndexOperator(InputsAreDataFramesValidatorMixin, PandasOperator):
     """
     Parameters
     ----------
@@ -59,8 +59,8 @@ class SetIndexOperator(InputsAreDataFramesValidatorMixin, ProcessingOperator):
 
         """
         self.keys = keys
+        super().__init__(kwargs)
         self.kwargs = kwargs
-        super().__init__()
 
     def _process(self, *data_frames):
         """Process the passed data using the processing configuration specified

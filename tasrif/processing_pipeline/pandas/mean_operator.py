@@ -1,11 +1,11 @@
 """
 Mean operator
 """
-from tasrif.processing_pipeline import ProcessingOperator
+from tasrif.processing_pipeline import PandasOperator
 from tasrif.processing_pipeline.validators import InputsAreDataFramesValidatorMixin
 
 
-class MeanOperator(InputsAreDataFramesValidatorMixin, ProcessingOperator):
+class MeanOperator(InputsAreDataFramesValidatorMixin, PandasOperator):
     """
 
       Mean operator
@@ -39,6 +39,7 @@ class MeanOperator(InputsAreDataFramesValidatorMixin, ProcessingOperator):
                 Arguments to pandas pd.mean function
 
         """
+        super().__init__(kwargs)
         self.kwargs = kwargs
 
     def _process(self, *data_frames):
