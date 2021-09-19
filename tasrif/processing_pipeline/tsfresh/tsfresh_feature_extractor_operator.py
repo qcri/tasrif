@@ -123,11 +123,11 @@ class TSFreshFeatureExtractorOperator(ProcessingOperator):
                 more details
 
         """
+        super().__init__()
         self.date_feature_name = date_feature_name
         self.seq_id_col = seq_id_col
         self.value_col = value_col
         self.features = features
-        super().__init__()
 
     def process(self, *data_frames):
         """

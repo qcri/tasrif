@@ -40,13 +40,13 @@ class ComposeOperator(ProcessingOperator):
           1  Batman  Batmobile 1940-04-25,)]
 
         """
+        super().__init__()
         for operator in processing_operators:
 
             if not isinstance(operator, ProcessingOperator):
                 raise ValueError("All operators in a pipeline must derive from ProcessingOperator!")
 
         self.processing_operators = processing_operators
-        super().__init__()
 
     def _process(self, *args):
         """Processes a list of processing operators. Input of an operator is received from the

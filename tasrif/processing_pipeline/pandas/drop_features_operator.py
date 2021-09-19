@@ -48,8 +48,8 @@ class DropFeaturesOperator(InputsAreDataFramesValidatorMixin, ProcessingOperator
               features (columns) to drop from each dataframe
 
         """
-        self.feature_names = feature_names
         super().__init__()
+        self.feature_names = feature_names
 
     def __str__(self):
         return self.__class__.__name__

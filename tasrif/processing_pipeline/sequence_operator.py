@@ -35,6 +35,7 @@ class SequenceOperator(ProcessingOperator):
          1  Batman  Batmobile 1940-04-25,)
 
         """
+        super().__init__()
         for operator in processing_operators:
 
             if not isinstance(operator, ProcessingOperator):
@@ -42,7 +43,6 @@ class SequenceOperator(ProcessingOperator):
 
         self.processing_operators = processing_operators
         self.set_observers(observers)
-        super().__init__()
 
     def set_observers(self, observers):
         if observers:

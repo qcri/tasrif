@@ -61,6 +61,7 @@ class SplitOperator(ProcessingOperator):
             3  07-06-2021  <NA>
             5  08-06-2021  4000,)]
         """
+        super().__init__()
         for operator in split_operators:
             if not isinstance(operator, ProcessingOperator):
                 raise ValueError("All split operators must derive from ProcessingOperator!")
@@ -70,7 +71,6 @@ class SplitOperator(ProcessingOperator):
 
         self.split_operators = split_operators
         self.bind_list = bind_list
-        super().__init__()
 
     def _process(self, *args):
         """Processes a list of processing operators. Input of an operator is received from the
