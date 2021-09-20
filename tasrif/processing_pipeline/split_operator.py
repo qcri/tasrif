@@ -19,9 +19,7 @@ class SplitOperator(ProcessingOperator):
                 corresponding to the index of the argument for the operator at that index.
                 For example: a bind_order of [0, 1, 1] means that the first operator receives the first
                 argument (index 0) and the second and third operator receives the second argument (index 1).
-
                 Note that an error is raised if len(bind_list) != len(split_operators).
-
                 If no bind_list is passed, arguments are passed in the same order as they are received
                 (representing a bind_list of [0, 1, 2, ...]).
             observers (list[Observer]):
