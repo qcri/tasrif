@@ -75,7 +75,7 @@ class SplitOperator(ProcessingOperator):
         self.set_observers(observers)
 
     def set_observers(self, observers):
-        if observers and not self._observers:
+        if observers:
             for operator in self.split_operators:
                 operator.set_observers(observers)
 
