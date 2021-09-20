@@ -17,7 +17,7 @@
 # %autoreload 2
 import pandas as pd
 from tasrif.processing_pipeline.pandas import ReplaceOperator
-from tasrif.processing_pipeline import SequenceOperator, Observer
+from tasrif.processing_pipeline import SequenceOperator, Observer, ComposeOperator, SplitOperator
 
 # %%
 # Full
@@ -44,5 +44,12 @@ df
 # %% pycharm={"name": "#%%\n"}
 pipeline = SequenceOperator([ReplaceOperator(to_replace="green", value="red", observers=[PrintFirstRow]), ReplaceOperator(to_replace="red", value="green", observers=[PrintFirstRow, PrintHead])], observers=[PrintHead])
 result = pipeline.process(df)
+
+
+
+# %% pycharm={"name": "#%%\n"}
+pipeline = ComposeOperator([ReplaceOperator(to_replace="green", value="red"), ReplaceOperator(to_replace="red", value="green")], observers=[PrintHead])
+result = pipeline.process(df)
+result
 
 

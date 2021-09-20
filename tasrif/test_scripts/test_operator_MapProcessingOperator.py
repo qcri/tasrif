@@ -31,5 +31,5 @@ df1 = pd.DataFrame([['tom', 10],
 class SizeOperator(MapProcessingOperator):
     def _processing_function(self, df):
         return df.size
-
+            
 SizeOperator().process(df0, df1)

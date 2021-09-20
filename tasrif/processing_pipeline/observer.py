@@ -16,9 +16,8 @@ class Observer:
 
         Args:
             operator (ProcessingOperator):
-              Processing operator which is observed
-
+                Processing operator which is observed
             *data_frames (list of pd.DataFrame):
-              Variable number of pandas dataframes to be observed
+                Variable number of pandas dataframes to be observed
         """
         
