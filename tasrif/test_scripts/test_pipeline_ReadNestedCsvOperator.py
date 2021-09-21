@@ -13,13 +13,13 @@
 # ---
 
 # %% [markdown]
-# # The following code requires two small csv files to be saved in disk in order to test IterateCsvOperator
+# # The following code requires two small csv files to be saved in disk in order to test ReadNestedCsvOperator
 
 # %%
 import pandas as pd
 import numpy as np
 
-from tasrif.processing_pipeline.custom import IterateCsvOperator
+from tasrif.processing_pipeline.custom import ReadNestedCsvOperator
 
 df = pd.DataFrame({"name": ['Alfred', 'Roy'],
                    "age": [43, 32],
@@ -38,7 +38,7 @@ details2 = pd.DataFrame({'calories': [420, 250],
 details1.to_csv('details1.csv', index=False)
 details2.to_csv('details2.csv', index=False)
 
-operator = IterateCsvOperator(folder_path='./', field='file_details', pipeline=None)
+operator = ReadNestedCsvOperator(folder_path='./', field='file_details', pipeline=None)
 generator = operator.process(df)[0]
 
 # Iterates twice

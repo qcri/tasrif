@@ -21,7 +21,7 @@ from tasrif.processing_pipeline.pandas import DropNAOperator, ConvertToDatetimeO
                                               SetIndexOperator, PivotResetColumnsOperator, ConcatOperator, \
                                               MergeOperator, AsTypeOperator, JsonNormalizeOperator
 from tasrif.processing_pipeline.custom import CreateFeatureOperator, AggregateOperator, FilterOperator, \
-                                              IterateCsvOperator, IterateJsonOperator, FlattenOperator
+                                              ReadNestedCsvOperator, IterateJsonOperator, FlattenOperator
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -123,7 +123,7 @@ hkd_pipeline = SequenceOperator([
             CreateFeatureOperator(
                 feature_name='file_name',
                 feature_creator=lambda df: str(df['data.csv'])),
-            IterateCsvOperator(
+            ReadNestedCsvOperator(
                 folder_path=csv_folder_path,
                 field='file_name',
                 pipeline=csv_pipeline),
