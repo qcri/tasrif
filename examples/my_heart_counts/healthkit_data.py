@@ -1,7 +1,7 @@
 import os
 from tasrif.processing_pipeline import SequenceOperator
 from tasrif.data_readers.my_heart_counts import MyHeartCountsDataset
-from tasrif.processing_pipeline.custom import CreateFeatureOperator, IterateCsvOperator, \
+from tasrif.processing_pipeline.custom import CreateFeatureOperator, ReadNestedCsvOperator, \
                                               AggregateOperator
 from tasrif.processing_pipeline.pandas import ConvertToDatetimeOperator, DropNAOperator, \
                                               DropFeaturesOperator, SetIndexOperator, \
@@ -31,7 +31,7 @@ pipeline = SequenceOperator([
     CreateFeatureOperator(
         feature_name='file_name',
         feature_creator=lambda df: str(df['data.csv'])),
-    IterateCsvOperator(
+    ReadNestedCsvOperator(
         folder_path=csv_folder_path,
         field='file_name',
         pipeline=csv_pipeline),

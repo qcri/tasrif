@@ -8,7 +8,7 @@ import pandas as pd
 from tasrif.processing_pipeline import ProcessingOperator
 from tasrif.processing_pipeline import SequenceOperator
 
-class IterateCsvOperator(ProcessingOperator):
+class ReadNestedCsvOperator(ProcessingOperator):
     """
     Operator that returns a Generator: one record per call.
 
@@ -18,7 +18,7 @@ class IterateCsvOperator(ProcessingOperator):
 	>>> import pandas as pd
 	>>> import numpy as np
 	>>>
-	>>> from tasrif.processing_pipeline.custom import IterateCsvOperator
+	>>> from tasrif.processing_pipeline.custom import ReadNestedCsvOperator
 	>>>
 	>>> df = pd.DataFrame({"name": ['Alfred', 'Roy'],
 	...                    "age": [43, 32],
@@ -37,7 +37,7 @@ class IterateCsvOperator(ProcessingOperator):
 	>>> details1.to_csv('details1.csv', index=False)
 	>>> details2.to_csv('details2.csv', index=False)
 	>>>
-	>>> operator = IterateCsvOperator(folder_path='./', field='file_details', pipeline=None)
+	>>> operator = ReadNestedCsvOperator(folder_path='./', field='file_details', pipeline=None)
 	>>> generator = operator.process(df)
 	>>>
 	>>> # Iterates twice
@@ -74,7 +74,7 @@ class IterateCsvOperator(ProcessingOperator):
 	"""
 
     def __init__(self, folder_path, field, pipeline: SequenceOperator = None):
-        """Creates a new instance of IterateCsvOperator
+        """Creates a new instance of ReadNestedCsvOperator
 
         Args:
             folder_path (str):

@@ -12,7 +12,7 @@ def generator(scope='module'):
 
 def test_data_is_correctly_loaded(generator):
     for record, csv in generator:
-        # IterateCsvOperator returns the record as a NamedTuple with some extra
+        # ReadNestedCsvOperator returns the record as a NamedTuple with some extra
         # fields, just check for a subset of them.
         record_columns = list(record._fields)
         for column in ['appVersion', 'createdOn', 'healthCode',
