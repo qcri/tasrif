@@ -47,6 +47,7 @@ class ResampleOperator(ProcessingOperator):
             **resample_args:
                 key word arguments passed to pandas DataFrame.resample method
         """
+        super().__init__()
         self.rule = rule
         self.aggregation_definition = aggregation_definition
         self.resample_args = resample_args

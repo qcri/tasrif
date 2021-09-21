@@ -1,11 +1,11 @@
 """
 Corr operator
 """
-from tasrif.processing_pipeline import ProcessingOperator
+from tasrif.processing_pipeline import PandasOperator
 from tasrif.processing_pipeline.validators import InputsAreDataFramesValidatorMixin
 
 
-class CorrOperator(InputsAreDataFramesValidatorMixin, ProcessingOperator):
+class CorrOperator(InputsAreDataFramesValidatorMixin, PandasOperator):
     """
 
       Corr operator
@@ -40,6 +40,7 @@ class CorrOperator(InputsAreDataFramesValidatorMixin, ProcessingOperator):
                 Arguments to pandas pd.corr function
 
         """
+        super().__init__(kwargs)
         self.kwargs = kwargs
 
     def _process(self, *data_frames):

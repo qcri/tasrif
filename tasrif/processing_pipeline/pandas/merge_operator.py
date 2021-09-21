@@ -1,11 +1,11 @@
 """
 Merge multiple dataframes into a single one.
 """
-from tasrif.processing_pipeline import ProcessingOperator
+from tasrif.processing_pipeline import PandasOperator
 from tasrif.processing_pipeline.validators import InputsAreDataFramesValidatorMixin
 
 
-class MergeOperator(InputsAreDataFramesValidatorMixin, ProcessingOperator):
+class MergeOperator(InputsAreDataFramesValidatorMixin, PandasOperator):
     """Merge different datasets based on Pandas merge method.
 
     Examples
@@ -28,8 +28,8 @@ class MergeOperator(InputsAreDataFramesValidatorMixin, ProcessingOperator):
               key word arguments passed to pandas DataFrame.merge method
 
         """
+        super().__init__(kwargs)
         self.kwargs = kwargs
-        super().__init__()
 
     def _process(self, *data_frames):
         """Merge multiple datasets on a common feature defined on the constructor method.

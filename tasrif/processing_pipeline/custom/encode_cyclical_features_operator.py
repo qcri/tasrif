@@ -64,7 +64,7 @@ class EncodeCyclicalFeaturesOperator(ProcessingOperator):
                         {"month", "calendar_month}
                     ]
         """
-
+        super().__init__()
         self.date_feature_name = date_feature_name
         self.category_definition = category_definition
 

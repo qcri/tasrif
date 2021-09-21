@@ -1,11 +1,11 @@
 """
 Sort multiple dataframes based on some keys
 """
-from tasrif.processing_pipeline import ProcessingOperator
+from tasrif.processing_pipeline import PandasOperator
 from tasrif.processing_pipeline.validators import InputsAreDataFramesValidatorMixin
 
 
-class SortOperator(InputsAreDataFramesValidatorMixin, ProcessingOperator):
+class SortOperator(InputsAreDataFramesValidatorMixin, PandasOperator):
     """Sort datasets based on Pandas `sort_values` method.
 
     Examples
@@ -35,8 +35,8 @@ class SortOperator(InputsAreDataFramesValidatorMixin, ProcessingOperator):
 
 
         """
+        super().__init__(kwargs)
         self.kwargs = kwargs
-        super().__init__()
 
     def _process(self, *data_frames):
         """Sort multiple datasets using the Pandas function `sort_values`.

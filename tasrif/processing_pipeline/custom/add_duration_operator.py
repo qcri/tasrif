@@ -54,6 +54,7 @@ class AddDurationOperator(ProcessingOperator):
                 Name of the feature representing the duration
 
         """
+        super().__init__()
         self.groupby_feature_names = groupby_feature_names
         self.date_feature_name = date_feature_name
         self.duration_feature_name = duration_feature_name

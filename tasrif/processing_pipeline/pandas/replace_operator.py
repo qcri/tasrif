@@ -1,11 +1,11 @@
 """
 Replaces values in multiple dataframes based on Pandas `replace` method.
 """
-from tasrif.processing_pipeline import ProcessingOperator
+from tasrif.processing_pipeline import PandasOperator
 from tasrif.processing_pipeline.validators import InputsAreDataFramesValidatorMixin
 
 
-class ReplaceOperator(InputsAreDataFramesValidatorMixin, ProcessingOperator):
+class ReplaceOperator(InputsAreDataFramesValidatorMixin, PandasOperator):
     """Replaces a value by another on the datasets based on Pandas `replace` method.
 
     Examples
@@ -28,8 +28,8 @@ class ReplaceOperator(InputsAreDataFramesValidatorMixin, ProcessingOperator):
                 key word arguments passed to pandas `DataFrame.replace` method
 
         """
+        super().__init__(kwargs)
         self.kwargs = kwargs
-        super().__init__()
 
     def _process(self, *data_frames):
         """Replaces values in multiple datasets using the Pandas function `replace`.

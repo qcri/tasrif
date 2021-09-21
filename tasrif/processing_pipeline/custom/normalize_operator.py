@@ -69,6 +69,7 @@ class NormalizeOperator(ProcessingOperator):
             ValueError: parameter method unknown.
 
         """
+        super().__init__()
         self.feature_names = feature_names
         if not normalization_parameters:
             normalization_parameters = {}

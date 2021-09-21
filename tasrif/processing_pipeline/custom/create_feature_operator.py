@@ -44,6 +44,7 @@ class CreateFeatureOperator(ProcessingOperator):
                 lambda operator defining how the new feature can be created from existing column features.
 
         """
+        super().__init__()
         self.feature_name = feature_name
         self.feature_creator = feature_creator
 

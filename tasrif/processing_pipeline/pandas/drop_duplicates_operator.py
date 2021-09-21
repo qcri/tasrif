@@ -2,11 +2,11 @@
 """
 Remove duplicate values from one or more dataframes.
 """
-from tasrif.processing_pipeline import ProcessingOperator
+from tasrif.processing_pipeline import PandasOperator
 from tasrif.processing_pipeline.validators import InputsAreDataFramesValidatorMixin
 
 
-class DropDuplicatesOperator(InputsAreDataFramesValidatorMixin, ProcessingOperator):
+class DropDuplicatesOperator(InputsAreDataFramesValidatorMixin, PandasOperator):
     """
     Remove duplicate rows from one or more dataframes.
 
@@ -47,8 +47,8 @@ class DropDuplicatesOperator(InputsAreDataFramesValidatorMixin, ProcessingOperat
             **kwargs:
               key word arguments passed to pandas DataFrame.drop_duplicates method
         """
+        super().__init__(kwargs)
         self.kwargs = kwargs
-        super().__init__()
 
     def _process(self, *data_frames):
         """Process the passed data using the processing configuration specified

@@ -47,6 +47,7 @@ class AggregateOperator(ProcessingOperator):
                 Dictionary containing feature to aggregation functions mapping.
 
         """
+        super().__init__()
         self.groupby_feature_names = groupby_feature_names
         self.aggregation_definition = aggregation_definition
 

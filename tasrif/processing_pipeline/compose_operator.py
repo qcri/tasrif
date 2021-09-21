@@ -9,12 +9,14 @@ class ComposeOperator(ProcessingOperator):
     results of all the containing operators
     """
 
-    def __init__(self, processing_operators):
+    def __init__(self, processing_operators, observers=None):
         """Constructs a compose operator from a list of operators
 
         Args:
             processing_operators : list[ProcessingOperator]
                 Python list of processing operators
+            observers (list[Observer]):
+                Python list of observers
 
         Raises:
             ValueError: Occurs when one of the objects in the specified list is not a ProcessingOperator
@@ -40,13 +42,21 @@ class ComposeOperator(ProcessingOperator):
           1  Batman  Batmobile 1940-04-25,)]
 
         """
-        for operator in processing_operators:
+        super().__init__()
+        self._observers = []
 
+        for operator in processing_operators:
             if not isinstance(operator, ProcessingOperator):
                 raise ValueError("All operators in a pipeline must derive from ProcessingOperator!")
 
         self.processing_operators = processing_operators
+        self.set_observers(observers)
 
+    def set_observers(self, observers):
+        if observers and not self._observers:
+            self._observers = observers
+            for operator in self.processing_operators:
+                operator.set_observers(self._observers)
 
     def _process(self, *args):
         """Processes a list of processing operators. Input of an operator is received from the

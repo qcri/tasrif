@@ -2,11 +2,11 @@
 Operator to convert a column feature from string to datetime
 """
 import pandas as pd
-from tasrif.processing_pipeline import ProcessingOperator
+from tasrif.processing_pipeline import PandasOperator
 from tasrif.processing_pipeline.validators import InputsAreDataFramesValidatorMixin
 
 
-class ConvertToDatetimeOperator(InputsAreDataFramesValidatorMixin, ProcessingOperator):
+class ConvertToDatetimeOperator(InputsAreDataFramesValidatorMixin, PandasOperator):
     """
 
     Converts a set of (string) features to datetime using Pandas ``to_datetime``
@@ -46,8 +46,8 @@ class ConvertToDatetimeOperator(InputsAreDataFramesValidatorMixin, ProcessingOpe
 
         """
         self.feature_names = feature_names
+        super().__init__(kwargs)
         self.kwargs = kwargs
-        super().__init__()
 
     def _process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.

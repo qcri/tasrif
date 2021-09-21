@@ -40,8 +40,8 @@ class DropIndexDuplicatesOperator(ProcessingOperator):
             keep ('first', 'last', False): The value or values in a set of duplicates to mark as missing.
 
         """
-        self.keep = keep
         super().__init__()
+        self.keep = keep
 
     def _process(self, *data_frames):
         """Process the passed data using the processing configuration specified

@@ -1,10 +1,10 @@
 """
 Pivots a dataframe
 """
-from tasrif.processing_pipeline import ProcessingOperator
+from tasrif.processing_pipeline import PandasOperator
 from tasrif.processing_pipeline.validators import InputsAreDataFramesValidatorMixin
 
-class PivotOperator(InputsAreDataFramesValidatorMixin, ProcessingOperator):
+class PivotOperator(InputsAreDataFramesValidatorMixin, PandasOperator):
     """
     Pivots a dataframe.
 
@@ -40,6 +40,7 @@ class PivotOperator(InputsAreDataFramesValidatorMixin, ProcessingOperator):
             **kwargs: Arguments to pandas pivot function
 
         """
+        super().__init__(kwargs)
         self.kwargs = kwargs
 
 

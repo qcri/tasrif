@@ -63,6 +63,7 @@ class OneHotEncoderOperator(ProcessingOperator):
                 That is the separator, if any, used when the values in a column are represented as multiple choice.
                 Default: ','
         """
+        super().__init__()
         self.feature_names = feature_names
         self.drop_first = drop_first
         self.separator = separator

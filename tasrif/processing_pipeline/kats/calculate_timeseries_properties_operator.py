@@ -93,7 +93,7 @@ class CalculateTimeseriesPropertiesOperator(ProcessingOperator):
             **kwargs : None or List[str]; list of feature/feature group name(s)
                 key word arguments passed to method's parameters
         """
-
+        super().__init__()
         self.date_feature_name = date_feature_name
         self.value_column = value_column
         self.method = method

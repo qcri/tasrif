@@ -32,6 +32,7 @@ class FitbitIntradayDataset(ProcessingOperator):
 
         """
         # Abort if table_name isn't valid
+        super().__init__()
         self._validate_table_name(table_name)
 
         self.folder_path = folder_path

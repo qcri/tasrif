@@ -8,7 +8,7 @@ class SplitOperator(ProcessingOperator):
     multiple branches represented by split operators that are passed in the constructor.
     """
 
-    def __init__(self, split_operators, bind_list=None):
+    def __init__(self, split_operators, bind_list=None, observers=None):
         """Constructs a split operator using the provided arguments
 
         Args:
@@ -19,11 +19,11 @@ class SplitOperator(ProcessingOperator):
                 corresponding to the index of the argument for the operator at that index.
                 For example: a bind_order of [0, 1, 1] means that the first operator receives the first
                 argument (index 0) and the second and third operator receives the second argument (index 1).
-
                 Note that an error is raised if len(bind_list) != len(split_operators).
-
                 If no bind_list is passed, arguments are passed in the same order as they are received
                 (representing a bind_list of [0, 1, 2, ...]).
+            observers (list[Observer]):
+                Python list of observers
 
         Raises:
             ValueError: Occurs when one of the objects in the split_operators list is not a ProcessingOperator.
@@ -61,6 +61,8 @@ class SplitOperator(ProcessingOperator):
             3  07-06-2021  <NA>
             5  08-06-2021  4000,)]
         """
+        super().__init__()
+        self._observers = []
         for operator in split_operators:
             if not isinstance(operator, ProcessingOperator):
                 raise ValueError("All split operators must derive from ProcessingOperator!")
@@ -70,6 +72,13 @@ class SplitOperator(ProcessingOperator):
 
         self.split_operators = split_operators
         self.bind_list = bind_list
+        self.set_observers(observers)
+
+    def set_observers(self, observers):
+        if observers and not self._observers:
+            self._observers = observers
+            for operator in self.split_operators:
+                operator.set_observers(self._observers)
 
     def _process(self, *args):
         """Processes a list of processing operators. Input of an operator is received from the

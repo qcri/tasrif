@@ -2,10 +2,10 @@
 Sum operator
 
 """
-from tasrif.processing_pipeline import ProcessingOperator
+from tasrif.processing_pipeline import PandasOperator
 from tasrif.processing_pipeline.validators import InputsAreDataFramesValidatorMixin
 
-class SumOperator(InputsAreDataFramesValidatorMixin, ProcessingOperator):
+class SumOperator(InputsAreDataFramesValidatorMixin, PandasOperator):
     """
 
     Sum operator
@@ -41,6 +41,7 @@ class SumOperator(InputsAreDataFramesValidatorMixin, ProcessingOperator):
                 Arguments to pandas pd.sum function
 
         """
+        super().__init__(kwargs)
         self.kwargs = kwargs
 
 

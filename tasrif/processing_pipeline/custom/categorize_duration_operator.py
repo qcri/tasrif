@@ -89,7 +89,7 @@ class CategorizeDurationOperator(ProcessingOperator):
                         {"day": "day_of_week"},
                     ]
         """
-
+        super().__init__()
         self.duration_feature_name = duration_feature_name
         self.category_definition = category_definition
 

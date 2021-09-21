@@ -37,7 +37,7 @@ class JsonPivotOperator(ProcessingOperator):
             feature_names (list of str):
               The feature_names which contains Json data
         """
-
+        super().__init__()
         self.feature_names = feature_names
 
     def _process(self, *data_frames):
