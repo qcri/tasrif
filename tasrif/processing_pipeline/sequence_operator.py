@@ -46,9 +46,10 @@ class SequenceOperator(ProcessingOperator):
         self.set_observers(observers)
 
     def set_observers(self, observers):
-        if observers:
+        if observers and not self._observers:
+            self._observers = observers
             for operator in self.processing_operators:
-                operator.set_observers(observers)
+                operator.set_observers(self._observers)
 
     def _process(self, *args):
         """Processes a list of processing operators. Input of an operator is received from the

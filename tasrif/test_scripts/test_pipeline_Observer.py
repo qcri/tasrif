@@ -42,7 +42,7 @@ df = ReplaceOperator(to_replace="red", value="green", observers=[PrintHead]).pro
 df
 
 # %% pycharm={"name": "#%%\n"}
-pipeline = SequenceOperator([ReplaceOperator(to_replace="green", value="red", observers=[PrintFirstRow]), ReplaceOperator(to_replace="red", value="green", observers=[PrintFirstRow, PrintHead])], observers=[PrintHead])
+pipeline = SequenceOperator([ReplaceOperator(to_replace="green", value="red"), ReplaceOperator(to_replace="red", value="green", observers=[PrintFirstRow, PrintHead])], observers=[PrintHead])
 result = pipeline.process(df)
 
 
