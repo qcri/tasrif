@@ -15,9 +15,8 @@ RUN pip3 install -r requirements.txt
 
 # install tasrif and its dependencies in editable mode
 COPY setup.py /home/setup.py
-RUN MINIMAL=1 pip install --use-deprecated=legacy-resolver -e .
+RUN MINIMAL=1 pip3 install --use-deprecated=legacy-resolver -e .
 
-COPY run-prospector.sh /home
 COPY run-pylint.sh /home
 COPY run-darglint.sh /home
 

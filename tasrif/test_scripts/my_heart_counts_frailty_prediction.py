@@ -101,10 +101,10 @@ csv_pipeline = SequenceOperator([
             CreateFeatureOperator(
                 feature_name='Date',
                 feature_creator=lambda df: df['endTime'].date()),
-            DropFeaturesOperator(drop_features=['startTime', 'endTime']),
+            DropFeaturesOperator(feature_names=['startTime', 'endTime']),
             FilterOperator(
-                participant_id_column=None,
-                ts_column="Date",
+                participant_identifier=None,
+                date_feature_name="Date",
                 epoch_filter=lambda df: (df['type'] == 'HKQuantityTypeIdentifierStepCount') &
                 (df['sourceIdentifier'] == 'com.apple.health') & (df['source'] == 'phone')
             ),
