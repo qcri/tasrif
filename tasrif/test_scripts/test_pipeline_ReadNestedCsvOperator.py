@@ -5,7 +5,7 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.7.1
+#       jupytext_version: 1.11.2
 #   kernelspec:
 #     display_name: Python 3
 #     language: python
@@ -39,7 +39,7 @@ details1.to_csv('details1.csv', index=False)
 details2.to_csv('details2.csv', index=False)
 
 operator = ReadNestedCsvOperator(folder_path='./', field='file_details', pipeline=None)
-generator = operator.process(df)[0]
+generator = operator.process(df)
 
 # Iterates twice
 for record, details in generator:
@@ -49,3 +49,5 @@ for record, details in generator:
     print('Subject details:')
     print(details)
     print('============================')
+
+# %%
