@@ -31,7 +31,7 @@ class ProcessingOperator:
         if observers and not self._observers:
             self._observers = observers
 
-    def _observe(self, *data_frames):
+    def observe(self, *data_frames):
         """
         Function that runs the observe method for each observer for the given operator
 
@@ -40,6 +40,7 @@ class ProcessingOperator:
               Variable number of pandas dataframes to be observed
         """
         for observer in self._observers:
+            observer = observer()
             observer.observe(self, *data_frames)
 
     def _validate(self, *data_frames):
@@ -82,5 +83,15 @@ class ProcessingOperator:
         """
         self._validate(*data_frames)
         result = self._process(*data_frames)
-        self._observe(result)
+        self.observe(result)
         return result
+
+    def is_functional(self):
+        """
+        Function that returns whether the operator is functional or infrastructure
+
+        Returns:
+            is_functional (bool):
+                whether is_functional
+        """
+        return True

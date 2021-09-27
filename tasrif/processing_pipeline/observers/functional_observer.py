@@ -1,8 +1,8 @@
-"""Module that defines the Observer class
+"""Module that defines the FunctionalObserver class
 """
+from tasrif.processing_pipeline.observer import Observer
 
-
-class Observer:
+class FunctionalObserver(Observer):
     """Interface specification of a observer
     The constructor of a concrete operator will provide options to configure the
     operation. The processing is invoked via the process method and the data to be
@@ -24,6 +24,7 @@ class Observer:
     def observe(self, operator, *data_frames):
         """
         Function that performs checks on operator and data frame before observation
+        This observation is only performed on non-infrastructure operators
 
         Args:
             operator (ProcessingOperator):
@@ -31,5 +32,6 @@ class Observer:
             *data_frames (list of pd.DataFrame):
                 Variable number of pandas dataframes to be observed
         """
-        self._observe(operator, *data_frames)
-        
+
+        if operator.is_functional():
+            self._observe(operator, *data_frames)

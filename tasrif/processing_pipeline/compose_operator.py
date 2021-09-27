@@ -78,3 +78,13 @@ class ComposeOperator(ProcessingOperator):
             output.append(result)
 
         return output
+
+    def is_functional(self):
+        """
+        Function that returns whether the operator is functional or infrastructure
+
+        Returns:
+            is_functional (bool):
+                whether is_functional
+        """
+        return False
