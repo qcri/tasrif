@@ -17,7 +17,7 @@
 # %autoreload 2
 import pandas as pd
 from tasrif.processing_pipeline.pandas import RenameOperator
-from tasrif.processing_pipeline.observers import FunctionalObserver, Logger
+from tasrif.processing_pipeline.observers import FunctionalObserver, Logger, GroupbyLogger
 from tasrif.processing_pipeline import SequenceOperator, Observer
 
 # %%
@@ -32,9 +32,12 @@ df = pd.DataFrame([
 # %%
 df = RenameOperator(columns={"logId": "id"}, observers=[Logger()]).process(df)
 
-df
+df = df[0]
+
+# %%
+df = RenameOperator(columns={"sleep_level": "sleep"}, observers=[GroupbyLogger('id', method="first,last")]).process(df)
 
 # %% pycharm={"name": "#%%\n"}
-pipeline = SequenceOperator([RenameOperator(columns={"timestamp": "time"}), RenameOperator(columns={"time": "time_difference"})], observers=[Logger("first")])
-result = pipeline.process(df)
+pipeline = SequenceOperator([RenameOperator(columns={"timestamp": "time"}), RenameOperator(columns={"time": "time_difference"})], observers=[Logger("head")])
+result = pipeline.process(df[0])
 result
