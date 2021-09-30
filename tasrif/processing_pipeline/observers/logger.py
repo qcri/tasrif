@@ -31,14 +31,10 @@ class Logger(FunctionalObserver):
                 Variable number of pandas dataframes to be observed
         """
         for data_frame in data_frames:
-            if self._logging_method == '':
-                print(data_frame)
-            elif self._logging_method == 'first':
-                print(data_frame[0].groupby('id').first())
-            elif self._logging_method == 'last':
-                print(data_frame[0].groupby('id').last())
-            else:
+            if self._logging_method:
                 print(getattr(data_frame[0], self._logging_method)())
+            else:
+                print(data_frame)
 
     def observe(self, operator, *data_frames):
         """
