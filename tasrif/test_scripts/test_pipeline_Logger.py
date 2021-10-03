@@ -38,6 +38,6 @@ df = df[0]
 df = RenameOperator(columns={"sleep_level": "sleep"}, observers=[GroupbyLogger('id', method="first,last")]).process(df)
 
 # %% pycharm={"name": "#%%\n"}
-pipeline = SequenceOperator([RenameOperator(columns={"timestamp": "time"}), RenameOperator(columns={"time": "time_difference"})], observers=[Logger("head")])
+pipeline = SequenceOperator([RenameOperator(columns={"timestamp": "time"}), RenameOperator(columns={"time": "time_difference"})], observers=[Logger("head,tail")])
 result = pipeline.process(df[0])
 result

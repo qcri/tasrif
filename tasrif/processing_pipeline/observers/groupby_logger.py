@@ -6,19 +6,20 @@ class GroupbyLogger(FunctionalObserver):
     """GroupbyLogger class to log a dataframe after grouping
     """
 
-    def __init__(self, *args, method=""):
+    def __init__(self, groupby_args, method=""):
         """
         The constructor of the GroupbyLogger class will provide options to configure the
         operation using keyword arguments. The logging is invoked via the observe method
         and the data to be logged is passed to the observe method.
 
         Args:
-            **kwargs: Arguments to pandas pd.groupby function
+            groupby_args (String or list): 
+                Arguments to pandas pd.groupby function
             method (String):
                 Logging method to log the dataframe
                 Options: "head", "tail", "info", "first", "last"
         """
-        self.args = args
+        self.groupby_args = groupby_args
         self._logging_methods = []
         if method:
             self._logging_methods = method.split(',')
@@ -37,7 +38,7 @@ class GroupbyLogger(FunctionalObserver):
         for data_frame in data_frames:
             if self._logging_methods:
                 for logging_method in self._logging_methods:
-                    print(getattr(getattr(data_frame[0], "groupby")(*self.args), logging_method)())
+                    print(getattr(data_frame[0].groupby(self.groupby_args), logging_method)())
 
     def observe(self, operator, *data_frames):
         """
