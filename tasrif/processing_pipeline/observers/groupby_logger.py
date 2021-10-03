@@ -13,7 +13,7 @@ class GroupbyLogger(FunctionalObserver):
         and the data to be logged is passed to the observe method.
 
         Args:
-            groupby_args (String or list): 
+            groupby_args (String or list):
                 Arguments to pandas pd.groupby function
             method (String):
                 Logging method to log the dataframe
