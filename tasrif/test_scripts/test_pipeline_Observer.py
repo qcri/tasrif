@@ -17,7 +17,7 @@
 # %autoreload 2
 import pandas as pd
 from tasrif.processing_pipeline.pandas import ReplaceOperator
-from tasrif.processing_pipeline.observers import FunctionalObserver
+from tasrif.processing_pipeline.observers import FunctionalObserver, Logger
 from tasrif.processing_pipeline import SequenceOperator, Observer
 
 # %%
@@ -31,18 +31,18 @@ class PrintHead(Observer):
         for df in dfs:
             print(df.head())
             
-class PrintFirstRow(FunctionObserver):
+class PrintFirstRow(FunctionalObserver):
     def _observe(self, operator, dfs):
         for df in dfs:
             print(df.iloc[0])
 
 
 # %%
-df_replaced = ReplaceOperator(to_replace="sleep_level", value="sleep", observers=[PrintHead]).process(df)
+df_replaced = ReplaceOperator(to_replace="sleep_level", value="sleep", observers=[PrintHead()]).process(df)
 
 df_replaced
 
 # %% pycharm={"name": "#%%\n"}
-pipeline = SequenceOperator([ReplaceOperator(to_replace="green", value="red"), ReplaceOperator(to_replace="red", value="green", observers=[PrintHead])], observers=[PrintFirstRow])
+pipeline = SequenceOperator([ReplaceOperator(to_replace="green", value="red"), ReplaceOperator(to_replace="red", value="green", observers=[PrintHead()])], observers=[PrintFirstRow()])
 result = pipeline.process(df)
 result

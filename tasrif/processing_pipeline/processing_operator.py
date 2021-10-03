@@ -40,7 +40,6 @@ class ProcessingOperator:
               Variable number of pandas dataframes to be observed
         """
         for observer in self._observers:
-            observer = observer()
             observer.observe(self, *data_frames)
 
     def _validate(self, *data_frames):

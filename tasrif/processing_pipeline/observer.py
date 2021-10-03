@@ -1,12 +1,10 @@
 """Module that defines the Observer class
 """
 
-
 class Observer:
     """Interface specification of a observer
-    The constructor of a concrete operator will provide options to configure the
-    operation. The processing is invoked via the process method and the data to be
-    processed is passed to the process method.
+    The observation is invoked via the observe method and the data to be
+    observed is passed to the observe method.
     """
 
     def _observe(self, operator, *data_frames):
