@@ -62,6 +62,25 @@ class FilterOperator(ProcessingOperator):
     193     2018-01-09 05:00:00     8709    9
     194     2018-01-09 15:00:00     8970    9
 
+    >>> df = pd.DataFrame([
+    ...     [1, "2020-05-01 00:00:00", "1", "3"],
+    ...     [1, "2020-05-01 01:00:00", "1", "5" ],
+    ...     [2, "2020-05-01 03:00:00", "2", "3"],
+    ...     [2, "2020-05-02 00:00:00", "1", "10"],
+    ...     [3, "2020-05-02 01:00:00", "1", "0"],
+    ...     [4, "2020-05-03 01:00:00", "1", "0"]],
+    ...     columns=['logId', 'timestamp', 'sleep_level', 'awake_count'])
+    >>>
+    >>> op = FilterParticipantsOperator(participant_identifier="logId",
+    ...                                 participants=[1, 3],
+    ...                                 filter_type="include",)
+    >>> df1 = op.process(df)
+    >>> df1[0]
+    logId   timestamp   sleep_level     awake_count
+    0   1   2020-05-01 00:00:00     1   3
+    1   1   2020-05-01 01:00:00     1   5
+    4   3   2020-05-02 01:00:00     1   0
+
     """
     def __init__(  #pylint: disable=too-many-arguments
             self,
@@ -69,6 +88,7 @@ class FilterOperator(ProcessingOperator):
             date_feature_name="time",
             epoch_filter=None,
             day_filter=None,
+            participant_filter=None,
             filter_type="include"):
         """
         Initializes the operator
@@ -82,6 +102,8 @@ class FilterOperator(ProcessingOperator):
                 row filter
             day_filter (str, callable):
                 filter the days per patient
+            participant_filter (list):
+                participants to include or exclude
             filter_type (str):
                 include the filtered epochs, and days, or exclude them.
         """
@@ -90,6 +112,7 @@ class FilterOperator(ProcessingOperator):
         self.date_feature_name = date_feature_name
         self.epoch_filter = epoch_filter
         self.day_filter = day_filter
+        self.participant_filter = participant_filter
         self.filter_type = filter_type
 
     def _process(self, *data_frames):
@@ -109,7 +132,8 @@ class FilterOperator(ProcessingOperator):
 
         for data_frame in data_frames:
             processed_df = None
-            processed_df = self._process_epoch(data_frame)
+            processed_df = self._process_participants(data_frame)
+            processed_df = self._process_epoch(processed_df)
             processed_df = self._process_day(processed_df)
             processed.append(processed_df)
 
@@ -223,8 +247,8 @@ class FilterOperator(ProcessingOperator):
         # Take the date difference between a row and its previous row
         # If the difference is not 1 day, we start a new label for the sequence using pd.cumsum()
         label_of_consecutive_days_per_id = days_per_id.groupby(
-            self.participant_identifier)[self.date_feature_name].diff().dt.days.ne(
-                1).cumsum()
+            self.participant_identifier)[
+                self.date_feature_name].diff().dt.days.ne(1).cumsum()
         consecutive_days_per_id = days_per_id.groupby(
             [self.participant_identifier,
              label_of_consecutive_days_per_id]).size().reset_index(level=1,
@@ -274,3 +298,27 @@ class FilterOperator(ProcessingOperator):
         days = days_to_keep.loc[days_to_keep[self.participant_identifier] ==
                                 dataframe.name, self.date_feature_name].dt.date
         return dataframe[dataframe[self.date_feature_name].dt.date.isin(days)]
+
+    def _process_participants(self, data_frame):
+        """ filters rows based on self.epoch_filter
+
+        Args:
+            data_frame (pd.DataFrame):
+                pandas dataframes to be filtered by row.
+
+        Returns:
+            processed_df (pd.DataFrame):
+                filtered pandas DataFrame
+
+        """
+        if not self.participant_filter:
+            return data_frame
+
+        data_frame_filter = data_frame[self.participant_identifier].isin(
+            self.participant_filter)
+        if self.filter_type == "include":
+            processed_df = data_frame[data_frame_filter]
+        else:
+            processed_df = data_frame[~data_frame_filter]
+
+        return processed_df

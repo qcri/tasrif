@@ -52,4 +52,17 @@ operator = FilterOperator(participant_identifier="Id",
                           filter_type="include")
 operator.process(df)[0]
 
+df = pd.DataFrame([
+    [1, "2020-05-01 00:00:00", "1", "3"],
+    [1, "2020-05-01 01:00:00", "1", "5" ],
+    [2, "2020-05-01 03:00:00", "2", "3"],
+    [2, "2020-05-02 00:00:00", "1", "10"],
+    [3, "2020-05-02 01:00:00", "1", "0"],
+    [4, "2020-05-03 01:00:00", "1", "0"]],
+    columns=['logId', 'timestamp', 'sleep_level', 'awake_count'])
+op = FilterOperator(participant_identifier="logId",
+                    participant_filter=[1, 3],
+                    filter_type="include",)
+df1 = op.process(df)
+df1[0]
 
