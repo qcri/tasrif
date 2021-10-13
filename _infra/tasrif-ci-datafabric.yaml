@@ -21,8 +21,8 @@ jobs:
         inputs:
           versionSpec: '3.7'
       - bash: |
-          export FITBIT_INTERDAY_PATH=
-          export FITBIT_INTRADAY_PATH=
+          export FITBIT_INTERDAY_PATH='/export/qcai-healthdata01/fitbit-data/fitbit-interday-sample.csv'
+          export FITBIT_INTRADAY_PATH='/export/qcai-healthdata01/fitbit-data/VolunteerFitbitData-1March21/Fitbit-Volunteer-Data/'
           export MYHEARTCOUNTS_ACTIVITYSLEEPSURVEY_PATH='/export/qcai-healthdata01/MyHeartCounts/Activity and Sleep Survey.csv'
           export MYHEARTCOUNTS_CARDIODIETSURVEY_PATH='/export/qcai-healthdata01/MyHeartCounts/Cardio Diet Survey.csv'
           export MYHEARTCOUNTS_DAILYCHECKSURVEY_PATH='/export/qcai-healthdata01/MyHeartCounts/Daily Check Survey.csv'
@@ -38,7 +38,7 @@ jobs:
           export MYHEARTCOUNTS_RISKFACTORSURVEY_PATH='/export/qcai-healthdata01/MyHeartCounts/Risk Factor Survey.csv'
           export MYHEARTCOUNTS_SIXMINUTEWALKACTIVITY_JSON_FOLDER_PATH='/export/qcai-healthdata01/MyHeartCounts/Six Minute Walk Activity'
           export MYHEARTCOUNTS_SIXMINUTEWALKACTIVITY_PATH='/export/qcai-healthdata01/MyHeartCounts/Six Minute Walk Activity.csv'
-          export SIHA_PATH=
+          export SIHA_PATH='/export/qcai-healthdata01/qcri-hmc__profast__2020-2021-03-17T13:00:44'
           export SLEEPHEALTH_ABOUTME_PATH='/export/qcai-healthdata01/sleephealth/About Me.csv'
           export SLEEPHEALTH_AMCHECKIN_PATH='/export/qcai-healthdata01/sleephealth/AM Check-in.csv'
           export SLEEPHEALTH_MYFAMILY_PATH='/export/qcai-healthdata01/sleephealth/My Family.csv'
@@ -49,7 +49,7 @@ jobs:
           export SLEEPHEALTH_SLEEPASSESSMENT_PATH='/export/qcai-healthdata01/sleephealth/Sleep Assessment.csv'
           export SLEEPHEALTH_SLEEPHABIT_PATH='/export/qcai-healthdata01/sleephealth/Sleep Habits.csv'
           export SLEEPHEALTH_SLEEPQUALITYCHECKER_PATH='/export/qcai-healthdata01/sleephealth/Sleep Quality Checker.csv'
-          export WITHINGS_PATH=
+          export WITHINGS_PATH='/export/qcai-healthdata01/withings-data/'
           export ZENODOFITBIT_PATH=/export/qcai-healthdata01/Zenodo_Fitbit
 
           export PYTHONPATH=$(System.DefaultWorkingDirectory)
