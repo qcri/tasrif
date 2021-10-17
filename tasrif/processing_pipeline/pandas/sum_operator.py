@@ -3,9 +3,9 @@ Sum operator
 
 """
 from tasrif.processing_pipeline import PandasOperator
-from tasrif.processing_pipeline.validators import InputsAreDataFramesValidatorMixin
+from tasrif.processing_pipeline.validators import GroupbyCompatibleValidatorMixin
 
-class SumOperator(InputsAreDataFramesValidatorMixin, PandasOperator):
+class SumOperator(GroupbyCompatibleValidatorMixin, PandasOperator):
     """
 
     Sum operator

@@ -2,10 +2,10 @@
 Corr operator
 """
 from tasrif.processing_pipeline import PandasOperator
-from tasrif.processing_pipeline.validators import InputsAreDataFramesValidatorMixin
+from tasrif.processing_pipeline.validators import GroupbyCompatibleValidatorMixin
 
 
-class CorrOperator(InputsAreDataFramesValidatorMixin, PandasOperator):
+class CorrOperator(GroupbyCompatibleValidatorMixin, PandasOperator):
     """
 
       Corr operator

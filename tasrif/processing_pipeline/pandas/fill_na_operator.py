@@ -2,10 +2,10 @@
 Fill NaN values for one or more dataframes
 """
 from tasrif.processing_pipeline import PandasOperator
-from tasrif.processing_pipeline.validators import InputsAreDataFramesValidatorMixin
+from tasrif.processing_pipeline.validators import GroupbyCompatibleValidatorMixin
 
 
-class FillNAOperator(InputsAreDataFramesValidatorMixin, PandasOperator):
+class FillNAOperator(GroupbyCompatibleValidatorMixin, PandasOperator):
     """
 
     Examples

@@ -2,10 +2,10 @@
 Rolling Operator
 """
 from tasrif.processing_pipeline import PandasOperator
-from tasrif.processing_pipeline.validators import InputsAreDataFramesValidatorMixin
+from tasrif.processing_pipeline.validators import GroupbyCompatibleValidatorMixin
 
 
-class RollingOperator(InputsAreDataFramesValidatorMixin, PandasOperator):
+class RollingOperator(GroupbyCompatibleValidatorMixin, PandasOperator):
     """
 
     Examples
