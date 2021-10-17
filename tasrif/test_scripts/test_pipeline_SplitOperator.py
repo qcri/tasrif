@@ -15,6 +15,6 @@ df1 = pd.DataFrame({
 operator = SplitOperator([
         DropNAOperator(),
         DropDuplicatesOperator()
-    ])
+    ], num_processes=1)
 
 operator.process(df0, df1)

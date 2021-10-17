@@ -1,14 +1,16 @@
 """Module that defines the SequenceOperator class
 """
 
+import ray
 from tasrif.processing_pipeline.processing_operator import ProcessingOperator
+from tasrif.processing_pipeline.parallel_operator import ParallelOperator
 
-class SplitOperator(ProcessingOperator):
+class SplitOperator(ParallelOperator):
     """Class representing a split operation. The input coming into this operator is split into
     multiple branches represented by split operators that are passed in the constructor.
     """
 
-    def __init__(self, split_operators, bind_list=None, observers=None):
+    def __init__(self, split_operators, bind_list=None, observers=None, num_processes=1):
         """Constructs a split operator using the provided arguments
 
         Args:
@@ -24,6 +26,8 @@ class SplitOperator(ProcessingOperator):
                 (representing a bind_list of [0, 1, 2, ...]).
             observers (list[Observer]):
                 Python list of observers
+            num_processes: int
+                number of logical processes to use to process the operator
 
         Raises:
             ValueError: Occurs when one of the objects in the split_operators list is not a ProcessingOperator.
@@ -61,7 +65,7 @@ class SplitOperator(ProcessingOperator):
             3  07-06-2021  <NA>
             5  08-06-2021  4000,)]
         """
-        super().__init__()
+        super().__init__(num_processes)
         self._observers = []
         for operator in split_operators:
             if not isinstance(operator, ProcessingOperator):
@@ -101,6 +105,35 @@ class SplitOperator(ProcessingOperator):
 
         for arg, operator in zip(data, self.split_operators):
             output.append(operator.process(arg))
+
+        return output
+
+    def _process_ray(self, *args):
+        """
+        Ray version of _process
+
+        Args:
+            *args (list of pd.DataFrame):
+              Variable number of pandas dataframes to be processed
+
+        Returns:
+            list[pd.DataFrame]
+                Processed dataframe(s) resulting from distributing the inputs to the split_operators.
+        """
+        output = []
+        data = args
+        if self.bind_list:
+            data = []
+            for index in self.bind_list:
+                data.append(args[index])
+
+        for arg, operator in zip(data, self.split_operators):
+            result = self._process_operator.remote(operator, arg)
+            output.append(result)
+
+        assert isinstance(output, list)
+        assert all(isinstance(x, ray.ObjectID) for x in output)
+        output = ray.get(output)
 
         return output
 

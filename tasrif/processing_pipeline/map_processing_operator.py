@@ -1,9 +1,10 @@
 """Module that defines the MapProcessingOperator class
 """
 import abc
-from tasrif.processing_pipeline.processing_operator import ProcessingOperator
+import ray
+from tasrif.processing_pipeline.parallel_operator import ParallelOperator
 
-class MapProcessingOperator(ProcessingOperator, metaclass=abc.ABCMeta):
+class MapProcessingOperator(ParallelOperator, metaclass=abc.ABCMeta):
     """
     The MapProcessingOperator is a specialized ProcessingOperator, where a map
     function is applied on each element of a list of inputs. Users can inherit
@@ -34,6 +35,7 @@ class MapProcessingOperator(ProcessingOperator, metaclass=abc.ABCMeta):
     [15, 8]
 
     """
+
     @abc.abstractmethod
     def _processing_function(self, element):
         """
@@ -44,9 +46,41 @@ class MapProcessingOperator(ProcessingOperator, metaclass=abc.ABCMeta):
                 The element of the list the processing function acts on.
         """
 
+    #pylint: disable=W0212
+    @staticmethod
+    @ray.remote
+    def _processing_function_ray(instance, element):
+        """
+        Map function to be applied to each element of a list of inputs.
+
+        Args:
+            instance (Class):
+                MapProcessingOperator instance
+            element (Any):
+                The element of the list the processing function acts on.
+
+        Returns:
+            processed list using `_processing_function`
+
+        """
+        return instance._processing_function(element)
+
+
     def _process(self, *list_of_inputs):
         output = []
         for element in list_of_inputs:
             result = self._processing_function(element)
             output.append(result)
+        return output
+
+    def _process_ray(self, *list_of_inputs):
+        output = []
+        for element in list_of_inputs:
+            result = self._processing_function_ray.remote(self, element)
+            output.append(result)
+
+        assert isinstance(output, list)
+        assert all(isinstance(x, ray.ObjectID) for x in output)
+        output = ray.get(output)
+
         return output

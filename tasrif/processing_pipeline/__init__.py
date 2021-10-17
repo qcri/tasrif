@@ -10,3 +10,4 @@ from tasrif.processing_pipeline.map_processing_operator import MapProcessingOper
 from tasrif.processing_pipeline.reduce_processing_operator import ReduceProcessingOperator
 from tasrif.processing_pipeline.pandas_operator import PandasOperator
 from tasrif.processing_pipeline.observer import Observer
+from tasrif.processing_pipeline.parallel_operator import ParallelOperator

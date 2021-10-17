@@ -1,15 +1,17 @@
 """Module that defines the ComposeOperator class
 """
 
+import ray
 from tasrif.processing_pipeline.processing_operator import ProcessingOperator
+from tasrif.processing_pipeline.parallel_operator import ParallelOperator
 
-class ComposeOperator(ProcessingOperator):
+class ComposeOperator(ParallelOperator):
     """Class representing a composiition of processing operators. The same data flows to all the
     operators. The order is not important. The output of the `process` function is a composition of the
     results of all the containing operators
     """
 
-    def __init__(self, processing_operators, observers=None):
+    def __init__(self, processing_operators, observers=None, num_processes=1):
         """Constructs a compose operator from a list of operators
 
         Args:
@@ -17,6 +19,8 @@ class ComposeOperator(ProcessingOperator):
                 Python list of processing operators
             observers (list[Observer]):
                 Python list of observers
+            num_processes: int
+                number of logical processes to use to process the operator
 
         Raises:
             ValueError: Occurs when one of the objects in the specified list is not a ProcessingOperator
@@ -42,7 +46,7 @@ class ComposeOperator(ProcessingOperator):
           1  Batman  Batmobile 1940-04-25,)]
 
         """
-        super().__init__()
+        super().__init__(num_processes)
         self._observers = []
 
         for operator in processing_operators:
@@ -76,6 +80,29 @@ class ComposeOperator(ProcessingOperator):
         for operator in self.processing_operators:
             result = operator.process(*args)
             output.append(result)
+
+        return output
+
+    def _process_ray(self, *args):
+        """
+        Ray version of _process
+
+        Args:
+            *args (list of ProcessingOperator):
+                Variable number of ProcessingOperator to be applied on a dataframe
+
+        Returns:
+            output (list[pd.DataFrame]):
+                processed dataframes
+        """
+        output = []
+        for operator in self.processing_operators:
+            result = self._process_operator.remote(operator, *args)
+            output.append(result)
+
+        assert isinstance(output, list)
+        assert all(isinstance(x, ray.ObjectID) for x in output)
+        output = ray.get(output)
 
         return output
 
