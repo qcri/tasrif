@@ -9,7 +9,7 @@ class ProcessingOperator:
     processed is passed to the process method.
     """
 
-    def __init__(self, observers=None):
+    def __init__(self, observers=None, **kwargs):
         """Base processing operator class
 
         Args:
@@ -17,8 +17,13 @@ class ProcessingOperator:
                 Python list of observers
         """
         self._observers = []
+        self.kwargs = kwargs
+
         if observers:
             self.set_observers(observers)
+
+        self.set_attributes(self.kwargs)
+
 
     def set_observers(self, observers):
         """
@@ -94,3 +99,9 @@ class ProcessingOperator:
                 whether is_functional
         """
         return True
+
+
+    def set_attributes(self, kwargs):
+        self.kwargs = {**self.kwargs, **kwargs}
+        for k, v in kwargs.items():
+            setattr(self, k, v)

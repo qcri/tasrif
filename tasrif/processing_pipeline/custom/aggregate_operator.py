@@ -39,7 +39,7 @@ class AggregateOperator(ProcessingOperator):
        1  Dubai           20.5      0.707107  1.0  7.105427e-15]
 
     """
-    def __init__(self, groupby_feature_names, aggregation_definition, observers=None):
+    def __init__(self, groupby_feature_names, aggregation_definition, observers=None, **kwargs):
         """Creates a new instance of AggregateOperator
 
         Args:
@@ -54,8 +54,8 @@ class AggregateOperator(ProcessingOperator):
                 Python list of observers
 
         """
-        super().__init__()
         self._observers = []
+        self.kwargs = kwargs
         self.groupby_feature_names = groupby_feature_names
         self.aggregation_definition = aggregation_definition
         self.pandas_dict = {}
@@ -71,12 +71,19 @@ class AggregateOperator(ProcessingOperator):
                     self.pandas_dict[key] = value
 
         self.set_observers(observers)
+        self.pass_attributes()
+        super().__init__(**kwargs)
+
 
     def set_observers(self, observers):
         if observers and not self._observers:
             self._observers = observers
             for key in self.processing_op_dict:
                 self.processing_op_dict[key].set_observers(self._observers)
+
+    def pass_attributes(self):
+        for operator in self.processing_op_dict:
+            operator.set_attributes(self.kwargs)
 
     def _process_operators(self, groups):
         result = []

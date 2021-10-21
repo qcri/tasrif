@@ -8,7 +8,7 @@ class SequenceOperator(ProcessingOperator):
     Data flows from one operator to another in a chained fashion.
     """
 
-    def __init__(self, processing_operators, observers=None):
+    def __init__(self, processing_operators, observers=None, **kwargs):
         """Constructs a sequence operator from a list of operators
 
         Args:
@@ -35,8 +35,8 @@ class SequenceOperator(ProcessingOperator):
          1  Batman  Batmobile 1940-04-25,)
 
         """
-        super().__init__()
         self._observers = []
+        self.kwargs = kwargs
         for operator in processing_operators:
 
             if not isinstance(operator, ProcessingOperator):
@@ -44,12 +44,19 @@ class SequenceOperator(ProcessingOperator):
 
         self.processing_operators = processing_operators
         self.set_observers(observers)
+        self.pass_attributes()
+
+        super().__init__(**self.kwargs)
 
     def set_observers(self, observers):
         if observers and not self._observers:
             self._observers = observers
             for operator in self.processing_operators:
                 operator.set_observers(self._observers)
+
+    def pass_attributes(self):
+        if self.processing_operators:
+            self.processing_operators[0].set_attributes(self.kwargs)        
 
     def _process(self, *args):
         """Processes a list of processing operators. Input of an operator is received from the
@@ -66,8 +73,11 @@ class SequenceOperator(ProcessingOperator):
 
         """
         data = args
-        for operator in self.processing_operators:
+        for idx, operator in enumerate(self.processing_operators[:-1]):
             data = operator.process(*data)
+            self.processing_operators[idx + 1].set_attributes(operator.kwargs)
+
+        self.processing_operators[-1].process(*data)
 
         return data
 

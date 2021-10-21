@@ -7,7 +7,7 @@ class ParallelOperator(ProcessingOperator):
     """Interface specification of an operator that uses ray
     """
 
-    def __init__(self, num_processes=1):
+    def __init__(self, num_processes=1, **kwargs):
         """Constructs a ray operator. Replaces `_process` with `_process_ray`
 
         Args:
@@ -15,7 +15,6 @@ class ParallelOperator(ProcessingOperator):
                 number of logical processes to use to process the operator
 
         """
-        super().__init__()
         self.num_processes = num_processes
 
         if ray.is_initialized() and (self.num_processes == 1):
@@ -24,6 +23,10 @@ class ParallelOperator(ProcessingOperator):
         if self.num_processes > 1:
             self.init_ray(self.num_processes)
             self._process = self._process_ray
+
+        super().__init__(**kwargs)
+
+
 
     def _process_ray(self, *args):
         """

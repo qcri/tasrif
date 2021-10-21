@@ -10,7 +10,7 @@ class SplitOperator(ParallelOperator):
     multiple branches represented by split operators that are passed in the constructor.
     """
 
-    def __init__(self, split_operators, bind_list=None, observers=None, num_processes=1):
+    def __init__(self, split_operators, bind_list=None, observers=None, num_processes=1, **kwargs):
         """Constructs a split operator using the provided arguments
 
         Args:
@@ -65,8 +65,8 @@ class SplitOperator(ParallelOperator):
             3  07-06-2021  <NA>
             5  08-06-2021  4000,)]
         """
-        super().__init__(num_processes)
         self._observers = []
+        self.kwargs = kwargs
         for operator in split_operators:
             if not isinstance(operator, ProcessingOperator):
                 raise ValueError("All split operators must derive from ProcessingOperator!")
@@ -77,12 +77,18 @@ class SplitOperator(ParallelOperator):
         self.split_operators = split_operators
         self.bind_list = bind_list
         self.set_observers(observers)
+        self.pass_attributes()
+        super().__init__(num_processes=num_processes, **self.kwargs)
 
     def set_observers(self, observers):
         if observers and not self._observers:
             self._observers = observers
             for operator in self.split_operators:
                 operator.set_observers(self._observers)
+
+    def pass_attributes(self):
+        for operator in self.split_operators:
+            operator.set_attributes(self.kwargs)
 
     def _process(self, *args):
         """Processes a list of processing operators. Input of an operator is received from the

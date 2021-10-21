@@ -11,7 +11,7 @@ class ComposeOperator(ParallelOperator):
     results of all the containing operators
     """
 
-    def __init__(self, processing_operators, observers=None, num_processes=1):
+    def __init__(self, processing_operators, observers=None, num_processes=1, **kwargs):
         """Constructs a compose operator from a list of operators
 
         Args:
@@ -46,21 +46,26 @@ class ComposeOperator(ParallelOperator):
           1  Batman  Batmobile 1940-04-25,)]
 
         """
-        super().__init__(num_processes)
         self._observers = []
-
+        self.kwargs = kwargs
         for operator in processing_operators:
             if not isinstance(operator, ProcessingOperator):
                 raise ValueError("All operators in a pipeline must derive from ProcessingOperator!")
 
         self.processing_operators = processing_operators
         self.set_observers(observers)
+        self.pass_attributes()
+        super().__init__(num_processes=num_processes, **self.kwargs)
 
     def set_observers(self, observers):
         if observers and not self._observers:
             self._observers = observers
             for operator in self.processing_operators:
                 operator.set_observers(self._observers)
+
+    def pass_attributes(self):
+        for operator in self.processing_operators:
+            operator.set_attributes(self.kwargs)
 
     def _process(self, *args):
         """Processes a list of processing operators. Input of an operator is received from the
@@ -78,6 +83,7 @@ class ComposeOperator(ParallelOperator):
         """
         output = []
         for operator in self.processing_operators:
+            operator.set_attributes(self.kwargs)
             result = operator.process(*args)
             output.append(result)
 
