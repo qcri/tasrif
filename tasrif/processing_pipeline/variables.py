@@ -4,6 +4,8 @@ from inspect import getfullargspec
 import functools
 
 class Variable:
+    """[summary]
+    """
 
     def __init__(self, _value=None):
         self._value = _value
@@ -17,13 +19,13 @@ class Variable:
     value = property(_get, _set)
 
 
-def match_exp(arg):
+def _match_exp(arg):
     if type(arg) == str:
         regex = r"(^{[^{}]*}$)|(^{{[a-zA-Z_]+\w*}})$"
         return re.search(regex, arg)
     return None
 
-def try_parse_number(arg):
+def _try_parse_number(arg):
     result = None
     try:
         result = Variable(float(arg))
@@ -34,14 +36,14 @@ def try_parse_number(arg):
 def _define_variables(args):
     result = {}
     for key, value in args.items():
-        match_result = match_exp(value)
+        match_result = _match_exp(value)
         if match_result:
             value_str = match_result.group()[1:-1]
             if value_str.startswith('{'):
                 result[key] = value_str[1:-1]
             elif value_str and value_str != "None" :
                 if value_str[0].isdigit() or value[0] == '.':
-                    result[key] = try_parse_number(value_str)
+                    result[key] = _try_parse_number(value_str)
                 else:
                     result[key] = Variable(value_str)
             else:
@@ -49,6 +51,8 @@ def _define_variables(args):
     return result
 
 def enable_variables():
+    """[summary]
+    """
     def _enable_variables(f):
 
         @functools.wraps(f)
