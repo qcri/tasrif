@@ -4,6 +4,7 @@ Operator to aggregate column features based on a column
 import pandas as pd
 
 from tasrif.processing_pipeline import ProcessingOperator
+from tasrif.processing_pipeline.variables import enable_variables
 
 
 class AggregateOperator(ProcessingOperator):
@@ -39,6 +40,8 @@ class AggregateOperator(ProcessingOperator):
        1  Dubai           20.5      0.707107  1.0  7.105427e-15]
 
     """
+
+    @enable_variables
     def __init__(self, groupby_feature_names, aggregation_definition, observers=None):
         """Creates a new instance of AggregateOperator
 
@@ -81,7 +84,7 @@ class AggregateOperator(ProcessingOperator):
     def _process_operators(self, groups):
         result = []
         for key, operator in self.processing_op_dict.items():
-            data_frame = self._apply_operator(groups, operator)
+            data_frame = self._apply_operator(groups, operator, self._vars)
             column_names = key.split(',')
             if len(data_frame.columns) != len(column_names):
                 raise ValueError(f"Length of aggregation key does not match length of aggregated output \
@@ -97,7 +100,7 @@ class AggregateOperator(ProcessingOperator):
         return result
 
     @staticmethod
-    def _apply_operator(groups, operator):
+    def _apply_operator(groups, operator, _vars):
         """ Applies ProcessingOperator on Pandas DataFrameGroupBy
 
         Args:
@@ -114,7 +117,7 @@ class AggregateOperator(ProcessingOperator):
 
         result = []
         for _, group in groups:
-            result.append(operator.process(group)[0])
+            result.append(operator.process(group, _vars=_vars)[0])
 
         result = pd.DataFrame(result)
         return result

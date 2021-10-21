@@ -4,13 +4,15 @@
 import ray
 from tasrif.processing_pipeline.processing_operator import ProcessingOperator
 from tasrif.processing_pipeline.parallel_operator import ParallelOperator
+from tasrif.processing_pipeline.variables import enable_variables
 
 class SplitOperator(ParallelOperator):
     """Class representing a split operation. The input coming into this operator is split into
     multiple branches represented by split operators that are passed in the constructor.
     """
 
-    def __init__(self, split_operators, bind_list=None, observers=None, num_processes=1):
+    @enable_variables()
+    def __init__(self, split_operators, bind_list=None, observers=None, num_processes=1, **vars):
         """Constructs a split operator using the provided arguments
 
         Args:
@@ -104,7 +106,7 @@ class SplitOperator(ParallelOperator):
                 data.append(args[index])
 
         for arg, operator in zip(data, self.split_operators):
-            output.append(operator.process(arg))
+            output.append(operator.process(arg, _vars=self._vars))
 
         return output
 
@@ -128,7 +130,7 @@ class SplitOperator(ParallelOperator):
                 data.append(args[index])
 
         for arg, operator in zip(data, self.split_operators):
-            result = self._process_operator.remote(operator, arg)
+            result = self._process_operator.remote(operator, arg, _vars=self._vars)
             output.append(result)
 
         assert isinstance(output, list)

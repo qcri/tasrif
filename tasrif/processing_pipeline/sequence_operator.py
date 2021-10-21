@@ -1,6 +1,7 @@
 """Module that defines the SequenceOperator class
 """
 from tasrif.processing_pipeline.processing_operator import ProcessingOperator
+from tasrif.processing_pipeline.variables import enable_variables
 
 class SequenceOperator(ProcessingOperator):
     """Class representing a pipeline of processing operators. The definition of the pipeline
@@ -8,7 +9,8 @@ class SequenceOperator(ProcessingOperator):
     Data flows from one operator to another in a chained fashion.
     """
 
-    def __init__(self, processing_operators, observers=None):
+    @enable_variables()
+    def __init__(self, processing_operators, observers=None, **vars):
         """Constructs a sequence operator from a list of operators
 
         Args:
@@ -67,7 +69,7 @@ class SequenceOperator(ProcessingOperator):
         """
         data = args
         for operator in self.processing_operators:
-            data = operator.process(*data)
+            data = operator.process(*data, _vars=self._vars)
 
         return data
 

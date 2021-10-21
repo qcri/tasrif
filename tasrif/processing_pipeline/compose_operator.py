@@ -4,6 +4,7 @@
 import ray
 from tasrif.processing_pipeline.processing_operator import ProcessingOperator
 from tasrif.processing_pipeline.parallel_operator import ParallelOperator
+from tasrif.processing_pipeline.variables import enable_variables
 
 class ComposeOperator(ParallelOperator):
     """Class representing a composiition of processing operators. The same data flows to all the
@@ -11,7 +12,8 @@ class ComposeOperator(ParallelOperator):
     results of all the containing operators
     """
 
-    def __init__(self, processing_operators, observers=None, num_processes=1):
+    @enable_variables()
+    def __init__(self, processing_operators, observers=None, num_processes=1, **vars):
         """Constructs a compose operator from a list of operators
 
         Args:
@@ -78,7 +80,7 @@ class ComposeOperator(ParallelOperator):
         """
         output = []
         for operator in self.processing_operators:
-            result = operator.process(*args)
+            result = operator.process(*args, _vars=self._vars)
             output.append(result)
 
         return output
@@ -97,7 +99,7 @@ class ComposeOperator(ParallelOperator):
         """
         output = []
         for operator in self.processing_operators:
-            result = self._process_operator.remote(operator, *args)
+            result = self._process_operator.remote(operator, *args, _vars=self._vars)
             output.append(result)
 
         assert isinstance(output, list)

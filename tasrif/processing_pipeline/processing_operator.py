@@ -16,6 +16,9 @@ class ProcessingOperator:
             observers (list[Observer]):
                 Python list of observers
         """
+        if not hasattr(self, '_vars'):
+            self._vars = {}
+
         self._observers = []
         if observers:
             self.set_observers(observers)
@@ -41,6 +44,7 @@ class ProcessingOperator:
         """
         for observer in self._observers:
             observer.observe(self, *data_frames)
+
 
     def _validate(self, *data_frames):
         """
@@ -69,7 +73,27 @@ class ProcessingOperator:
         """
         return data_frames
 
-    def process(self, *data_frames):
+    def _resolve_vars(self, _vars):
+        self._resolve_vars_by_inheritance(_vars)
+        self._broadcast_unused_parent_vars(_vars)
+
+
+    def _resolve_vars_by_inheritance(self, _vars):
+        for name, value in self._vars.items():
+            if type(value)==str:
+                if _vars and value in _vars:
+                    self._vars[name] = _vars[value]
+                else:
+                    raise ValueError(f"Cannot bind {name} to {value}!")
+            setattr(self, name, self._vars[name])
+
+    def _broadcast_unused_parent_vars(self, _vars):
+        if _vars:
+            for name, value in _vars.items():
+                if name not in self._vars:
+                    self._vars[name] = value
+
+    def process(self, *data_frames, _vars=None):
         """
         Function that runs validation hooks and processes the input data_frames.
 
@@ -81,6 +105,7 @@ class ProcessingOperator:
             Output of _process method
         """
         self._validate(*data_frames)
+        self._resolve_vars(_vars)
         result = self._process(*data_frames)
         self.observe(result)
         return result
