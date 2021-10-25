@@ -38,7 +38,14 @@ class ProcessingOperator:
         Args:
             *data_frames (list of pd.DataFrame):
               Variable number of pandas dataframes to be observed
+
+        Raises:
+            RuntimeError: Occurs when super().__init__() is not called in the __init__() method of
+                the ProcessingOperator
         """
+        if not hasattr(self, '_observers'):
+            raise RuntimeError(f"Missing super().__init__() in the __init__() method of {self.__class__.__name__}!")
+
         for observer in self._observers:
             observer.observe(self, *data_frames)
 
