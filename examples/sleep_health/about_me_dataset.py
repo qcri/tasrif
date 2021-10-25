@@ -30,16 +30,15 @@ The default behavior of this module is to:
 The default final dataset size is 3019.
 
 """
-
 import os
 from tasrif.processing_pipeline import SequenceOperator
 from tasrif.data_readers.sleep_health import SleepHealthDataset
 from tasrif.processing_pipeline.pandas import DropNAOperator, DropDuplicatesOperator
 
-amd_file_path = os.environ['SLEEPHEALTH_ABOUTME_PATH']
+sleephealth_path = os.environ['SLEEPHEALTH']
 
 pipeline = SequenceOperator([
-    SleepHealthDataset(amd_file_path),
+    SleepHealthDataset(sleephealth_path, "aboutme"),
     DropNAOperator(subset=[
         "alcohol",
         "basic_expenses",

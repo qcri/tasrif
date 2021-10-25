@@ -23,10 +23,10 @@ from tasrif.processing_pipeline import SequenceOperator
 from tasrif.data_readers.sleep_health import SleepHealthDataset
 from tasrif.processing_pipeline.pandas import DropNAOperator, ReplaceOperator
 
-obd_file_path = os.environ['SLEEPHEALTH_ONBOARDING_DEMOGRAPHICS_PATH']
+sleephealth_path = os.environ['SLEEPHEALTH']
 
 pipeline = SequenceOperator([
-    SleepHealthDataset(obd_file_path),
+    SleepHealthDataset(sleephealth_path, "onboardingdemographics"),
     ReplaceOperator(to_replace="CENSORED", value=np.nan),
     DropNAOperator()
 ])

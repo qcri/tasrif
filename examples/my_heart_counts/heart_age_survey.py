@@ -3,14 +3,14 @@ from tasrif.processing_pipeline import SequenceOperator
 from tasrif.data_readers.my_heart_counts import MyHeartCountsDataset
 from tasrif.processing_pipeline.pandas import DropNAOperator, DropDuplicatesOperator
 
-has_file_path = os.environ['MYHEARTCOUNTS_HEARTAGESURVEY_PATH']
+mhc_file_path = os.environ['MYHEARTCOUNTS']
 
 pipeline = SequenceOperator([
-    MyHeartCountsDataset(has_file_path),
+    MyHeartCountsDataset(mhc_file_path, "heartagesurvey"),
     DropNAOperator(),
     DropDuplicatesOperator(subset=["healthCode"], keep="last")
 ])
 
-if __name__=='__main__':
+if __name__ == '__main__':
     df = pipeline.process()
     print(df)

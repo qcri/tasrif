@@ -39,10 +39,10 @@ from tasrif.data_readers.sleep_health import SleepHealthDataset
 from tasrif.processing_pipeline.pandas import DropNAOperator, ReplaceOperator, ConvertToDatetimeOperator
 from tasrif.processing_pipeline.custom import OneHotEncoderOperator
 
-shd_file_path = os.environ['SLEEPHEALTH_HABIT_PATH']
+sleephealth_path = os.environ['SLEEPHEALTH']
 
 pipeline = SequenceOperator([
-    SleepHealthDataset(shd_file_path),
+    SleepHealthDataset(sleephealth_path, "sleephabits"),
     ConvertToDatetimeOperator(feature_names=["timestamp"],
                               format="%Y-%m-%dT%H:%M:%S",
                               utc=True),

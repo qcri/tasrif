@@ -15,10 +15,10 @@ from tasrif.data_readers.sleep_health import SleepHealthDataset
 from tasrif.processing_pipeline.pandas import ConvertToDatetimeOperator, SortOperator
 from tasrif.processing_pipeline.custom import CreateFeatureOperator, AggregateOperator
 
-sqc_file_path = os.environ['SLEEPHEALTH_QUALITY_CHECKER_PATH']
+sleephealth_path = os.environ['SLEEPHEALTH']
 
 pipeline = SequenceOperator([
-    SleepHealthDataset(sqc_file_path),
+    SleepHealthDataset(sleephealth_path, "sleepqualitychecker"),
     SortOperator(by=["participantId", "timestamp"]),
     AggregateOperator(
         groupby_feature_names="participantId",

@@ -7,8 +7,8 @@ from tasrif.processing_pipeline.pandas import ConvertToDatetimeOperator, DropNAO
                                               DropFeaturesOperator, SetIndexOperator, \
                                               PivotResetColumnsOperator
 
-hkd_file_path = os.environ['MYHEARTCOUNTS_HEALTHKITDATA_PATH']
-csv_folder_path = os.environ['MYHEARTCOUNTS_HEALTHKITDATA_CSV_FOLDER_PATH']
+mhc_file_path = os.environ['MYHEARTCOUNTS']
+csv_folder_path = os.environ['MYHEARTCOUNTS'] + 'HealthKit Sleep'
 
 csv_pipeline = SequenceOperator([
     DropNAOperator(),
@@ -27,7 +27,7 @@ csv_pipeline = SequenceOperator([
 ])
 
 pipeline = SequenceOperator([
-    MyHeartCountsDataset(hkd_file_path),
+    MyHeartCountsDataset(mhc_file_path, "healthkitdata"),
     CreateFeatureOperator(
         feature_name='file_name',
         feature_creator=lambda df: str(df['data.csv'])),
@@ -35,7 +35,6 @@ pipeline = SequenceOperator([
         folder_path=csv_folder_path,
         field='file_name',
         pipeline=csv_pipeline),
-
 ])
 
 if __name__=='__main__':

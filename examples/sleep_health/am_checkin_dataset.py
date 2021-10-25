@@ -42,7 +42,7 @@ import numpy as np
 from tasrif.processing_pipeline import SequenceOperator
 from tasrif.data_readers.sleep_health import SleepHealthDataset
 from tasrif.processing_pipeline.pandas import (
-    ConvertToDatetimeOperator, 
+    ConvertToDatetimeOperator,
     DropNAOperator,
     DropFeaturesOperator,
     ReplaceOperator,
@@ -50,10 +50,10 @@ from tasrif.processing_pipeline.pandas import (
 )
 from tasrif.processing_pipeline.custom import EncodeCyclicalFeaturesOperator
 
-amc_file_path = os.environ['SLEEPHEALTH_AMCHECKIN_PATH']
+sleephealth_path = os.environ['SLEEPHEALTH']
 
 pipeline = SequenceOperator([
-    SleepHealthDataset(amc_file_path),
+    SleepHealthDataset(sleephealth_path, "amcheckin"),
     ConvertToDatetimeOperator(feature_names=["AMCH1", "AMCH4"],
                               format="%Y-%m-%dT%H:%M:%S%z",
                               utc=True),
