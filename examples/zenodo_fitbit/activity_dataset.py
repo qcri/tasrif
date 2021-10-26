@@ -20,7 +20,7 @@ from tasrif.processing_pipeline.pandas import (
 from tasrif.data_readers.zenodo_fitbit_dataset import ZenodoFitbitDataset
 
 
-zenodo_folder_path = os.environ['ZENODO_FITBIT_PATH']
+zenodo_folder_path = os.environ.get('ZENODO_FITBIT_PATH') or '/mnt/datafabric/Zenodo_Fitbit'
 
 DROP_FEATURES = [
     "TrackerDistance",
@@ -54,7 +54,7 @@ pipeline = SequenceOperator([
         feature_name="Date",
         feature_creator=lambda df: pd.to_datetime(df["ActivityDate"]),
     ),
-    DropFeaturesOperator(drop_features=DROP_FEATURES),
+    DropFeaturesOperator(feature_names=DROP_FEATURES),
     ComposeOperator([
         NoopOperator(),
         AggregateOperator(
@@ -67,3 +67,5 @@ pipeline = SequenceOperator([
 df = pipeline.process()
 
 print(df)
+
+

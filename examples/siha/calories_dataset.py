@@ -14,10 +14,10 @@ from tasrif.processing_pipeline.pandas import (
     AsTypeOperator,
 )
 
-siha_folder_path = os.environ['SIHA_PATH']
+siha_folder_path = os.environ.get('SIHA_PATH') or '/mnt/datafabric/qcri-hmc__profast__2020-2021-03-17T13:00:44'
 
 pipeline = SequenceOperator([
-    SihaDataset(folder=siha_folder_path, table_name="Calories"),
+    SihaDataset(folder_path=siha_folder_path, table_name="Calories"),
     JqOperator(
         'map({patientID} + .data.activities_tracker_calories[].data."activities-tracker-calories"[0])'
     ),
@@ -31,3 +31,5 @@ pipeline = SequenceOperator([
 df = pipeline.process()
 
 print(df)
+
+

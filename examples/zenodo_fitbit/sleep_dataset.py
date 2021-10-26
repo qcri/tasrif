@@ -15,7 +15,7 @@ from tasrif.processing_pipeline.custom import (
 
 from tasrif.data_readers.zenodo_fitbit_dataset import ZenodoFitbitDataset
 
-zenodo_folder_path = os.environ['ZENODO_FITBIT_PATH']
+zenodo_folder_path = os.environ.get('ZENODO_FITBIT_PATH') or '/mnt/datafabric/Zenodo_Fitbit'
 
 DAILY_AGGREGATION_DEFINITION = {
     "duration": ["sum"],
@@ -36,7 +36,7 @@ pipeline = SequenceOperator([
         feature_creator=lambda df: pd.to_datetime(df["date"]),
     ),
     AddDurationOperator(groupby_feature_names="logId",
-                        timestamp_feature_name="date"),
+                        date_feature_name="date"),
     AggregateOperator(
         groupby_feature_names=["logId", "Id"],
         aggregation_definition=DAILY_AGGREGATION_DEFINITION,
@@ -60,3 +60,5 @@ pipeline = SequenceOperator([
 df = pipeline.process()
 
 print(df)
+
+

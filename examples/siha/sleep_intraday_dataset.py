@@ -13,7 +13,7 @@ from tasrif.processing_pipeline.pandas import (
     ConvertToDatetimeOperator,
 )
 
-siha_folder_path = os.environ['SIHA_PATH']
+siha_folder_path = os.environ.get('SIHA_PATH') or '/mnt/datafabric/qcri-hmc__profast__2020-2021-03-17T13:00:44'
 
 pipeline = SequenceOperator([
     SihaDataset(siha_folder_path, table_name="SleepIntraday"),
@@ -75,3 +75,5 @@ pipeline = SequenceOperator([
 df = pipeline.process()
 
 print(df)
+
+

@@ -34,7 +34,7 @@ setup(
         'scikit-learn >= 0.22.1',
         'tqdm >= 4.52.0',
         'tsfresh >= 0.18.0',
-        'kats @ https://github.com/facebookresearch/kats/archive/250b4fdd019d39bf1ae9609339dbcd595b641d2b.zip',
+        'kats @ https://github.com/facebookresearch/kats/archive/eefa85275d36ec50e1fed3864f9bd7a435a3b405.zip',
         'ray >= 1.7.0'
     ],
     # numpy also needs to be specified in setup_requires,

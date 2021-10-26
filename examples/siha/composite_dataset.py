@@ -36,15 +36,15 @@ from tasrif.processing_pipeline.pandas import (
     DropFeaturesOperator
 )
 
-siha_folder_path = os.environ['SIHA_PATH']
+siha_folder_path = os.environ.get('SIHA_PATH') or '/mnt/datafabric/qcri-hmc__profast__2020-2021-03-17T13:00:44'
 
 
-class FlattenOperator(MapProcessingOperator):
-     def processing_function(self, arr):
+class _FlattenOperator(MapProcessingOperator):
+    def _processing_function(self, arr):
         return arr[0]
-    
+
 # Rename column names
-class RenameOperator(ProcessingOperator):
+class _RenameOperator(ProcessingOperator):
     def __init__(self, **kwargs):
         self.kwargs = kwargs
 
@@ -61,7 +61,7 @@ class RenameOperator(ProcessingOperator):
 # %%
 # base_datasets = ["EMR", "CGM", "Steps", "Distance", "Calories"]
 base_datasets = SequenceOperator([
-    SihaDataset(folder=siha_folder_path, table_name="EMR"),
+    SihaDataset(folder_path=siha_folder_path, table_name="EMR"),
     ComposeOperator([
         JqOperator("map({patientID} + .data.emr[])"), # EMR
         JqOperator("map({patientID} + .data.cgm[])"), # CGM
@@ -75,9 +75,9 @@ base_datasets = SequenceOperator([
             'map({patientID} + .data.activities_tracker_calories[].data."activities-tracker-calories"[0])'
         ), # Calories
     ]),
-    FlattenOperator(),
+    _FlattenOperator(),
     JsonNormalizeOperator(),
-    RenameOperator(columns={'time': 'dateTime'}, errors='ignore'),
+    _RenameOperator(columns={'time': 'dateTime'}, errors='ignore'),
     ConvertToDatetimeOperator(feature_names=["dateTime"], infer_datetime_format=True),
     SetIndexOperator("dateTime"),
     AsTypeOperator({"value": "float32"}, errors='ignore')
@@ -91,7 +91,7 @@ df
 # %%
 # intraday_datasets = ["HeartRateIntraday", "CaloriesIntraday", "StepsIntraday", "DistanceIntraday"]
 intraday_datasets = SequenceOperator([
-    SihaDataset(folder=siha_folder_path, table_name="HeartRateIntraday"),
+    SihaDataset(folder_path=siha_folder_path, table_name="HeartRateIntraday"),
     ComposeOperator([
         JqOperator(
             'map({patientID} + .data.activities_heart_intraday[].data as $item  | '
@@ -122,7 +122,7 @@ intraday_datasets = SequenceOperator([
             'map({date: $item."activities-distance"[0].dateTime} + .) | .[])'
         ), # DistanceIntraday
     ]),
-    FlattenOperator(),
+    _FlattenOperator(),
     JsonNormalizeOperator(),
     CreateFeatureOperator(
         feature_name="dateTime",
@@ -136,3 +136,5 @@ intraday_datasets = SequenceOperator([
 
 df_intra = intraday_datasets.process()
 df_intra
+
+# %%

@@ -34,7 +34,6 @@ jobs:
           source env/bin/activate
           pip3.7 install --upgrade pip
           pip3.7 install -r qa-requirements.txt
-          pip3.7 install -r requirements.txt
           MINIMAL=1 pip3.7 install -e .
           pytest -v tasrif/test_scripts/entrypoint.py --junitxml=notebook-tests.xml
         displayName: 'Install deps and run tests'

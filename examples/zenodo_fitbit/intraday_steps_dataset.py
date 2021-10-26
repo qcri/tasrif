@@ -19,7 +19,7 @@ from tasrif.processing_pipeline.pandas import (
 
 from tasrif.data_readers.zenodo_fitbit_dataset import ZenodoFitbitDataset
 
-zenodo_folder_path = os.environ['ZENODO_FITBIT_PATH']
+zenodo_folder_path = os.environ.get('ZENODO_FITBIT_PATH') or '/mnt/datafabric/Zenodo_Fitbit'
 
 HOURLY_AGGREGATION_DEFINITION = {"Steps": "sum"}
 
@@ -49,3 +49,5 @@ pipeline = SequenceOperator([
 df = pipeline.process()
 
 print(df)
+
+
