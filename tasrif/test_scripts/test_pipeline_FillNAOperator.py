@@ -5,7 +5,7 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.7.1
+#       jupytext_version: 1.11.2
 #   kernelspec:
 #     display_name: Python 3
 #     language: python
@@ -18,10 +18,10 @@ import numpy as np
 
 from tasrif.processing_pipeline.pandas import FillNAOperator
 
-df = pd.DataFrame({"name": ['Alfred', 'Batman', 'Catwoman'],
-                   "toy": [np.nan, 'Batmobile', 'Bullwhip'],
-                   "born": [pd.Timestamp("1940-04-25"), pd.Timestamp("1940-04-25"),
-                            pd.Timestamp("1940-04-25")]})
+df = pd.DataFrame({"name": ['Alfred', 'juli', 'Tom', 'Ali'],
+                   "height": [np.nan, 155, 159, 165],
+                   "born": [pd.NaT, pd.Timestamp("2010-04-25"), pd.NaT,
+                            pd.NaT]})
 
 operator = FillNAOperator(axis=0, value='laptop')
 df = operator.process(df)[0]
