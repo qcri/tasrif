@@ -11,3 +11,5 @@ from tasrif.processing_pipeline.reduce_processing_operator import ReduceProcessi
 from tasrif.processing_pipeline.pandas_operator import PandasOperator
 from tasrif.processing_pipeline.observer import Observer
 from tasrif.processing_pipeline.parallel_operator import ParallelOperator
+from tasrif.processing_pipeline.scoped_processing_operator import ScopedProcessingOperator
+from tasrif.processing_pipeline.variable import Variable
