@@ -33,17 +33,17 @@ class ComposeOperator(ParallelOperator):
         >>> from tasrif.processing_pipeline.pandas import DropDuplicatesOperator, DropNAOperator
         >>> from tasrif.processing_pipeline import ComposeOperator
         >>> pipeline = ComposeOperator([DropDuplicatesOperator(), DropNAOperator()])
-        >>> df = pd.DataFrame({"name": ['Alfred', 'Batman', 'Catwoman'],
-        >>>                  "toy": [np.nan, 'Batmobile', 'Bullwhip'],
+        >>> df = pd.DataFrame({"pid": ['001', '002', '003'],
+        >>>                  "height": [np.nan, 188, 170],
         >>>                  "born": [pd.NaT, pd.Timestamp("1940-04-25"),
         >>>                           pd.NaT]})
         >>> pipeline.process(df)
-        [(       name        toy       born
-          0    Alfred        NaN        NaT
-          1    Batman  Batmobile 1940-04-25
-          2  Catwoman   Bullwhip        NaT,),
-         (     name        toy       born
-          1  Batman  Batmobile 1940-04-25,)]
+        [(   pid  height       born
+          0  001     NaN        NaT
+          1  002   188.0 1940-04-25
+          2  003   170.0        NaT,),
+         (   pid  height       born
+          1  002   188.0 1940-04-25,)]
 
         """
         super().__init__(num_processes)

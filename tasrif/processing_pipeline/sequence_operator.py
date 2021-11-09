@@ -25,15 +25,14 @@ class SequenceOperator(ProcessingOperator):
 
         >>> from tasrif.processing_pipeline import SequenceOperator
         >>> from tasrif.processing_pipeline.pandas import DropDuplicatesOperator, DropNAOperator
-        >>> df = pd.DataFrame({"name": ['Alfred', 'Batman', 'Catwoman'],
-        ...                 "toy": [np.nan, 'Batmobile', 'Bullwhip'],
+        >>> df = pd.DataFrame({"pid": ['001', '002', '003'],
+        ...                 "height": [np.nan, 188, 170],
         ...                 "born": [pd.NaT, pd.Timestamp("1940-04-25"),
         ...                          pd.NaT]})
         >>> pipeline = SequenceOperator([DropDuplicatesOperator(), DropNAOperator()])
         >>> pipeline.process(df)
-        (     name        toy       born
-         1  Batman  Batmobile 1940-04-25,)
-
+        (   pid  height       born
+         1  002   188.0 1940-04-25,)
         """
         super().__init__()
         self._observers = []

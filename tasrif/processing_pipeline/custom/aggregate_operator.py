@@ -23,20 +23,20 @@ class AggregateOperator(ProcessingOperator):
       >>> from tasrif.processing_pipeline.custom import AggregateOperator
       >>> from tasrif.processing_pipeline.custom import LinearFitOperator
       >>>
-      >>> df0 = pd.DataFrame([['Doha', 25, 30], ['Doha', 17, 50], ['Dubai', 20, 40], ['Dubai', 21, 42]],
-      ...                     columns=['city', 'min_temp', 'max_temp'])
+      >>> df = pd.DataFrame([['001', 25, 30], ['001', 17, 50], ['002', 20, 40], ['002', 21, 42]],
+      ...                     columns=['pid', 'min_activity', 'max_activity'])
       >>>
       >>> operator = AggregateOperator(
-      ...    groupby_feature_names ="city",
+      ...    groupby_feature_names ="pid",
       ...    aggregation_definition= {"min_temp": ["mean", "std"],
-      ...                             "r2,_,intercept": LinearFitOperator(feature_names='min_temp',
-      ...                                                                 target='max_temp')})
+      ...                             "r2,_,intercept": LinearFitOperator(feature_names='min_activity',
+      ...                                                                 target='max_activity')})
       >>> df0 = operator.process(df0)
       >>>
       >>> print(df0)
-      [    city  min_temp_mean  min_temp_std   r2     intercept
-       0   Doha           21.0      5.656854  1.0  9.250000e+01
-       1  Dubai           20.5      0.707107  1.0  7.105427e-15]
+      [   pid  min_activity_mean  min_activity_std   r2     intercept
+       0  001               21.0          5.656854  1.0  9.250000e+01
+       1  002               20.5          0.707107  1.0  7.105427e-15]
 
     """
     def __init__(self, groupby_feature_names, aggregation_definition, observers=None):

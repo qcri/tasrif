@@ -16,18 +16,19 @@ class FillNAOperator(GroupbyCompatibleValidatorMixin, PandasOperator):
     >>>
     >>> from tasrif.processing_pipeline.pandas import FillNAOperator
     >>>
-    >>> df = pd.DataFrame({"name": ['Alfred', 'Batman', 'Catwoman'],
-    ...                    "toy": [np.nan, 'Batmobile', 'Bullwhip'],
-    ...                    "born": [pd.Timestamp("1940-04-25"), pd.Timestamp("1940-04-25"),
-    ...                             pd.Timestamp("1940-04-25")]})
+    >>> df = pd.DataFrame({"name": ['Alfred', 'juli', 'Tom', 'Ali'],
+    ...                   "height": [np.nan, 155, 159, 165],
+    ...                   "born": [pd.NaT, pd.Timestamp("2010-04-25"), pd.NaT,
+    >>>
     >>>
     >>> operator = FillNAOperator(axis=0, value='laptop')
     >>> df = operator.process(df)[0]
     >>> df
-        name    toy     born
-    0   Alfred  laptop  1940-04-25
-    1   Batman  Batmobile   1940-04-25
-    2   Catwoman    Bullwhip    1940-04-25
+    name    height  born
+    0   Alfred  laptop  laptop
+    1   juli    155     2010-04-25 00:00:00
+    2   Tom     159     laptop
+    3   Ali     165     laptop
 
     """
 

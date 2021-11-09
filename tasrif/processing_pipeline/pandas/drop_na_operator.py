@@ -14,21 +14,22 @@ class DropNAOperator(InputsAreDataFramesValidatorMixin, PandasOperator):
     >>> import numpy as np
     >>> from tasrif.processing_pipeline import DropNAOperator
     >>>
-    >>> df0 = pd.DataFrame([['tom', 10], ['nick', 15], ['juli', 14]])
-    >>> df1 = pd.DataFrame({"name": ['Alfred', 'Batman', 'Catwoman'],
-    ...                   "toy": [np.nan, 'Batmobile', 'Bullwhip'],
-    ...                   "born": [pd.NaT, pd.Timestamp("1940-04-25"),
-    ...                            pd.NaT]})
-    >>>operator = DropNAOperator(axis=0)
-    >>>df0, df1 = operator.process(df0, df1)
-    >>>print(df0)
-    >>>print(df1)
-    .     0   1
-    0   tom  10
-    1  nick  15
-    2  juli  14
-    .    name        toy       born
-    1  Batman  Batmobile 1940-04-25
+    >>> df0 = pd.DataFrame([['Tom', 10], ['Alfred', 15], ['Alfred', 18], ['Juli', 14]], columns=['name', 'score'])
+    >>> df1 = pd.DataFrame({"name": ['Alfred', 'juli', 'Tom', 'Ali'],
+    ...                    "height": [np.nan, 155, 159, 165],
+    ...                    "born": [pd.NaT, pd.Timestamp("2010-04-25"), pd.NaT,
+    ...                             pd.NaT]})
+    >>> operator = DropNAOperator(axis=0)
+    >>> df0, df1 = operator.process(df0, df1)
+    >>> print(df0)
+    >>> print(df1)
+         name  score
+    0     Tom     10
+    1  Alfred     15
+    2  Alfred     18
+    3    Juli     14
+       name  height       born
+    1  juli   155.0 2010-04-25
     """
 
     def __init__(self, **kwargs):
