@@ -40,8 +40,9 @@ details2.to_csv('./details2.csv', index=False)
 
 pipeline = SequenceOperator([
     ReadCsvFolderOperator(name_pattern='./*.csv', pipeline=None),
-    ConcatOperator()
 ])
 
 df = pipeline.process()[0]
 df
+
+# %%

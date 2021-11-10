@@ -5,7 +5,7 @@ from tasrif.processing_pipeline.custom import ReadCsvFolderOperator
 
 def test_type_of_return_when_read_csv_folder_is_called(mocker):
     args = ['arg1', 'arg2']
-    kwargs = {'kwarg1': None, 'kwarg2': None}
+    kwargs = {'kwarg1': None, 'kwarg2': None, 'concatenate': False}
 
     generator = ReadCsvFolderOperator(*args, **kwargs).process()
     assert isinstance(generator, types.GeneratorType)
@@ -21,7 +21,7 @@ def test_read_csv_folder_is_called_n_number_of_times(mocker):
     ]
 
     pandas_mock = mocker.patch('tasrif.processing_pipeline.custom.read_csv_folder_operator.pd')
-    pandas_mock.read_csv.return_value = pd.DataFrame() 
+    pandas_mock.read_csv.return_value = pd.DataFrame()
 
     generator = ReadCsvFolderOperator(name_pattern='path/to/folder/*.csv').process()
     list(generator)

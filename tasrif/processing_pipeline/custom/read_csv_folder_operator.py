@@ -52,6 +52,7 @@ class ReadCsvFolderOperator(ProcessingOperator):
                  pipeline: SequenceOperator = None,
                  name_pattern='*.csv',
                  filename_column_name='filename',
+                 concatenate=True,
                  **read_csv_kwargs):
         """Creates a new instance of ReadCsvFolderOperator
 
@@ -62,6 +63,8 @@ class ReadCsvFolderOperator(ProcessingOperator):
                 regex pattern of the csv files that the user wishes to read
             filename_column_name (str):
                 column to be created for the csv file representing the filename
+            concatenate (bool):
+                whether to concatenate the files to a single dataframe or not
             **read_csv_kwargs:
                 keyword arguments passed to Pandas read_csv method
         """
@@ -70,6 +73,7 @@ class ReadCsvFolderOperator(ProcessingOperator):
         self.read_csv_kwargs = read_csv_kwargs
         self.name_pattern = pathlib.Path(name_pattern)
         self.filename_column_name = filename_column_name
+        self.concatenate = concatenate
 
     def _read_csvs_in_folder(self):
         files = glob.glob(str(self.name_pattern))
@@ -95,4 +99,11 @@ class ReadCsvFolderOperator(ProcessingOperator):
         """
 
         generator = self._read_csvs_in_folder()
+
+        if self.concatenate:
+            output = list(generator)
+            output = pd.concat(output)
+            output = [output]
+            return output
+
         return generator
