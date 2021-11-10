@@ -25,3 +25,4 @@ from tasrif.processing_pipeline.custom.flatten_operator import FlattenOperator
 from tasrif.processing_pipeline.custom.sliding_window_operator import SlidingWindowOperator
 from tasrif.processing_pipeline.custom.read_csv_folder_operator import ReadCsvFolderOperator
 from tasrif.processing_pipeline.custom.linear_fit_operator import LinearFitOperator
+from tasrif.processing_pipeline.custom.set_start_hour_of_day_operator import SetStartHourOfDayOperator
