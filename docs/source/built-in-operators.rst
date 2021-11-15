@@ -9,6 +9,7 @@ Currently, built-in Operators can be classified into three groups:
 * **Kats**
 * **TSFresh**
 * **Custom**
+* **Observers**
 
 **Pandas Operators**, as the name suggests, are Operators that are built on top of
 the Pandas library. These Operators are mostly derived from the Pandas API, and
@@ -84,3 +85,36 @@ Examples include:
 
 .. _Facebook's Kats library: https://github.com/facebookresearch/Kats
 .. _TSFresh library: https://github.com/blue-yonder/tsfresh
+
+
+**Observers** allows the user to see the output of intermediate operators in a `SequenceOperator. A user may do the following with Observers:
+
+* See the "head", "tail" or "info" of the output of an operator using :code:`tasrif.processing_pipeline.observers.Logger`
+* See a dataframe after grouping using :code:`tasrif.processing_pipeline.observers.GroupbyLogger`
+* See "distribution", "correlation", "diff" and "missing" using :code:`tasrif.processing_pipeline.observers.DataprepObserver`
+* Plot data per day per id in a dataframe using :code:`tasrif.processing_pipeline.observers.VisualizeDaysObserver`
+
+Observer example:
+
+.. code-block:: python
+
+    import pandas as pd
+    import numpy as np
+    from tasrif.processing_pipeline.pandas import RenameOperator
+    from tasrif.processing_pipeline.observers import DataprepObserver
+
+    # Prepare two days data
+    two_days = 48*2
+    idx = pd.date_range("2018-01-01", periods=two_days, freq="30T", name='startTime')
+    activity = np.random.randint(0, 100, two_days)
+    df = pd.DataFrame(data=activity, index=idx, columns=['activity'])
+    df['steps'] = np.random.randint(100, 1000, two_days)
+    df['sleep'] = False
+
+    # reduce activity between 23:30 - 08:00
+    time_filter = df.between_time(start_time='23:30', end_time='8:00').index
+    df.loc[time_filter, 'sleep'] = True
+    df.loc[time_filter, 'activity'] = df.loc[time_filter, 'activity'] / 100
+    df.loc[time_filter, 'steps'] = 0
+    df = RenameOperator(columns={"logId": "id"}, observers=[DataprepObserver(method='distribution,missing')]).process(df)
+    df
