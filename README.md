@@ -7,6 +7,76 @@ Tasrif is a library for processing of eHealth data. It provides:
 - DataReaders for reading eHealth datasets such as
   [MyHeartCounts](https://www.synapse.org/?source=post_page---------------------------#!Synapse:syn11269541/wiki/), [SleepHealth](https://www.synapse.org/#!Synapse:syn18492837/wiki/) and data from FitBit devices.
 
+## Getting started
+
+### Installation
+
+To use Tasrif, you will need to have the package installed. Please follow the bellow steps to install Tasrif:
+
+
+First, create a virtual environment using [venv](https://docs.python.org/3/library/venv.html) with a linux operating system machine, or with [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/install)
+
+```python
+# Create a virtual environment
+python3 -m venv tasrif-env
+
+# Activate the virtual environment
+source tasrif-env/bin/activat
+```
+
+Then, install Tasrif either from PyPI
+
+```python
+(tasrif-env) MINIMAL=1 pip install tasrif
+```
+
+or install from source
+
+```python
+(tasrif-env) git clone https://github.com/qcrisw/tasrif
+(tasrif-env) cd tasrif
+(tasrif-env) MINIMAL=1 pip install -e .
+
+```
+
+Note that `MINIMAL=1` is passed in the installation script to minimally install one of Tasrif's internal dependancies. See [setup.py](setup.py) for details.
+
+### Quick start
+
+Once Tasrif is installed, import Tasrif via
+
+```python
+import Tasrif
+```
+
+- data/utilities package that includes csvs (you can use readcsvOpeartor for a single file, or readnestedcsv if the files are referenced in a column)
+- Reading data
+    + Use Tasrif to load csvs from a folder
+    + jqOperator
+    + IterateJSON
+- Concatenate them or process them individually
+- See statistics
+- add features 
+    + CreateFeatureOperator
+    + encode cyclical features
+    + tsfresh
+    + kats
+- FilterOperator
+- AggregateOperator
+    + Suppose that ...
+- DataWrangling
+    + SetStartHourOfDay
+    + Resample
+    + NormalizeOperator
+- Quickly test your prepared data
+    + linear fit operator
+- Add final pipeline
+    + Link to Colab
+- Debug your pipeline
+    + Observers
+    + Explain how, and not what
+
+
 ## Features
 
 ### Pipeline DSL
