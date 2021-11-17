@@ -43,11 +43,16 @@ Note that `MINIMAL=1` is passed in the installation script to minimally install 
 
 ### Quick start by usecase
 
-Once Tasrif is installed, import Tasrif via
-
-```python
-import Tasrif
-```
+- [Reading data](#reading-data)
+- [Concatenate dataframes](#concatenate-dataframes)
+- [Add and extract features from existing columns](#add-and-extract-features-from-existing-columns)
+- [Filter data](#filter-data)
+- [Wrangle data](#wrangle-data)
+- [Test prepared data](#test-prepared-data)
+- [Create a pipeline to link the operators](#create-a-pipeline-to-link-the-operators)
+- [Debug your pipeline](#debug-your-pipeline)
+- [Define a custom operator](#define-a-custom-operator)
+- [Other references](#other-references)
 
 
 ### Reading data
@@ -109,35 +114,302 @@ for record, details in generator:
     print(details)
 ```
 
+### Concatenate dataframes
+
+Concatenate multiple dataframes or a generator
+
+```python
+
+from tasrif.processing_pipeline.pandas import ConcatOperator
+
+concatenated_df = ConcatOperator().process(df1, df2)[0]
+concatenated_df = ConcatOperator().process(generator)[0]
+```
+
+### Compute statistics
+
+Compute quick statistics using `StatisticsOperator`. `StatisticsOperator` includes counts of rows, missing data, duplicate rows, and others.
+
+```python
+
+import pandas as pd
+from tasrif.processing_pipeline.custom import StatisticsOperator
+
+df = pd.DataFrame( [
+    ['2020-02-20', 1000, 1800, 1], ['2020-02-21', 5000, 2100, 1], ['2020-02-22', 10000, 2400, 1],
+    ['2020-02-20', 1000, 1800, 1], ['2020-02-21', 5000, 2100, 1], ['2020-02-22', 10000, 2400, 1],
+    ['2020-02-20', 0, 1600, 2], ['2020-02-21', 4000, 2000, 2], ['2020-02-22', 11000, 2400, 2],
+    ['2020-02-20', None, 2000, 3], ['2020-02-21', 0, 2700, 3], ['2020-02-22', 15000, 3100, 3]],
+columns=['Day', 'Steps', 'Calories', 'PersonId'])
+
+filter_features = {
+    'Steps': lambda x : x > 0
+}
+
+sop = StatisticsOperator(participant_identifier='PersonId', 
+                         date_feature_name='Day', filter_features=filter_features)
+sop.process(df)[0]
+```
+
+Or use `ParticipationOverviewOperator` to see statistics per participant. Pass the argument `overview_type="date_vs_features"` to compute statistics per date. See below
+
+```python
+
+from tasrif.processing_pipeline.custom import ParticipationOverviewOperator
+
+sop = ParticipationOverviewOperator(participant_identifier='PersonId', 
+                                    date_feature_name='Day', 
+                                    overview_type='participant_vs_features')
+sop.process(df)[0]
 
 
-- Reading data
-    + IterateJSON
-- Concatenate them or process them individually
-- See statistics
-- add features 
-    + CreateFeatureOperator
-    + encode cyclical features
-    + tsfresh
-    + kats
-- FilterOperator
-- AggregateOperator
-    + Suppose that ...
-- DataWrangling
-    + JSON data
-        * jqOperator
-    + SetStartHourOfDay
-    + Resample
-    + NormalizeOperator
-- Quickly test your prepared data
-    + linear fit operator
-- Add final pipeline
-    + Link to Colab
-- Debug your pipeline
-    + Observers
-    + Explain how, and not what
-- Other references
-    + You may examine `tasrif/processing_pipeline/test_scripts/` for other minimal examples of Tasrif's operators.
+```
+
+Use `AggregateOperator` if you require specific statistics for some columns
+
+
+```python
+from tasrif.processing_pipeline.custom import AggregateOperator
+
+operator = AggregateOperator(groupby_feature_names ="PersonId",
+                            aggregation_definition= {"Steps": ["mean", "std"],
+                                                     "Calories:": ["sum"]
+                                                    })
+operator.process(df)[0]
+
+```
+
+
+### Add and extract features from existing columns
+
+Add a column using `CreateFeatureOperator`
+
+```python
+import pandas as pd
+from pandas import Timestamp
+
+df = pd.DataFrame([
+ [Timestamp('2016-12-31 00:00:00'), Timestamp('2017-01-01 09:03:00'), 5470, 2968],
+ [Timestamp('2017-01-01 00:00:00'), Timestamp('2017-01-01 23:44:00'), 9769, 2073],
+ [Timestamp('2017-01-02 00:00:00'), Timestamp('2017-01-02 16:54:00'), 9444, 2883],
+ [Timestamp('2017-01-03 00:00:00'), Timestamp('2017-01-05 22:49:00'), 20064, 2287],
+ [Timestamp('2017-01-04 00:00:00'), Timestamp('2017-01-06 07:27:00'),16771, 2716]],
+    columns = ['startTime', 'endTime', 'steps', 'calories']
+)
+
+operator = CreateFeatureOperator(
+   feature_name="duration",
+   feature_creator=lambda df: df['endTime'] - df['startTime'])
+
+operator.process(df)[0]
+
+```
+
+Convert time columns into cyclical features, which are more efficiently grasped by machine learning models
+
+```python
+
+from tasrif.processing_pipeline.custom import EncodeCyclicalFeaturesOperator
+
+operator = EncodeCyclicalFeaturesOperator(date_feature_name="startTime", 
+                                          category_definition="day")
+operator.process(df)[0]
+```
+
+
+Extract timeseries features using `ExtractTimeseriesFeaturesOperator` which internally calls `kats` package
+
+```python
+
+from tasrif.processing_pipeline.custom import ExtractTimeseriesFeaturesOperator
+
+operator = ExtractTimeseriesFeaturesOperator(date_feature_name="startTime", value_column='Steps')
+operator.process(df)[0]
+
+```
+
+Extract using features using `tsfresh` package
+
+```python
+
+from tasrif.processing_pipeline.tsfresh import TSFreshFeatureExtractorOperator
+
+operator = TSFreshFeatureExtractorOperator(seq_id_col="seq_id", date_feature_name='startTime', value_col='Steps')
+operator.process(df)[0]
+
+```
+
+Note that `TSFreshFeatureExtractorOperator` requires a column`seq_id`. This column indicates which entities the time series belong to. Features will be extracted individually for each entity (id). The resulting feature matrix will contain one row per id. The column can be created manually or be created via `SlidingWindowOperator`.
+
+
+### Filter data
+
+filter rows, days, or participants with a custom condition using `FilterOperator`
+
+```python
+from tasrif.processing_pipeline.custom import FilterOperator
+
+operator = FilterOperator(participant_identifier="PersonId",
+                          date_feature_name="Hours",
+                          epoch_filter=lambda df: df['Steps'] > 10,
+                          day_filter={
+                              "column": "Hours",
+                              "filter": lambda x: x.count() < 10,
+                              "consecutive_days": (7, 12) # 7 minimum consecutive days, and 12 max
+                          },
+                          filter_type="include")
+operator.process(df)[0]
+```
+
+### Wrangle data
+
+You can use `jqOperator` to process JSON data
+
+```python
+from tasrif.processing_pipeline.custom import JqOperator
+
+op = JqOperator("map({date, sleep: .sleep[].sleep_data})")
+op.process(df)[0]
+
+```
+
+Upsample or downsample date features using `ResampleOperator`. The first argument `rule` can be minutes `min`, hours `H`, days `D`, and more. See details of resampling [here](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.resample.html) 
+
+```python
+from tasrif.processing_pipeline.custom import ResampleOperator
+
+op = ResampleOperator('D', {'sleep_level': 'mean'})
+op.process(df)[0]
+```
+
+Set the start hour of the day to some hour using `SetStartHourOfDayOperator`
+
+```python
+operator = SetStartHourOfDayOperator(date_feature_name='startTime',
+                                     participant_identifier='PersonId',
+                                     shift=6)
+ 
+operator.process(df)[0]
+
+```
+
+a new column `shifted_time_col` will be created. This can be useful if the user wants to calculate statistics at a redefined times of the day instead of midnight-to-midnight (e.g. 8:00 AM - 8:00 AM).
+
+Normalize selected columns
+
+```python
+import pandas as pd
+from tasrif.processing_pipeline.custom import NormalizeOperator
+df = pd.DataFrame([
+    [1, "2020-05-01 00:00:00", 10],
+    [1, "2020-05-01 01:00:00", 15], 
+    [1, "2020-05-01 03:00:00", 23], 
+    [2, "2020-05-02 00:00:00", 17],
+    [2, "2020-05-02 01:00:00", 11]],
+    columns=['logId', 'timestamp', 'sleep_level'])
+
+op = NormalizeOperator('all', 'minmax', {'feature_range': (0, 2)})
+output = op.process(df)
+```
+
+Use the fit normalizer on different data using `NormalizeTransformOperator`
+
+```python
+
+trained_model = output1[0][1]
+op = NormalizeTransformOperator('all', trained_model)
+op.process(df.to_frame())
+```
+
+### Test prepared data
+
+See if your prepared data can act as an input to a machine learning model
+
+```python
+from tasrif.processing_pipeline.custom import LinearFitOperator
+df = pd.DataFrame([
+    [1, "2020-05-01 00:00:00", 10, 'poor'],
+    [1, "2020-05-01 01:00:00", 15, 'poor'],
+    [1, "2020-05-01 03:00:00", 23, 'good'],
+    [2, "2020-05-02 00:00:00", 17, 'good'],
+    [2, "2020-05-02 01:00:00", 11, 'poor']],
+    columns=['logId', 'timestamp', 'sleep_level', 'sleep_quality'])
+
+op = LinearFitOperator(feature_names='sleep_level',
+                       target='sleep_quality',
+                       target_type='categorical')
+op.process(df)
+```
+
+### Create a pipeline to link the operators
+
+Chain operators using `SequenceOperator`
+
+```python
+import pandas as pd
+from tasrif.processing_pipeline import SequenceOperator
+from tasrif.processing_pipeline.custom import AggregateOperator, CreateFeatureOperator
+from tasrif.processing_pipeline.pandas import ConvertToDatetimeOperator, SortOperator
+
+pipeline = SequenceOperator([
+    ConvertToDatetimeOperator(feature_names=["startTime"]),
+    SetStartHourOfDayOperator(date_feature_name='startTime',
+                                     participant_identifier='PersonId',
+                                     shift=6),
+    SortOperator(by='startTime'),
+    AggregateOperator(groupby_feature_names ="PersonId",
+                      aggregation_definition= {"Steps": ["mean", "std"], "Calories:": ["sum"]})
+
+])
+
+pipeline.process(df)
+```
+
+
+### Debug your pipeline
+
+Tasrif contains observers under `tasrif/processing_pipeline/observers/` that are useful for seeing how the operators change your data. For instance, you can print the head of processed dataframe after every operator. You can do so by passing an `observer` to the `observers` argument in `SequenceOperator`.
+
+```python
+
+import pandas as pd
+from tasrif.processing_pipeline.pandas import RenameOperator
+from tasrif.processing_pipeline.observers import FunctionalObserver, Logger, GroupbyLogger
+from tasrif.processing_pipeline import SequenceOperator, Observer
+
+df = pd.DataFrame([
+    [1, "2020-05-01 00:00:00", 1],
+    [1, "2020-05-01 01:00:00", 1], 
+    [1, "2020-05-01 03:00:00", 2], 
+    [2, "2020-05-02 00:00:00", 1],
+    [2, "2020-05-02 01:00:00", 1]],
+    columns=['logId', 'timestamp', 'sleep_level'])
+
+pipeline = SequenceOperator([RenameOperator(columns={"timestamp": "time"}), 
+                             RenameOperator(columns={"time": "time_difference"})], 
+                             observers=[Logger("head,tail")])
+result = pipeline.process(df[0])
+result
+
+```
+
+### Define a custom operator
+
+Users can inherit from `MapProcessingOperator` to quickly build their own custom operators that perform map-like operations.
+
+```python
+from tasrif.processing_pipeline.map_processing_operator import MapProcessingOperator
+
+class SizeOperator(MapProcessingOperator):
+    def _processing_function(self, df):
+        return df.size
+```
+
+
+### Other references
+
+- You may examine `tasrif/processing_pipeline/test_scripts/` for other minimal examples of Tasrif's operators.
+- Common Pandas functions can be found under `tasrif/processing_pipeline/pandas/`
 
 
 ## Features
