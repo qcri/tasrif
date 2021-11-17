@@ -41,7 +41,7 @@ or install from source
 
 Note that `MINIMAL=1` is passed in the installation script to minimally install one of Tasrif's internal dependancies. See [setup.py](setup.py) for details.
 
-### Quick start
+### Quick start by usecase
 
 Once Tasrif is installed, import Tasrif via
 
@@ -49,10 +49,69 @@ Once Tasrif is installed, import Tasrif via
 import Tasrif
 ```
 
-- data/utilities package that includes csvs (you can use readcsvOpeartor for a single file, or readnestedcsv if the files are referenced in a column)
+
+### Reading data
+
+Reading a single csv file
+
+```python
+from tasrif.processing_pipeline.pandas import ReadCsvOperator
+
+operator = ReadCsvOperator('/path/to/file')
+df = operator.process()[0]
+```
+
+Reading multiple csvs in a folder
+
+```python
+from tasrif.processing_pipeline.pandas import ReadCsvOperator
+
+operator = ReadCsvFolderOperator(name_pattern='/path/to/folder/*.csv'),
+df = operator.process()[0]
+```
+
+by default, `ReadCsvFolderOperator` concatenates the csvs into one dataframe. if you would like to work on the csvs separately, you can pass the argument `concatenate=False` to `ReadCsvFolderOperator`, which returns a python generator that iterates the csvs.
+
+
+Reading csvs referenced by a column in dataframe `df`
+
+```python
+import pandas as pd
+from tasrif.processing_pipeline.custom import ReadNestedCsvOperator
+
+df = pd.DataFrame({"name": ['Alfred', 'Roy'],
+                   "age": [43, 32],
+                   "csv_files_column": ['details1.csv', 'details2.csv']})
+
+operator = ReadNestedCsvOperator(folder_path='/path/to/csv/files', field='csv_files_column')
+generator = operator.process(df)[0]
+
+for record, details in generator:
+    print(record)
+    print(details)
+```
+
+Reading json files referenced by a column in dataframe `df`
+
+```python
+import pandas as pd
+from tasrif.processing_pipeline.custom import IterateJsonOperator
+
+df = pd.DataFrame({"name": ['Alfred', 'Roy'],
+                   "age": [43, 32],
+                   "json_files_column": ['details1.json', 'details2.json']})
+
+operator = IterateJsonOperator(folder_path='/path/to/json/files', field='json_files_column')
+generator = operator.process(df)[0]
+
+for record, details in generator:
+    print(record)
+    print(details)
+```
+
+
+
 - Reading data
-    + Use Tasrif to load csvs from a folder
-    + jqOperator
     + IterateJSON
 - Concatenate them or process them individually
 - See statistics
@@ -65,6 +124,8 @@ import Tasrif
 - AggregateOperator
     + Suppose that ...
 - DataWrangling
+    + JSON data
+        * jqOperator
     + SetStartHourOfDay
     + Resample
     + NormalizeOperator
@@ -75,6 +136,8 @@ import Tasrif
 - Debug your pipeline
     + Observers
     + Explain how, and not what
+- Other references
+    + You may examine `tasrif/processing_pipeline/test_scripts/` for other minimal examples of Tasrif's operators.
 
 
 ## Features
