@@ -1,4 +1,34 @@
-# Tasrif
+<p align="center">
+  <img width="75%" src="./docs/TasrifLogo.png" alt="Tasrif">
+</p>
+<p align="center">
+  <b>A Python framework for processing wearable data in the health domain.</b>
+</p>
+<p align="center">
+  <a href="https://siha.qcri.org">
+    <img src="https://awesome.re/badge.svg" alt="SIHA">
+  </a>
+  <a href="https://www.python.org/">
+    <img src="https://img.shields.io/badge/Made%20with-Python3-1f425f.svg" alt="Made with Python">
+  </a>
+  <a href="https://github.com/qcrisw/tasrif/graphs/commit-activity">
+    <img src="https://img.shields.io/badge/Maintained%3F-yes-green.svg" alt="Maintenance">
+  </a>
+  <a href="https://github.com/qcrisw/tasrif/actions">
+    <img src="https://github.com/qcrisw/tasrif/actions/workflows/ci.yml/badge.svg" alt="Workflow Status">
+  </a>
+   <a href="https://GitHub.com/qcrisw/tasrif/watchers/">
+    <img src="https://img.shields.io/github/watchers/qcrisw/tasrif?style=social&label=Watch&maxAge=2592000" alt="GitHub Watchers">
+  </a>
+  </a>
+   <a href="https://GitHub.com/qcrisw/tasrif/stargazers/">
+    <img src="https://img.shields.io/github/stars/qcrisw/tasrif?style=social&label=Star&maxAge=2592000" alt="GitHub Stars">
+  </a>
+  </a>
+</p>
+
+
+#
 
 Tasrif is a library for processing of eHealth data. It provides:
 
@@ -117,3 +147,24 @@ make html
 ```
 
 You can then browse through them by opening `docs/build/html/index.html` in a browser.
+
+# Contributing
+
+</a>
+   <a href="https://github.com/qcrisw/tasrif/network/dependencies">
+   <img src="https://img.shields.io/github/contributors/qcrisw/tasrif" alt="Contributors">
+</a>
+
+
+This project is much stronger with your collaboration. Be part of it!<br>
+<b>Thank you all amazing contributors!</b>
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+
+<a href="https://github.com/uabbas"><img src="https://avatars.githubusercontent.com/u/7748104?v=4" class="avatar-user" width="50px;"/></a> 
+<a href="https://github.com/abalhomaid"><img src="https://avatars.githubusercontent.com/u/12021070?v=4" class="avatar-user" width="50px;"/></a> 
+<a href="https://github.com/hashimmoosavi"><img src="https://avatars.githubusercontent.com/u/3678012?v=4" class="avatar-user" width="50px;"/></a> 
+<a href="https://github.com/joaopalotti"><img src="https://avatars.githubusercontent.com/u/852343?s=400&v=4" class="avatar-user" width="50px;"/></a> 
+<a href="https://github.com/fabubaker"><img src="https://avatars.githubusercontent.com/u/9405286?v=4" class="avatar-user" width="50px;"/></a> 
