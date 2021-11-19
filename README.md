@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="75%" src="./docs/TasrifLogo.png" alt="Tasrif">
+  <img width="75%" src="./docs/TasrifLogo.svg" alt="Tasrif">
 </p>
 <p align="center">
   <b>A Python framework for processing wearable data in the health domain.</b>
