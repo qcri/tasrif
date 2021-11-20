@@ -11,17 +11,17 @@
   <a href="https://www.python.org/">
     <img src="https://img.shields.io/badge/Made%20with-Python3-1f425f.svg" alt="Made with Python">
   </a>
-  <a href="https://github.com/qcrisw/tasrif/graphs/commit-activity">
+  <a href="https://github.com/qcri/tasrif/graphs/commit-activity">
     <img src="https://img.shields.io/badge/Maintained%3F-yes-green.svg" alt="Maintenance">
   </a>
-  <a href="https://github.com/qcrisw/tasrif/actions">
+  <a href="https://github.com/qcri/tasrif/actions">
     <img src="https://github.com/qcrisw/tasrif/actions/workflows/ci.yml/badge.svg" alt="Workflow Status">
   </a>
-   <a href="https://GitHub.com/qcrisw/tasrif/watchers/">
+   <a href="https://GitHub.com/qcri/tasrif/watchers/">
     <img src="https://img.shields.io/github/watchers/qcrisw/tasrif?style=social&label=Watch&maxAge=2592000" alt="GitHub Watchers">
   </a>
   </a>
-   <a href="https://GitHub.com/qcrisw/tasrif/stargazers/">
+   <a href="https://GitHub.com/qcri/tasrif/stargazers/">
     <img src="https://img.shields.io/github/stars/qcrisw/tasrif?style=social&label=Star&maxAge=2592000" alt="GitHub Stars">
   </a>
   </a>
@@ -151,7 +151,7 @@ You can then browse through them by opening `docs/build/html/index.html` in a br
 # Contributing
 
 </a>
-   <a href="https://github.com/qcrisw/tasrif/network/dependencies">
+   <a href="https://github.com/qcri/tasrif/network/dependencies">
    <img src="https://img.shields.io/github/contributors/qcrisw/tasrif" alt="Contributors">
 </a>
 
