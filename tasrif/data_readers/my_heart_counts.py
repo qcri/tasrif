@@ -102,6 +102,7 @@ class MyHeartCountsDataset(ProcessingOperator):
     def _process_healthkitdata(self):
         path = pathlib.Path(self.path_name, 'HealthKit Data.csv')
         dataframe = pd.read_csv(path)
+        dataframe['data.csv'] = dataframe['data.csv'].astype(str)
         csv_pipeline = [ConvertToDatetimeOperator(['startTime', 'endTime'], utc=True)]
         csv_folder_path = pathlib.Path(self.path_name + 'HealthKit Data/data.csv/')
 
@@ -121,7 +122,7 @@ class MyHeartCountsDataset(ProcessingOperator):
             output = operator.process(dataframe)
             return output
 
-        elif isinstance(self.participants, list):
+        if isinstance(self.participants, list):
             dataframe = dataframe[dataframe['recordId'].isin(self.participants)]
             generator = operator.process(dataframe)[0]
             output = list(generator)
