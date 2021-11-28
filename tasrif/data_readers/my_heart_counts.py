@@ -4,7 +4,7 @@ Module that provides class to work with the MyHeartCounts dataset.
 import pathlib
 import pandas as pd
 from tasrif.processing_pipeline import ProcessingOperator, SequenceOperator
-from tasrif.processing_pipeline.pandas import ConvertToDatetimeOperator
+from tasrif.processing_pipeline.pandas import ConvertToDatetimeOperator, AsTypeOperator, DropNAOperator, SortOperator
 from tasrif.processing_pipeline.custom import ReadNestedCsvOperator
 from tasrif.processing_pipeline.custom import FilterOperator
 
@@ -103,7 +103,11 @@ class MyHeartCountsDataset(ProcessingOperator):
         path = pathlib.Path(self.path_name, 'HealthKit Data.csv')
         dataframe = pd.read_csv(path)
         dataframe['data.csv'] = dataframe['data.csv'].astype(str)
-        csv_pipeline = [ConvertToDatetimeOperator(['startTime', 'endTime'], utc=True)]
+        csv_pipeline = [ConvertToDatetimeOperator(['startTime', 'endTime'], utc=True),
+                        DropNAOperator(),
+                        AsTypeOperator({'value': 'float64'}),
+                        SortOperator(by='startTime')]
+
         csv_folder_path = pathlib.Path(self.path_name + 'HealthKit Data/data.csv/')
 
         if self.types or self.sources:

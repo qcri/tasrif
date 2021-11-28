@@ -237,7 +237,11 @@ class SlidingWindowOperator(ProcessingOperator):
         label_times = pd.Series(label_times)
         label_times.name = "gt_time"
 
-        transformed_df = pd.concat(transformed_df).reset_index(drop=True)
+        if transformed_df:
+            transformed_df = pd.concat(transformed_df).reset_index(drop=True)
+        else:
+            transformed_df = None
+
         pid = pd.Series([pid] * labels.shape[0])
         pid.name = "pid"
 
