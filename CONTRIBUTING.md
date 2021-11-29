@@ -9,8 +9,9 @@ Follow these steps to submit your code contribution.
 
 ### Step 1. Open an issue
 
-Before making any changes, we recommend opening an issue (if one doesn't already
-exist) and discussing your proposed changes. This way, we can give you feedback
+If the changes are minor (simple bug fix or documentation fix), then feel free
+to open a PR without discussion. Otherwise, we recommend opening an issue (if one doesn't already
+exist) and discuss your proposed changes. This way, we can give you feedback
 and validate the proposed changes. Here is a template
 
 
@@ -30,28 +31,47 @@ Fork the repository by clicking on the 'Fork' button on the repository's page. T
 
 Clone your fork to your local disk, and add the base repository as a remote:
 
-$ git clone git@github.com:<your Github handle>/tasrif.git
-$ cd tasrif
-$ git remote add upstream https://github.com/QCRI/tasrif.git
+```python
+git clone git@github.com:<github-username>/tasrif.git
+cd tasrif
+git remote add upstream https://github.com/QCRI/tasrif.git
+```
 
 Create a new branch to hold your development changes:
 
-$ git checkout -b a-descriptive-name-for-my-changes
+```python
+git checkout -b branch-name
+```
 
 Do not work on the master branch.
 
 Set up a development environment by running the following command in a virtual environment:
 
-$ MINIMAL=1 pip install -e .
+```python
+python3 -m venv tasrif-env
+source tasrif-env/bin/activate
+pip install --upgrade pip
+(tasrif-env) MINIMAL=1 pip install tasrif
+```
 
-To run the full test suite, you might need the additional dependency on datasets which requires a separate source install: (provide helpful Tasrif script to run tests on local or docker..)
-TODO: add script to run tests in docker or virtualenv
+You can check pylint results by running
 
+```python
+(tasrif-env) pylint --rcfile=.pylintrc path/to/changed/file
+```
 
-If the changes are minor (simple bug fix or documentation fix), then feel free
-to open a PR without discussion.
+or in docker
 
+```python
+docker build . -t tasrif
+docker run -it tasrif:latest pylint tasrif
+```
 
+And darglint by
+
+```python
+(tasrif-env) darglint -s google path/to/changed/file
+```
 
 
 ### Step 2. Make code changes
@@ -76,34 +96,3 @@ pull request. A team member will take care of the merging.
 
 Here is an [example pull request](https://github.com/qcri/tasrif/pull/5)
 for your reference.
-
-## Setup environment
-
-We provide two options for the development environment. One is to use our
-Dockerfile, which builds into a container with the required dev tools. The other option is
-to setup a local environment by installing the dev tools needed.
-
-### Option 1: Use a Docker container
-
-
-### Option 2: Setup a local environment
-
-
-## Run tests
-
-We use [Bazel](https://bazel.build/) to build and run the tests.
-
-
-### Run a single test case
-
-The best way to run a single test case is to comment out the rest of the test
-cases in a file before running the test file.
-
-### Run all tests
-
-You can run all the tests locally by running the following command in the repo
-root directory.
-
-```
-bazel test --test_timeout 300,450,1200,3600 --test_output=errors --keep_going --define=use_fast_cpp_protos=false --build_tests_only --build_tag_filters=-no_oss --test_tag_filters=-no_oss keras/...
-```
