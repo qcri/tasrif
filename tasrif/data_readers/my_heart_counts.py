@@ -4,7 +4,7 @@ Module that provides class to work with the MyHeartCounts dataset.
 import pathlib
 import pandas as pd
 from tasrif.processing_pipeline import ProcessingOperator, SequenceOperator
-from tasrif.processing_pipeline.pandas import ConvertToDatetimeOperator, AsTypeOperator, DropNAOperator, SortOperator
+from tasrif.processing_pipeline.pandas import ConvertToDatetimeOperator
 from tasrif.processing_pipeline.custom import ReadNestedCsvOperator
 from tasrif.processing_pipeline.custom import FilterOperator
 
@@ -27,7 +27,7 @@ class MyHeartCountsDataset(ProcessingOperator):
                          "healthkitdata", "healthkitsleep", "heartagesurvey", "parqsurvey", "qualityoflife",
                          "riskfactorsurvey", "sixminutewalkactivity"]
 
-    def __init__(self,
+    def __init__(self, # pylint: disable=R0913
         path_name,
         table_name,
         participants=None,
@@ -102,12 +102,7 @@ class MyHeartCountsDataset(ProcessingOperator):
     def _process_healthkitdata(self):
         path = pathlib.Path(self.path_name, 'HealthKit Data.csv')
         dataframe = pd.read_csv(path)
-        dataframe['data.csv'] = dataframe['data.csv'].astype(str)
-        csv_pipeline = [ConvertToDatetimeOperator(['startTime', 'endTime'], utc=True),
-                        DropNAOperator(),
-                        AsTypeOperator({'value': 'float64'}),
-                        SortOperator(by='startTime')]
-
+        csv_pipeline = [ConvertToDatetimeOperator(['startTime', 'endTime'], utc=True)]
         csv_folder_path = pathlib.Path(self.path_name + 'HealthKit Data/data.csv/')
 
         if self.types or self.sources:
@@ -156,6 +151,8 @@ class MyHeartCountsDataset(ProcessingOperator):
 
         if self.sources:
             return dataframe['source'].isin(self.sources)
+
+        return None
 
     def _split_groups(self, dataframe):
         if self.types and self.sources:
