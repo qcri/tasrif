@@ -1,10 +1,24 @@
 # Specify dependencies needed for setting up a local development environment here.
 pytest==6.2.3
 pylint==2.8.2
-jupytext==1.11.1
-matplotlib==3.0.0
+jupytext==1.13.2
+matplotlib==3.5.0
 seaborn==0.11.1
 pytest-mock==3.6.1
 Sphinx==3.2.1
 sphinx-autopackagesummary==1.3
 pydata-sphinx-theme==0.6.3
+
+
+# Dependancy conflict between tsfresh==0.18.0 and ray==1.7.0
+# where tsfresh requires matrixprofile which requires protobuf==3.11.1
+# and ray requires protobuf>=3.15.1. 
+# Therefore matrixprofile version listed below requires protobuf>=3.15.1
+# Install Matrixprofile
+-e git+https://github.com/abalhomaid/matrixprofile.git@f7a6788cae2267af129c9c6ad813e0375f37c321#egg=matrixprofile
+
+# Install tsfresh
+tsfresh>=0.18.0
+
+# Install Kats
+-e git+https://github.com/facebookresearch/Kats.git@0e0fc8d736a7e4eb5e8afdd2a1a107a92463d987#egg=Kats
