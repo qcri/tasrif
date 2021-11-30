@@ -27,7 +27,7 @@ class MyHeartCountsDataset(ProcessingOperator):
                          "healthkitdata", "healthkitsleep", "heartagesurvey", "parqsurvey", "qualityoflife",
                          "riskfactorsurvey", "sixminutewalkactivity"]
 
-    def __init__(self,
+    def __init__(self, # pylint: disable=R0913
         path_name,
         table_name,
         participants=None,
@@ -121,7 +121,7 @@ class MyHeartCountsDataset(ProcessingOperator):
             output = operator.process(dataframe)
             return output
 
-        elif isinstance(self.participants, list):
+        if isinstance(self.participants, list):
             dataframe = dataframe[dataframe['recordId'].isin(self.participants)]
             generator = operator.process(dataframe)[0]
             output = list(generator)
@@ -151,6 +151,8 @@ class MyHeartCountsDataset(ProcessingOperator):
 
         if self.sources:
             return dataframe['source'].isin(self.sources)
+
+        return None
 
     def _split_groups(self, dataframe):
         if self.types and self.sources:
