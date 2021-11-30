@@ -1,0 +1,88 @@
+name: Tasrif CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+
+  ci-build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag tasrif:latest
+    - uses: docker/build-push-action@v2
+      with:
+        tags: tasrif:latest
+        push: false
+    - name: Run pylint
+      run: docker run -v /tmp/pylint-results/pylint:/home/pylint tasrif:latest /home/run-pylint.sh 
+    - uses: actions/upload-artifact@master
+      with:
+        name: pylint-results
+        path: /tmp/pylint-results/pylint/report.xml
+    - uses: actions/download-artifact@master
+      with:
+        path: pylint-results        
+    - name: Publish linting results
+      uses: EnricoMi/publish-unit-test-result-action@v1
+      if: always()
+      with:
+        files: pylint-results/**/*.xml        
+    - name: Run unit tests
+      run:  |
+        docker run --env PYTHONPATH=/home/ --entrypoint "/bin/bash" \
+            -v /tmp/unittest-results:/home/unittest-results/ \
+            tasrif:latest \
+            -c "pytest -v --ignore=/home/tasrif/test_scripts --ignore=/home/examples \
+            --ignore=/home/src/kats \
+            --cov=tasrif --cov-report=xml --junitxml=/home/unittest-results/unit-tests.xml && \
+            cp /home/coverage.xml /home/unittest-results/coverage.xml"
+    - uses: actions/upload-artifact@master
+      with:
+        name: unittest-results
+        path: /tmp/unittest-results/unit-tests.xml
+    - uses: actions/download-artifact@master
+      with:
+        path: unittest-results
+    - name: Publish unittest results
+      uses: EnricoMi/publish-unit-test-result-action@v1
+      if: always()
+      with:
+        files: unittest-results/**/*.xml
+    - uses: actions/upload-artifact@master
+      with:
+        name: coverage-results
+        path: /tmp/unittest-results/coverage.xml
+    - uses: actions/download-artifact@master
+      with:
+        path: coverage-results
+    - name: Setup .NET Core # Required to execute ReportGenerator
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.100        
+    - name: Publish unit test coverage report
+      uses: danielpalme/ReportGenerator-GitHub-Action@4.8.12
+      with:
+        reports: 'coverage-results/**/*.xml'
+        targetdir: 'coveragereport'
+        sourcedirs: '.'
+        reporttypes: 'HtmlInline;Cobertura;MarkdownSummary' 
+    - name: Publish coverage summary
+      uses: marocchino/sticky-pull-request-comment@v2
+      with:
+        path: coveragereport/Summary.md
+    - name: Run darglint
+      run: docker run -v /tmp/darglint-results/darglint:/home/darglint tasrif:latest /home/run-darglint.sh 
+    - uses: actions/upload-artifact@master
+      with:
+        name: darglint-results
+        path: /tmp/darglint-results/darglint/report.xml
+    - uses: actions/download-artifact@master
+      with:
+        path: darglint-results   
