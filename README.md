@@ -70,7 +70,7 @@ or install from source
 
 ```
 
-If no installation errors occur, you can see [Quick start by usecase](#quick-start-by-usecase) section to use Tasrif.
+If no installation errors occur, see [Quick start by usecase](#quick-start-by-usecase) section to use Tasrif.
 
 ### Note on feature extraction using Tasrif
 
