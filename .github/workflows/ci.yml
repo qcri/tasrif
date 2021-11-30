@@ -40,7 +40,7 @@ jobs:
             -v /tmp/unittest-results:/home/unittest-results/ \
             tasrif:latest \
             -c "pytest -v --ignore=/home/tasrif/test_scripts --ignore=/home/examples \
-            --ignore=/home/src/kats \
+            --ignore=/home/src/ \
             --cov=tasrif --cov-report=xml --junitxml=/home/unittest-results/unit-tests.xml && \
             cp /home/coverage.xml /home/unittest-results/coverage.xml"
     - uses: actions/upload-artifact@master
