@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="75%" src="./docs/TasrifLogo.svg" alt="Tasrif">
+  <img width="75%" src="https://github.com/qcri/tasrif/edit/master/docs/TasrifLogo.svg" alt="Tasrif">
 </p>
 <p align="center">
   <b>A Python framework for processing wearable data in the health domain.</b>
@@ -15,7 +15,7 @@
     <img src="https://img.shields.io/badge/Maintained%3F-yes-green.svg" alt="Maintenance">
   </a>
   <a href="https://github.com/qcri/tasrif/actions">
-    <img src="https://github.com/qcrisw/tasrif/actions/workflows/ci.yml/badge.svg" alt="Workflow Status">
+    <img src="https://github.com/qcri/tasrif/actions/workflows/ci.yml/badge.svg" alt="Workflow Status">
   </a>
    <a href="https://GitHub.com/qcri/tasrif/watchers/">
     <img src="https://img.shields.io/github/watchers/qcrisw/tasrif?style=social&label=Watch&maxAge=2592000" alt="GitHub Watchers">
