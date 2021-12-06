@@ -32,9 +32,9 @@ Fork the repository by clicking on the 'Fork' button on the repository's page. T
 Clone your fork to your local disk, and add the base repository as a remote:
 
 ```python
-git clone git@github.com:<github-username>/tasrif.git
+git clone git@github.com:qcri/tasrif.git
 cd tasrif
-git remote add upstream https://github.com/QCRI/tasrif.git
+git remote add upstream https://github.com/<your-github-username>/tasrif.git
 ```
 
 Create a new branch to hold your development changes:
@@ -50,11 +50,23 @@ Set up a development environment by running the following command in a virtual e
 ```python
 python3 -m venv tasrif-env
 source tasrif-env/bin/activate
-pip install --upgrade pip
-(tasrif-env) MINIMAL=1 pip install tasrif
+(tasrif-env) pip install --upgrade pip
+(tasrif-env) cd tasrif
+(tasrif-env) pip install -e .
 ```
 
-You can check pylint results by running
+Make sure you have `qa-requirements.txt` and `requirements.txt` installed, so you can use `pylint` and `darglint` modules
+
+```python
+(tasrif-env) pip install -r requirements.txt
+(tasrif-env) pip install -r qa-requirements.txt
+```
+
+### Step 2. Make code changes
+
+Make sure that your environment is set from the previous section. You can create your own custom operator by following the [Custom Operators](https://tasrif.qcri.org/custom-operators.html) section in the tutorial.
+
+After making the changes, check if you have pylint or darglint errors. The [CI pipeline](https://github.com/qcrisw/tasrif/actions) checks those errors by default. However, it is preferable to check the errors locally by running
 
 ```python
 (tasrif-env) pylint --rcfile=.pylintrc path/to/changed/file
@@ -74,16 +86,10 @@ And darglint by
 ```
 
 
-### Step 2. Make code changes
-
-To make code changes, you need to fork the repository. You will need to setup a
-development environment and run the unit tests. This is covered in section
-"Setup environment".
-
 ### Step 3. Create a pull request
 
 Once the change is ready, open a pull request from your branch in your fork to
-the master branch in [qcri/tasrif](https://github.com/qcri/tasrif).
+the master branch in [Tasrif](https://github.com/qcri/tasrif).
 
 ### Step 4. Code review
 
