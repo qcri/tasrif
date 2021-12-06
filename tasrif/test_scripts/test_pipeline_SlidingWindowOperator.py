@@ -61,7 +61,7 @@ df
 op = SlidingWindowOperator(winsize="1h15t",
                            time_col="dateTime",
                            label_col="CGM",
-                           pid_col="patientID")
+                           participant_identifier="patientID")
 
 
 

@@ -87,31 +87,21 @@ class SetStartHourOfDayOperator(ProcessingOperator):
         """
         processed = []
         for data_frame in data_frames:
-            if self.date_feature_name in data_frame.columns:
-                data_frame = data_frame.set_index(
-                    data_frame[self.date_feature_name])
-            else:
-                assert data_frame.index.name == self.date_feature_name
-
-            data_frame = data_frame.groupby(self.participant_identifier).apply(
-                self._change_start_hour_for_day)
+            data_frame[self.shifted_date_feature_name] = data_frame.groupby(self.participant_identifier)\
+                [self.date_feature_name].transform(self._change_start_hour_for_day)
             processed.append(data_frame)
 
         return processed
 
-    def _change_start_hour_for_day(self, data_frame):
+    def _change_start_hour_for_day(self, date_feature):
         """Changes the start hour of the day to be plotted
 
         Args:
-            data_frame (pd.DataFrame):
-              Pandas data_frame to be processed
+            date_feature (pd.DataFrame):
+              date_feature to be processed
 
         Returns:
-            data_frame (pd.DataFrame):
-              data_frame with changed hour start of the day
+            Series (pd.Series):
+              date_feature with changed hour start of the day
         """
-
-        new_datetime = data_frame.index - pd.DateOffset(hours=self.shift)
-        data_frame[self.shifted_date_feature_name] = new_datetime
-
-        return data_frame
+        return date_feature - pd.DateOffset(hours=self.shift)
