@@ -65,6 +65,6 @@ class ConvertToDatetimeOperator(InputsAreDataFramesValidatorMixin, PandasOperato
         processed = []
         for data_frame in data_frames:
             for col in columns:
-                data_frame[col] = pd.to_datetime(data_frame[col], **self.kwargs)
+                data_frame[col] = pd.to_datetime(data_frame[col], errors='coerce', **self.kwargs)
             processed.append(data_frame)
         return processed

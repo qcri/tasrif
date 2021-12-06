@@ -62,7 +62,7 @@ class SlidingWindowOperator(ProcessingOperator):
         >>> op = SlidingWindowOperator(winsize="1h15t",
         ...                           time_col="dateTime",
         ...                           label_col="CGM",
-        ...                           pid_col="patientID")
+        ...                           participant_identifier="patientID")
         >>> df_timeseries, df_labels, df_label_time, df_pids = op.process(df)[0]
         >>> df_timeseries
         .   dateTime    CGM     seq_id
@@ -85,7 +85,7 @@ class SlidingWindowOperator(ProcessingOperator):
                  period=15,
                  time_col="time",
                  label_col="CGM",
-                 pid_col="patientID"):
+                 participant_identifier="patientID"):
         """Creates a new instance of SlidingWindowsOperator
 
         Args:
@@ -100,8 +100,8 @@ class SlidingWindowOperator(ProcessingOperator):
                 time column in the dataframe
             label_col (str):
                 label column in the dataframe
-            pid_col (str):
-                patient id column in the dataframe
+            participant_identifier (str):
+                participant id column in the dataframe
 
         """
         super().__init__()
@@ -109,7 +109,7 @@ class SlidingWindowOperator(ProcessingOperator):
         self.period = period
         self.time_col = time_col
         self.label_col = label_col
-        self.pid_col = pid_col
+        self.participant_identifier = participant_identifier
 
     def _process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.
@@ -138,10 +138,10 @@ class SlidingWindowOperator(ProcessingOperator):
 
             last_seq_id = 0
 
-            for pid in tqdm(data_frame["patientID"].unique()):
+            for pid in tqdm(data_frame[self.participant_identifier].unique()):
 
                 last_seq_id, df_ts_tmp, df_label_tmp, df_label_time_tmp, df_pid = self._generate_slide_wins(
-                    data_frame[data_frame["patientID"] == pid],
+                    data_frame[data_frame[self.participant_identifier] == pid],
                     start_seq=last_seq_id,
                     max_size=window_size_in_rows
                     )
@@ -158,8 +158,7 @@ class SlidingWindowOperator(ProcessingOperator):
             df_pids = pd.concat(df_pids).reset_index(drop=True)
             df_pids.name = "pid"
 
-            processed.append(
-                [df_timeseries, df_labels, df_label_time, df_pids])
+            processed.append([df_timeseries, df_labels, df_label_time, df_pids])
 
         return processed
 
@@ -203,7 +202,7 @@ class SlidingWindowOperator(ProcessingOperator):
         labels = []
         label_times = []
 
-        pid = df_in[self.pid_col].unique()
+        pid = df_in[self.participant_identifier].unique()
         if len(pid) > 1:
             raise ValueError(
                 "_generate_slide_wins must be called with one pid")
@@ -228,7 +227,7 @@ class SlidingWindowOperator(ProcessingOperator):
             tmp_df["seq_id"] = seq_id
             seq_id += 1
 
-            del tmp_df[self.pid_col]
+            del tmp_df[self.participant_identifier]
 
             transformed_df.append(tmp_df)
 
@@ -238,7 +237,11 @@ class SlidingWindowOperator(ProcessingOperator):
         label_times = pd.Series(label_times)
         label_times.name = "gt_time"
 
-        transformed_df = pd.concat(transformed_df).reset_index(drop=True)
+        if transformed_df:
+            transformed_df = pd.concat(transformed_df).reset_index(drop=True)
+        else:
+            transformed_df = None
+
         pid = pd.Series([pid] * labels.shape[0])
         pid.name = "pid"
 

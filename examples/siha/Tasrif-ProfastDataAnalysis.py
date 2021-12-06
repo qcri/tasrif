@@ -570,7 +570,7 @@ def convert_time_sin_cos(df, datetime_col):
 tsfresh_input = SlidingWindowOperator(winsize="3h15t",
                       time_col="dateTime",
                       label_col="CGM",
-                      pid_col="patientID").process(df_intra)
+                      participant_identifier="patientID").process(df_intra)
 
 tsfresh_input[0][0][['dateTime', 'CGM', 'seq_id']]
 

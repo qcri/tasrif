@@ -2,7 +2,7 @@
 Operator to extract features from a dataframe
 """
 
-from tsfresh import extract_features
+from tsfresh import extract_features, extract_relevant_features
 from tasrif.processing_pipeline import ProcessingOperator
 
 
@@ -107,6 +107,7 @@ class TSFreshFeatureExtractorOperator(ProcessingOperator):
                  seq_id_col="seq_id",
                  date_feature_name="time",
                  value_col="Steps",
+                 labels=None,
                  features=Defaults.TSFRESH_FEATURES):
         """Creates a new instance of TSFreshFeatureExtractorOperator
 
@@ -117,6 +118,8 @@ class TSFreshFeatureExtractorOperator(ProcessingOperator):
                 time column in the dataframe
             value_col (str or list):
                 column(s) to extract features from
+            labels (list):
+                extract relevant features if the labels are present.
             features (dict):
                 list of features to be passed to tsfresh extract_features method.
                 (see https://tsfresh.readthedocs.io/en/latest/api/tsfresh.feature_extraction.html) for
@@ -127,6 +130,7 @@ class TSFreshFeatureExtractorOperator(ProcessingOperator):
         self.date_feature_name = date_feature_name
         self.seq_id_col = seq_id_col
         self.value_col = value_col
+        self.labels = labels
         self.features = features
 
     def process(self, *data_frames):
@@ -162,10 +166,20 @@ class TSFreshFeatureExtractorOperator(ProcessingOperator):
 
         processed = []
         for data_frame in data_frames:
-            tsfresh_features = extract_features(data_frame,
-                                               column_id=self.seq_id_col,
-                                               column_sort=self.date_feature_name,
-                                               kind_to_fc_parameters=kind_to_fc_parameters)
+            if (self.labels is not None) and (not self.labels.empty):
+                tsfresh_features = extract_relevant_features(data_frame[[self.date_feature_name,
+                                                                         self.seq_id_col,
+                                                                         *self.value_col]],
+                                                            y=self.labels,
+                                                            column_id=self.seq_id_col,
+                                                            column_sort=self.date_feature_name)
+            else:
+                tsfresh_features = extract_features(data_frame[[self.date_feature_name,
+                                                                self.seq_id_col,
+                                                                *self.value_col]],
+                                                   column_id=self.seq_id_col,
+                                                   column_sort=self.date_feature_name,
+                                                   kind_to_fc_parameters=kind_to_fc_parameters)
             processed.append(tsfresh_features)
 
         return processed
