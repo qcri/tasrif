@@ -15,6 +15,7 @@ RUN MINIMAL_KATS=1 pip3 install -r requirements.txt
 
 # install tasrif and its dependencies in editable mode
 COPY setup.py /home/setup.py
+COPY README.md /home/README.md
 RUN pip3 install --use-deprecated=legacy-resolver -e .
 
 COPY run-pylint.sh /home

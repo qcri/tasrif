@@ -10,10 +10,26 @@ print(find_packages(), file=sys.stderr)
 # version has to be below <= 1.20.
 NUMPY_VERSION='numpy <= 1.20'
 
+dir_path = os.path.dirname(os.path.realpath(__file__))
+
+with open(dir_path + "/README.md", "r", encoding="utf-8") as fh:
+    long_description = fh.read()
+
 setup(
     name='tasrif',
-    version='0.1',
+    author='QCRI',
+    author_email='uabbas@hbku.edu.qa',
+    long_description=long_description,
+    long_description_content_type="text/markdown",
+    url='https://github.com/qcri/tasrif',
+    version='0.0.4',
     packages=find_packages(),
+    license=' BSD-3-Clause',
+    classifiers=[
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: BSD License",
+        "Operating System :: OS Independent",
+    ],
     python_requires='>= 3.7',
     install_requires=[
         'pandas >= 1.1.1',
@@ -31,3 +47,4 @@ setup(
         NUMPY_VERSION,
     ],
 )
+
