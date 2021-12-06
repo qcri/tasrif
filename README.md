@@ -5,7 +5,7 @@
   <b>A Python framework for processing wearable data in the health domain.</b>
 </p>
 <p align="center">
-  <a href="https://siha.qcri.org">
+  <a href="https://tasrif.qcri.org">
     <img src="https://awesome.re/badge.svg" alt="SIHA">
   </a>
   <a href="https://www.python.org/">
@@ -18,11 +18,11 @@
     <img src="https://github.com/qcri/tasrif/actions/workflows/ci.yml/badge.svg" alt="Workflow Status">
   </a>
    <a href="https://GitHub.com/qcri/tasrif/watchers/">
-    <img src="https://img.shields.io/github/watchers/qcrisw/tasrif?style=social&label=Watch&maxAge=2592000" alt="GitHub Watchers">
+    <img src="https://img.shields.io/github/watchers/qcri/tasrif?style=social&label=Watch&maxAge=2592000" alt="GitHub Watchers">
   </a>
   </a>
    <a href="https://GitHub.com/qcri/tasrif/stargazers/">
-    <img src="https://img.shields.io/github/stars/qcrisw/tasrif?style=social&label=Star&maxAge=2592000" alt="GitHub Stars">
+    <img src="https://img.shields.io/github/stars/qcri/tasrif?style=social&label=Star&maxAge=2592000" alt="GitHub Stars">
   </a>
   </a>
 </p>
@@ -64,7 +64,7 @@ Then, install Tasrif either from PyPI
 or install from source
 
 ```python
-(tasrif-env) git clone https://github.com/qcrisw/tasrif
+(tasrif-env) git clone https://github.com/qcri/tasrif
 (tasrif-env) cd tasrif
 (tasrif-env) pip install -e .
 
@@ -569,7 +569,7 @@ You can then browse through them by opening `docs/build/html/index.html` in a br
 
 </a>
    <a href="https://github.com/qcri/tasrif/network/dependencies">
-   <img src="https://img.shields.io/github/contributors/qcrisw/tasrif" alt="Contributors">
+   <img src="https://img.shields.io/github/contributors/qcri/tasrif" alt="Contributors">
 </a>
 
 
