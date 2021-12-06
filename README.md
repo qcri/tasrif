@@ -17,14 +17,18 @@
   <a href="https://github.com/qcri/tasrif/actions">
     <img src="https://github.com/qcri/tasrif/actions/workflows/ci.yml/badge.svg" alt="Workflow Status">
   </a>
-   <a href="https://GitHub.com/qcri/tasrif/watchers/">
-    <img src="https://img.shields.io/github/watchers/qcrisw/tasrif?style=social&label=Watch&maxAge=2592000" alt="GitHub Watchers">
+  <a href="https://pypi.org/project/tasrif/">
+    <img alt="PyPI - Downloads" src="https://img.shields.io/pypi/dm/tasrif?style=flat">
+  </a>  
+  <a href="https://pypi.org/project/tasrif/">
+    <img alt="PyPI - Version" src="https://img.shields.io/pypi/v/tasrif">
   </a>
+  <a href="https://GitHub.com/qcri/tasrif/watchers/">
+    <img src="https://img.shields.io/github/watchers/qcri/tasrif?style=social&label=Watch&maxAge=2592000" alt="GitHub Watchers">
   </a>
-   <a href="https://GitHub.com/qcri/tasrif/stargazers/">
-    <img src="https://img.shields.io/github/stars/qcrisw/tasrif?style=social&label=Star&maxAge=2592000" alt="GitHub Stars">
-  </a>
-  </a>
+  <a href="https://GitHub.com/qcri/tasrif/stargazers/">
+    <img src="https://img.shields.io/github/stars/qcri/tasrif?style=social&label=Star&maxAge=2592000" alt="GitHub Stars">
+  </a> 
 </p>
 
 
