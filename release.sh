@@ -57,14 +57,14 @@ python3 -m twine upload --repository pypi  dist/*
 echo "Done!"
 
 echo -n "Step 5 of 9: Building docker image of Tasrif.."
-docker build . --file Dockerfile --tag tasrif/tasrif:${tasrif_version}
+docker build . --file Dockerfile --tag tasrif/tasrif:v${tasrif_version}
 docker login -u tasrif -p $DOCKER_PWD
-docker push  tasrif/tasrif:${tasrif_version}
+docker push  tasrif/tasrif:v${tasrif_version}
 echo "Done!"
 
 echo "Step 6 of 9: Generating documentation.."
 docker run -entrypoint "/bin/bash" -v $PWD/generated/docs/build:/home/docs/build \
-            tasrif:${tasrif_version} \
+            tasrif:v${tasrif_version} \
             -c "cd docs; make html"
 echo "Done!"
 
