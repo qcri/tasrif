@@ -97,9 +97,9 @@ operators themselves take as input and output [Pandas](https://pandas.pydata.org
 For example, consider the `AggregateOperator`:
 
 ```python
-import pandas as pd
-from tasrif.processing_pipeline.custom import AggregateOperator
-from tasrif.processing_pipeline import DropNAOperator
+>>> import pandas as pd
+>>> from tasrif.processing_pipeline.custom import AggregateOperator
+>>> from tasrif.processing_pipeline.pandas import DropNAOperator
 
 >>> df0 = pd.DataFrame([
         ['Doha', 25, 30],
@@ -115,6 +115,7 @@ from tasrif.processing_pipeline import DropNAOperator
 >>> df0 = operator.process(df0)
 
 >>> df0
+
 [    city  min_temp_mean  min_temp_std
 0   Doha           21.0      5.656854
 1  Dubai           20.5      0.707107]
