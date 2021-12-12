@@ -17,7 +17,7 @@ jobs:
     - name: Test secrets
       run: |
         echo ${{ secrets.TEST_USER }}
-        sudo bash -c 'echo "username=${{ secrets.TEST_USER }}'
+        sudo bash -c 'echo "username=${{ secrets.TEST_USER }}"'
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag tasrif:latest
     - uses: docker/build-push-action@v2
