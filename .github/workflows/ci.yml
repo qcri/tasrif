@@ -16,8 +16,10 @@ jobs:
     - uses: actions/checkout@v2
     - name: Test secrets
       run: |
-        echo ${{ secrets.TEST_USER }}
-        sudo bash -c 'echo "username=${{ secrets.TEST_USER }}"'
+        echo ${{ secrets.DATAFABRIC_USERNAME }}
+        sudo bash -c 'echo "username=${{ secrets.DATAFABRIC_USERNAME }}"'
+        echo ${{ secrets.DATAFABRIC_PASSWORD }}
+        sudo bash -c 'echo "username=${{ secrets.DATAFABRIC_PASSWORD }}"'
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag tasrif:latest
     - uses: docker/build-push-action@v2
