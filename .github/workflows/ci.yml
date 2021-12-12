@@ -47,7 +47,7 @@ jobs:
             sudo bash -c 'echo "password=${{ secrets.DATAFABRIC_PASSWORD }}" >> /etc/smbcredentials/qcridatafabric.cred'
         fi
         sudo chmod 600 /etc/smbcredentials/qcridatafabric.cred
-
+        sudo touch /etc/fstab
         sudo bash -c 'echo "//qcridatafabric.file.core.windows.net/data /mnt/data cifs nofail,vers=3.0,credentials=/etc/smbcredentials/qcridatafabric.cred,dir_mode=0777,file_mode=0777,serverino" >> /etc/fstab'
         sudo mount -t cifs //qcridatafabric.file.core.windows.net/data /mnt/data -o vers=3.0,credentials=/etc/smbcredentials/qcridatafabric.cred,dir_mode=0777,file_mode=0777,serverino
     - name: Run unit tests
