@@ -14,12 +14,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag tasrif:latest
     - name: Test secrets
       run: |
-        cat ${{ secrets.TEST_USER }}
+        echo ${{ secrets.TEST_USER }}
         sudo bash -c 'echo "username=${{ secrets.TEST_USER }}'
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag tasrif:latest
     - uses: docker/build-push-action@v2
       with:
         tags: tasrif:latest
