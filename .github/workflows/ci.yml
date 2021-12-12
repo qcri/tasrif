@@ -64,7 +64,7 @@ jobs:
         -c "pytest -vv --ignore=/home/tasrif/test_scripts \
         --ignore=/home/src/ \
         --cov=tasrif --cov-report=xml --junitxml=/home/unittest-results/unit-tests.xml && \
-        cp /home/coverage.xml /home/unittest-results/coverage.xml
+        cp /home/coverage.xml /home/unittest-results/coverage.xml"
     - uses: actions/upload-artifact@master
       with:
         name: unittest-results
