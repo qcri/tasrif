@@ -35,6 +35,9 @@ jobs:
       with:
         files: pylint-results/**/*.xml
     - name: Mount data for running tests
+      env:
+        DATAFABRIC_USERNAME: ${{ secrets.DATAFABRIC_USERNAME }}
+        DATAFABRIC_PASSWORD: ${{ secrets.DATAFABRIC_PASSWORD}}
       run: |
         sudo apt-get update
         sudo apt-get install cifs-utils
@@ -43,8 +46,8 @@ jobs:
         sudo mkdir /etc/smbcredentials
         fi
         if [ ! -f "/etc/smbcredentials/qcridatafabric.cred" ]; then
-            sudo bash -c 'echo "username=${{ secrets.DATAFABRIC_USERNAME }}" >> /etc/smbcredentials/qcridatafabric.cred'
-            sudo bash -c 'echo "password=${{ secrets.DATAFABRIC_PASSWORD }}" >> /etc/smbcredentials/qcridatafabric.cred'
+            sudo bash -c 'echo "username=$DATAFABRIC_USERNAME" >> /etc/smbcredentials/qcridatafabric.cred'
+            sudo bash -c 'echo "password=$DATAFABRIC_PASSWORD" >> /etc/smbcredentials/qcridatafabric.cred'
         fi
         sudo chmod 600 /etc/smbcredentials/qcridatafabric.cred
         sudo mount -t cifs //qcridatafabric.file.core.windows.net/data /mnt/data -o vers=3.0,credentials=/etc/smbcredentials/qcridatafabric.cred,dir_mode=0777,file_mode=0777,serverino
