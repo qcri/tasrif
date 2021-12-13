@@ -117,7 +117,7 @@ jobs:
     - uses: actions/upload-artifact@master
       with:
         name: integrationtest-results
-        path: /tmp/integrationtest-results/unit-tests.xml
+        path: /tmp/integrationtest-results/notebook-tests.xml
     - uses: actions/download-artifact@master
       with:
         path: integrationtest-results
