@@ -113,7 +113,7 @@ jobs:
             -v /tmp/integrationtest-results:/home/integrationtest-results/ \
             -v /mnt/data/:/mnt/data/ \
             tasrif:latest \
-            -c "pytest -v tasrif/test_scripts/entrypoint.py  --junitxml=notebook-tests.xml"
+            -c "pytest -v tasrif/test_scripts/entrypoint.py  --junitxml=/home/integrationtest-results/notebook-tests.xml"
     - uses: actions/upload-artifact@master
       with:
         name: integrationtest-results
