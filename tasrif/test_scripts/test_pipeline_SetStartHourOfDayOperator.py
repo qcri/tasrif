@@ -15,5 +15,5 @@ df.iloc[48:, 1] = 2
 operator = SetStartHourOfDayOperator(date_feature_name='startTime',
                                      participant_identifier='participant',
                                      shift=6)
-
+df = df.reset_index()
 operator.process(df)[0]
