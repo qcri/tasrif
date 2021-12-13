@@ -121,6 +121,7 @@ jobs:
     - uses: actions/download-artifact@master
       with:
         path: integrationtest-results
+        name: integrationtest-results
     - name: Publish integrationtest results
       uses: EnricoMi/publish-unit-test-result-action@v1
       if: always()
