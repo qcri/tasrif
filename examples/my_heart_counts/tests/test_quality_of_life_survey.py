@@ -9,12 +9,11 @@ def test_data_is_correctly_loaded(df):
     columns = list(df.columns)
     columns.sort()
 
-    assert(columns == [
-        'activity1_intensity', 'activity1_option', 'activity1_time', 'activity1_type',
-        'activity2_intensity', 'activity2_option', 'activity2_time', 'activity2_type',
-        'appVersion', 'createdOn', 'healthCode', 'phoneInfo',
-        'phone_on_user', 'recordId', 'sleep_time'
-    ])
+    assert(set(columns) ==  {'appVersion',
+                             'createdOn','feel_worthwhile1','feel_worthwhile2','feel_worthwhile3',
+                             'feel_worthwhile4','healthCode', 'phoneInfo', 'recordId',
+                             'riskfactors1', 'riskfactors2', 'riskfactors3', 'riskfactors4',
+                             'satisfiedwith_life', 'zip3'})
 
 def test_healthCode_is_unique(df):
     assert(df['healthCode'].is_unique)

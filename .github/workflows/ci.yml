@@ -21,28 +21,50 @@ jobs:
         tags: tasrif:latest
         push: false
     - name: Run pylint
-      run: docker run -v /tmp/pylint-results/pylint:/home/pylint tasrif:latest /home/run-pylint.sh 
+      run: docker run -v /tmp/pylint-results/pylint:/home/pylint tasrif:latest /home/run-pylint.sh
     - uses: actions/upload-artifact@master
       with:
         name: pylint-results
         path: /tmp/pylint-results/pylint/report.xml
     - uses: actions/download-artifact@master
       with:
-        path: pylint-results        
+        path: pylint-results
     - name: Publish linting results
       uses: EnricoMi/publish-unit-test-result-action@v1
       if: always()
       with:
-        files: pylint-results/**/*.xml        
+        files: pylint-results/**/*.xml
+    - name: Mount data for running tests
+      run: |
+        sudo apt-get update
+        sudo apt-get install cifs-utils
+        sudo mkdir /mnt/data
+        if [ ! -d "/etc/smbcredentials" ]; then
+        sudo mkdir /etc/smbcredentials
+        fi
+        if [ ! -f "/etc/smbcredentials/qcridatafabric.cred" ]; then
+            sudo bash -c 'echo "username=${{ secrets.DATAFABRIC_USERNAME }}" >> /etc/smbcredentials/qcridatafabric.cred'
+            sudo bash -c 'echo "password=${{ secrets.DATAFABRIC_PASSWORD }}" >> /etc/smbcredentials/qcridatafabric.cred'
+        fi
+        sudo chmod 600 /etc/smbcredentials/qcridatafabric.cred
+        sudo mount -t cifs //qcridatafabric.file.core.windows.net/data /mnt/data -o vers=3.0,credentials=/etc/smbcredentials/qcridatafabric.cred,dir_mode=0777,file_mode=0777,serverino
     - name: Run unit tests
       run:  |
         docker run --env PYTHONPATH=/home/ --entrypoint "/bin/bash" \
-            -v /tmp/unittest-results:/home/unittest-results/ \
-            tasrif:latest \
-            -c "pytest -v --ignore=/home/tasrif/test_scripts --ignore=/home/examples \
-            --ignore=/home/src/ \
-            --cov=tasrif --cov-report=xml --junitxml=/home/unittest-results/unit-tests.xml && \
-            cp /home/coverage.xml /home/unittest-results/coverage.xml"
+        --env FITBIT_INTERDAY_PATH=/mnt/data/fitbit-data/fitbit-interday-sample.csv/ \
+        --env FITBIT_INTRADAY_PATH=/mnt/data/fitbit-data/VolunteerFitbitData-1March21/Fitbit-Volunteer-Data/ \
+        --env SIHA_PATH=/mnt/data/qcri-hmc__profast__2020-2021-03-17T13:00:44/ \
+        --env SLEEPHEALTH=/mnt/data/sleephealth/ \
+        --env WITHINGS_PATH=/mnt/data/withings-data/ \
+        --env MYHEARTCOUNTS=/mnt/data/MyHeartCounts/ \
+        --env ZENODOFITBIT_PATH=/mnt/data/Zenodo_Fitbit/ \
+        -v /mnt/data/:/mnt/data/ \
+        -v /tmp/unittest-results:/home/unittest-results/ \
+        tasrif:latest \
+        -c "pytest -vv --ignore=/home/tasrif/test_scripts \
+        --ignore=/home/src/ \
+        --cov=tasrif --cov-report=xml --junitxml=/home/unittest-results/unit-tests.xml && \
+        cp /home/coverage.xml /home/unittest-results/coverage.xml"
     - uses: actions/upload-artifact@master
       with:
         name: unittest-results
@@ -65,24 +87,52 @@ jobs:
     - name: Setup .NET Core # Required to execute ReportGenerator
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 6.0.100        
+        dotnet-version: 6.0.100
     - name: Publish unit test coverage report
       uses: danielpalme/ReportGenerator-GitHub-Action@4.8.12
       with:
         reports: 'coverage-results/**/*.xml'
         targetdir: 'coveragereport'
         sourcedirs: '.'
-        reporttypes: 'HtmlInline;Cobertura;MarkdownSummary' 
+        reporttypes: 'HtmlInline;Cobertura;MarkdownSummary'
     - name: Publish coverage summary
       uses: marocchino/sticky-pull-request-comment@v2
       with:
         path: coveragereport/Summary.md
+    - name: Run integration tests
+      run:  |
+          docker run --env PYTHONPATH=/home/ \
+            --env FITBIT_INTERDAY_PATH=/mnt/data/fitbit-data/fitbit-interday-sample.csv/ \
+            --env FITBIT_INTRADAY_PATH=/mnt/data/fitbit-data/VolunteerFitbitData-1March21/Fitbit-Volunteer-Data/ \
+            --env SIHA_PATH=/mnt/data/qcri-hmc__profast__2020-2021-03-17T13:00:44/ \
+            --env SLEEPHEALTH=/mnt/data/sleephealth/ \
+            --env WITHINGS_PATH=/mnt/data/withings-data/ \
+            --env MYHEARTCOUNTS=/mnt/data/MyHeartCounts/ \
+            --env ZENODOFITBIT_PATH=/mnt/data/Zenodo_Fitbit/ \
+            --entrypoint "/bin/bash" \
+            -v /tmp/integrationtest-results:/home/integrationtest-results/ \
+            -v /mnt/data/:/mnt/data/ \
+            tasrif:latest \
+            -c "pytest -v tasrif/test_scripts/entrypoint.py  --junitxml=/home/integrationtest-results/notebook-tests.xml"
+    - uses: actions/upload-artifact@master
+      with:
+        name: integrationtest-results
+        path: /tmp/integrationtest-results/notebook-tests.xml
+    - uses: actions/download-artifact@master
+      with:
+        path: integrationtest-results
+        name: integrationtest-results
+    - name: Publish integrationtest results
+      uses: EnricoMi/publish-unit-test-result-action@v1
+      if: always()
+      with:
+        files: integrationtest-results/**/*.xml
     - name: Run darglint
-      run: docker run -v /tmp/darglint-results/darglint:/home/darglint tasrif:latest /home/run-darglint.sh 
+      run: docker run -v /tmp/darglint-results/darglint:/home/darglint tasrif:latest /home/run-darglint.sh
     - uses: actions/upload-artifact@master
       with:
         name: darglint-results
         path: /tmp/darglint-results/darglint/report.xml
     - uses: actions/download-artifact@master
       with:
-        path: darglint-results   
+        path: darglint-results

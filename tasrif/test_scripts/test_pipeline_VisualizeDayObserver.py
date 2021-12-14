@@ -65,6 +65,6 @@ pipeline = SequenceOperator([
                                 shift=6),
       FillNAOperator(value=300),
 ], observers=[observer])
-
+df = df.reset_index()
 
 pipeline.process(df)[0]
