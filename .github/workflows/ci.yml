@@ -102,7 +102,7 @@ jobs:
     - name: Run integration tests
       run:  |
           docker run --env PYTHONPATH=/home/ \
-            --env FITBIT_INTERDAY_PATH=/mnt/data/fitbit-data/fitbit-interday-sample.csv \
+            --env FITBIT_INTERDAY_PATH=/mnt/data/fitbit-data/ \
             --env FITBIT_INTRADAY_PATH=/mnt/data/fitbit-data/VolunteerFitbitData-1March21/Fitbit-Volunteer-Data/ \
             --env SIHA_PATH=/mnt/data/qcri-hmc__profast__2020-2021-03-17T13:00:44 \
             --env SLEEPHEALTH=/mnt/data/sleephealth/ \
