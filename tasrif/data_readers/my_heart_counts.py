@@ -33,12 +33,13 @@ class MyHeartCountsDataset(ProcessingOperator):
         participants=None,
         types=None,
         sources=None,
-        split=False):
+        split=False,
+        csvs_path_name=None):
         """Initializes a dataset reader with the input parameters.
 
         Args:
             path_name (str):
-                Path to the withings export file containing data.
+                Path to the myheartcounts file containing data.
             table_name (str):
                 The table to extract data from.
             participants (int, str, list):
@@ -53,6 +54,8 @@ class MyHeartCountsDataset(ProcessingOperator):
                 used when participants is set. If None, retrieve all sources.
             split (bool):
                 used when participants is set. If true, return split dataset by type and sources
+            csvs_path_name (str):
+                Path to participants data
 
         """
         # Abort if table_name isn't valid
@@ -65,6 +68,10 @@ class MyHeartCountsDataset(ProcessingOperator):
         self.types = types
         self.sources = sources
         self.split = split
+        self.csvs_path_name = csvs_path_name
+
+        if not self.csvs_path_name:
+            self.csvs_path_name = self.path_name + 'HealthKit Data/data.csv/'
 
     def process(self, *data_frames):
         if self.table_name == "activitysleepsurvey":
@@ -108,7 +115,7 @@ class MyHeartCountsDataset(ProcessingOperator):
                         AsTypeOperator({'value': 'float64'}),
                         SortOperator(by='startTime')]
 
-        csv_folder_path = pathlib.Path(self.path_name + 'HealthKit Data/data.csv/')
+        csv_folder_path = pathlib.Path(self.csvs_path_name)
 
         if self.types or self.sources:
             filter_op = FilterOperator(epoch_filter=lambda df, func=self._filter_data_func: func(df))
