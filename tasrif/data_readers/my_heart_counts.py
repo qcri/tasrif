@@ -14,6 +14,15 @@ class MyHeartCountsDataset(ProcessingOperator):
     """
     Class to work with the MyHeartCounts dataset.
     """
+
+    class Defaults: #pylint: disable=too-few-public-methods
+        """Default parameters used by the class."""
+        CSV_PIPELINE = SequenceOperator([ConvertToDatetimeOperator(['startTime', 'endTime'], utc=True),
+                                         DropNAOperator(),
+                                         AsTypeOperator({'value': 'float64'}),
+                                         SortOperator(by='startTime')])
+
+
     day_one_survey_device_mapping = {
         "iPhone": "1",
         "ActivityBand": "2",
@@ -33,7 +42,8 @@ class MyHeartCountsDataset(ProcessingOperator):
         participants=None,
         types=None,
         sources=None,
-        split=False):
+        split=False,
+        csv_pipeline=Defaults.CSV_PIPELINE):
         """Initializes a dataset reader with the input parameters.
 
         Args:
@@ -65,6 +75,7 @@ class MyHeartCountsDataset(ProcessingOperator):
         self.types = types
         self.sources = sources
         self.split = split
+        self.csv_pipeline = csv_pipeline
 
     def process(self, *data_frames):
         if self.table_name == "activitysleepsurvey":
@@ -103,21 +114,15 @@ class MyHeartCountsDataset(ProcessingOperator):
         path = pathlib.Path(self.path_name, 'HealthKit Data.csv')
         dataframe = pd.read_csv(path)
         dataframe['data.csv'] = dataframe['data.csv'].astype(str)
-        csv_pipeline = [ConvertToDatetimeOperator(['startTime', 'endTime'], utc=True),
-                        DropNAOperator(),
-                        AsTypeOperator({'value': 'float64'}),
-                        SortOperator(by='startTime')]
-
         csv_folder_path = pathlib.Path(self.path_name + 'HealthKit Data/data.csv/')
 
         if self.types or self.sources:
             filter_op = FilterOperator(epoch_filter=lambda df, func=self._filter_data_func: func(df))
-            csv_pipeline.append(filter_op)
+            self.csv_pipeline.processing_operators.append(filter_op)
 
-        csv_pipeline = SequenceOperator(csv_pipeline)
         operator = ReadNestedCsvOperator(folder_path=csv_folder_path,
                                          field='_6',
-                                         pipeline=csv_pipeline)
+                                         pipeline=self.csv_pipeline)
 
         if not self.participants:
             return [dataframe]
