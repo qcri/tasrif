@@ -18,10 +18,10 @@ from sklearn.pipeline import Pipeline
 
 # Can we predict the distance a user would do in the next timestep (e.g. hour) using past HR and Steps
 # Set the below line to MyHeartCounts dataset path
-mhc_folder_path = '/path/to/myheartCounts'
+mhc_folder_path = os.environ['MYHEARTCOUNTS']
 
 # Read myHeartCounts
-mhc = MyHeartCountsDataset(path_name=mhc_folder_path, 
+mhc = MyHeartCountsDataset(path_name=mhc_folder_path,
                            table_name='healthkitdata',
                            participants=100,
                            sources=['phone'],
