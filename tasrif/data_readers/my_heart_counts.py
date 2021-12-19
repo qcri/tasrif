@@ -10,7 +10,7 @@ from tasrif.processing_pipeline.custom import FilterOperator
 
 
 
-class MyHeartCountsDataset(ProcessingOperator):
+class MyHeartCountsDataset(ProcessingOperator):  # pylint: disable=R0902
     """
     Class to work with the MyHeartCounts dataset.
     """
