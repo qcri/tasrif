@@ -2,6 +2,7 @@
 Module that provides class to work with the MyHeartCounts dataset.
 """
 import pathlib
+import warnings
 import pandas as pd
 from tasrif.processing_pipeline import ProcessingOperator, SequenceOperator
 from tasrif.processing_pipeline.pandas import ConvertToDatetimeOperator, AsTypeOperator, DropNAOperator, SortOperator
@@ -66,6 +67,9 @@ class MyHeartCountsDataset(ProcessingOperator):  # pylint: disable=R0902
                 used when participants is set. If true, return split dataset by type and sources
             csvs_path_name (str):
                 Path to participants data
+
+        Warns:
+            if participant file not found during generator iteration.
 
         """
         # Abort if table_name isn't valid
@@ -142,19 +146,25 @@ class MyHeartCountsDataset(ProcessingOperator):  # pylint: disable=R0902
             dataframe = dataframe[dataframe['recordId'].isin(self.participants)]
             generator = operator.process(dataframe)[0]
             output = list(generator)
-            output = [self._join_columns(data[0], data[1]) for data in output]
-            output = pd.concat(output)
+            output = [data for data in output if self._file_exists(data[0], data[1])]
+
+            if output:
+                output = [self._join_columns(data[0], data[1]) for data in output]
+                output = pd.concat(output)
 
         elif isinstance(self.participants, int):
             dataframe = dataframe.iloc[:self.participants]
             generator = operator.process(dataframe)[0]
             output = list(generator)
-            output = [self._join_columns(data[0], data[1]) for data in output]
-            output = pd.concat(output)
+            output = [data for data in output if self._file_exists(data[0], data[1])]
 
-        if self.split:
+            if output:
+                output = [self._join_columns(data[0], data[1]) for data in output]
+                output = pd.concat(output)
+
+        if self.split and output:
             output = self._split_groups(output)
-        else:
+        elif output:
             output = [output]
 
         return output
@@ -184,6 +194,13 @@ class MyHeartCountsDataset(ProcessingOperator):  # pylint: disable=R0902
         output = list(output)
         output = [group for _, group in output]
         return output
+
+    @staticmethod
+    def _file_exists(row, data):
+        if not data:
+            warnings.warn('file not found for participant:' + str(row.recordId))
+        return
+
 
     @staticmethod
     def _join_columns(row, data):
