@@ -199,8 +199,6 @@ class MyHeartCountsDataset(ProcessingOperator):  # pylint: disable=R0902
     def _file_exists(row, data):
         if not data:
             warnings.warn('file not found for participant:' + str(row.recordId))
-        return
-
 
     @staticmethod
     def _join_columns(row, data):

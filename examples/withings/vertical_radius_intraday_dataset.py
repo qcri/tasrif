@@ -11,7 +11,7 @@ pipeline = SequenceOperator([
     WithingsDataset(withings_data_filename, table_name="Vertical_Radius"),
     ConvertToDatetimeOperator(feature_names=["from", "to"], infer_datetime_format=True, utc=True),
     SetIndexOperator("from"),
-    AsTypeOperator({"vertical_radius": "int32"})
+    AsTypeOperator({"vertical__radius": "int32", errors='ignore'})
 ])
 
 df = pipeline.process()
