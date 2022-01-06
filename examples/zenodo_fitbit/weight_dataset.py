@@ -11,7 +11,7 @@ from tasrif.processing_pipeline.custom import AggregateOperator
 from tasrif.processing_pipeline.pandas import DropFeaturesOperator
 from tasrif.data_readers.zenodo_fitbit_dataset import ZenodoFitbitDataset
 
-zenodo_folder_path = os.environ.get('ZENODO_FITBIT_PATH') or '/mnt/datafabric/Zenodo_Fitbit'
+zenodo_folder_path = os.environ.get('ZENODOFITBIT_PATH')
 
 
 DROP_COLUMNS = ["Fat", "WeightPounds", "IsManualReport"]

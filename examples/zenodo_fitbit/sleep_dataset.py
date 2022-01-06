@@ -15,7 +15,7 @@ from tasrif.processing_pipeline.custom import (
 
 from tasrif.data_readers.zenodo_fitbit_dataset import ZenodoFitbitDataset
 
-zenodo_folder_path = os.environ.get('ZENODO_FITBIT_PATH') or '/mnt/datafabric/Zenodo_Fitbit'
+zenodo_folder_path = os.environ.get('ZENODOFITBIT_PATH')
 
 DAILY_AGGREGATION_DEFINITION = {
     "duration": ["sum"],
