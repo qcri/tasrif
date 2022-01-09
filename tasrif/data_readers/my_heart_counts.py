@@ -67,6 +67,8 @@ class MyHeartCountsDataset(ProcessingOperator):  # pylint: disable=R0902
                 used when participants is set. If true, return split dataset by type and sources
             csvs_path_name (str):
                 Path to participants data
+            csv_pipeline (ProcessingOperator):
+                operators to process each csv file
 
         Warns:
             if participant file not found during generator iteration.
