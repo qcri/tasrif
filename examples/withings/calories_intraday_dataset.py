@@ -4,7 +4,7 @@ from tasrif.data_readers.withings_dataset import WithingsDataset
 from tasrif.processing_pipeline.pandas import ConvertToDatetimeOperator, SetIndexOperator, AsTypeOperator
 
 # +
-withings_data_filename = os.environ['WITHINGS_PATH']+'raw_tracker_calories.csv'
+withings_data_filename = os.environ['WITHINGS_PATH']+'raw_tracker_calories-earned.csv'
 # -
 
 pipeline = SequenceOperator([

@@ -9,7 +9,7 @@ files_patterns = [
     'examples/my_heart_counts/[!test_]*.py'
     'examples/siha/*.py',
     'examples/sleep_health/*.py',
-    # 'examples/withings/*.py',
+    'examples/withings/*.py',
     'examples/zenodo_fitbit/*.py',
     'tasrif/test_scripts/*.py'
 ]
