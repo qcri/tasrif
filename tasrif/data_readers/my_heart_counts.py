@@ -2,6 +2,7 @@
 Module that provides class to work with the MyHeartCounts dataset.
 """
 import pathlib
+import warnings
 import pandas as pd
 from tasrif.processing_pipeline import ProcessingOperator, SequenceOperator
 from tasrif.processing_pipeline.pandas import ConvertToDatetimeOperator, AsTypeOperator, DropNAOperator, SortOperator
@@ -10,10 +11,19 @@ from tasrif.processing_pipeline.custom import FilterOperator
 
 
 
-class MyHeartCountsDataset(ProcessingOperator):
+class MyHeartCountsDataset(ProcessingOperator):  # pylint: disable=R0902
     """
     Class to work with the MyHeartCounts dataset.
     """
+
+    class Defaults: #pylint: disable=too-few-public-methods
+        """Default parameters used by the class."""
+        CSV_PIPELINE = SequenceOperator([ConvertToDatetimeOperator(['startTime', 'endTime'], utc=True),
+                                         DropNAOperator(),
+                                         AsTypeOperator({'value': 'float64'}),
+                                         SortOperator(by='startTime')])
+
+
     day_one_survey_device_mapping = {
         "iPhone": "1",
         "ActivityBand": "2",
@@ -33,12 +43,14 @@ class MyHeartCountsDataset(ProcessingOperator):
         participants=None,
         types=None,
         sources=None,
-        split=False):
+        split=False,
+        csvs_path_name=None,
+        csv_pipeline=Defaults.CSV_PIPELINE):
         """Initializes a dataset reader with the input parameters.
 
         Args:
             path_name (str):
-                Path to the withings export file containing data.
+                Path to the myheartcounts file containing data.
             table_name (str):
                 The table to extract data from.
             participants (int, str, list):
@@ -53,6 +65,13 @@ class MyHeartCountsDataset(ProcessingOperator):
                 used when participants is set. If None, retrieve all sources.
             split (bool):
                 used when participants is set. If true, return split dataset by type and sources
+            csvs_path_name (str):
+                Path to participants data
+            csv_pipeline (ProcessingOperator):
+                operators to process each csv file
+
+        Warns:
+            if participant file not found during generator iteration.
 
         """
         # Abort if table_name isn't valid
@@ -65,6 +84,11 @@ class MyHeartCountsDataset(ProcessingOperator):
         self.types = types
         self.sources = sources
         self.split = split
+        self.csvs_path_name = csvs_path_name
+        self.csv_pipeline = csv_pipeline
+
+        if not self.csvs_path_name:
+            self.csvs_path_name = self.path_name + 'HealthKit Data/data.csv/'
 
     def process(self, *data_frames):
         if self.table_name == "activitysleepsurvey":
@@ -103,21 +127,15 @@ class MyHeartCountsDataset(ProcessingOperator):
         path = pathlib.Path(self.path_name, 'HealthKit Data.csv')
         dataframe = pd.read_csv(path)
         dataframe['data.csv'] = dataframe['data.csv'].astype(str)
-        csv_pipeline = [ConvertToDatetimeOperator(['startTime', 'endTime'], utc=True),
-                        DropNAOperator(),
-                        AsTypeOperator({'value': 'float64'}),
-                        SortOperator(by='startTime')]
-
-        csv_folder_path = pathlib.Path(self.path_name + 'HealthKit Data/data.csv/')
+        csv_folder_path = pathlib.Path(self.csvs_path_name)
 
         if self.types or self.sources:
             filter_op = FilterOperator(epoch_filter=lambda df, func=self._filter_data_func: func(df))
-            csv_pipeline.append(filter_op)
+            self.csv_pipeline.processing_operators.append(filter_op)
 
-        csv_pipeline = SequenceOperator(csv_pipeline)
         operator = ReadNestedCsvOperator(folder_path=csv_folder_path,
                                          field='_6',
-                                         pipeline=csv_pipeline)
+                                         pipeline=self.csv_pipeline)
 
         if not self.participants:
             return [dataframe]
@@ -130,19 +148,25 @@ class MyHeartCountsDataset(ProcessingOperator):
             dataframe = dataframe[dataframe['recordId'].isin(self.participants)]
             generator = operator.process(dataframe)[0]
             output = list(generator)
-            output = [self._join_columns(data[0], data[1]) for data in output]
-            output = pd.concat(output)
+            output = [data for data in output if self._file_exists(data[0], data[1])]
+
+            if output:
+                output = [self._join_columns(data[0], data[1]) for data in output]
+                output = pd.concat(output)
 
         elif isinstance(self.participants, int):
             dataframe = dataframe.iloc[:self.participants]
             generator = operator.process(dataframe)[0]
             output = list(generator)
-            output = [self._join_columns(data[0], data[1]) for data in output]
-            output = pd.concat(output)
+            output = [data for data in output if self._file_exists(data[0], data[1])]
 
-        if self.split:
+            if output:
+                output = [self._join_columns(data[0], data[1]) for data in output]
+                output = pd.concat(output)
+
+        if self.split and output:
             output = self._split_groups(output)
-        else:
+        elif output:
             output = [output]
 
         return output
@@ -172,6 +196,11 @@ class MyHeartCountsDataset(ProcessingOperator):
         output = list(output)
         output = [group for _, group in output]
         return output
+
+    @staticmethod
+    def _file_exists(row, data):
+        if not data:
+            warnings.warn('file not found for participant:' + str(row.recordId))
 
     @staticmethod
     def _join_columns(row, data):

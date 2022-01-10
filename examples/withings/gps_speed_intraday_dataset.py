@@ -11,7 +11,7 @@ pipeline = SequenceOperator([
     WithingsDataset(withings_data_filename, table_name="Gps_Speed"),
     ConvertToDatetimeOperator(feature_names=["from", "to"], infer_datetime_format=True, utc=True),
     SetIndexOperator("from"),
-    AsTypeOperator({"gps_speed": "float32"})
+    AsTypeOperator({"gps__speed": "float32"})
 ])
 
 df = pipeline.process()

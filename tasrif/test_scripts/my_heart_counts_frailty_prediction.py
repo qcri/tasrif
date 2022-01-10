@@ -22,27 +22,31 @@ from tasrif.processing_pipeline.pandas import DropNAOperator, ConvertToDatetimeO
                                               MergeOperator, AsTypeOperator, JsonNormalizeOperator
 from tasrif.processing_pipeline.custom import CreateFeatureOperator, AggregateOperator, FilterOperator, \
                                               ReadNestedCsvOperator, IterateJsonOperator, FlattenOperator
-import warnings
-warnings.filterwarnings("ignore")
 
 # %%
 # First, we extract six minute walk activity step count for each participant. Note that
 # participants are idenitified by a unique healthCode and may have participated in
 # multiple six minute walk activities.
-smwa_file_path = os.environ['MYHEARTCOUNTS_SIXMINUTEWALKACTIVITY_PATH']
-json_folder_path = os.environ['MYHEARTCOUNTS_SIXMINUTEWALKACTIVITY_JSON_FOLDER_PATH']
+smwa_file_path = os.environ['MYHEARTCOUNTS']
+json_folder_path = os.environ['MYHEARTCOUNTS'] + 'Six Minute Walk Activity/pedometer_fitness.walk.items/'
 
 # To do this, we create a custom operator to emit some data from the SMWA rows and json files.
 class EmitHealthCodeSMWAStepsOperator(MapProcessingOperator):
     def _processing_function(self, generator):
+        # limit json reads to speed up tests
+        count = 0
+        limit = 10
         data = []
 
         for row, smwa_data in generator:
+            if count >= limit:
+                break
             if smwa_data is None:
                 continue
             healthCode = row.healthCode
             smwaSteps = smwa_data.iloc[-1]['numberOfSteps']
             data.append([healthCode, smwaSteps])
+            count = count + 1
 
         return pd.DataFrame(data, columns=['healthCode', 'smwaSteps'])
 
@@ -50,9 +54,10 @@ json_pipeline = SequenceOperator([
     JsonNormalizeOperator()
 ])
 
+
 # Use the custom operator along with some built-in operators to get the data we want.
 smwa_pipeline = SequenceOperator([
-    MyHeartCountsDataset(smwa_file_path),
+    MyHeartCountsDataset(path_name=smwa_file_path, table_name='sixminutewalkactivity'),
     CreateFeatureOperator(
         feature_name='file_name',
         # The json filename has an extra '.0' appended to it.
@@ -74,8 +79,8 @@ participant_smwa_steps = smwa_pipeline.process()[0]
 
 # %%
 # Next, we extract the highest daily step count for each participant.
-hkd_file_path = os.environ['MYHEARTCOUNTS_HEALTHKITDATA_PATH']
-csv_folder_path = os.environ['MYHEARTCOUNTS_HEALTHKITDATA_CSV_FOLDER_PATH']
+hkd_file_path = os.environ['MYHEARTCOUNTS']
+# csv_folder_path = os.environ['MYHEARTCOUNTS'] + 'HealthKit Data'
 
 # Before that, we need a custom operator that enhances HealthKitData csv
 # dataframes with the healthCode from their corresponding rows.
@@ -119,49 +124,39 @@ csv_pipeline = SequenceOperator([
 # We then use the custom operator from above to attach healthCodes to the csv data.
 # Then, we aggregate all the daily steps taken by each user, and take the highest.
 hkd_pipeline = SequenceOperator([
-            MyHeartCountsDataset(hkd_file_path),
-            CreateFeatureOperator(
-                feature_name='file_name',
-                feature_creator=lambda df: str(df['data.csv'])),
-            ReadNestedCsvOperator(
-                folder_path=csv_folder_path,
-                field='file_name',
-                pipeline=csv_pipeline),
-            AppendHealthCodeOperator(),
-            FlattenOperator(),
-            ConcatOperator(),
+            MyHeartCountsDataset(path_name=hkd_file_path, table_name='healthkitdata', participants=5),
             AggregateOperator(
                 groupby_feature_names=["healthCode"],
                 aggregation_definition={'HKQuantityTypeIdentifierStepCount': 'max'})
 ])
 
-participant_most_steps_in_a_day = hkd_pipeline.process()[0]
+participant_most_steps_in_a_day = hkd_pipeline.process()
 
-# %%
-# For each participant, merge his six minute walk activity steps with his most steps taken in a day.
-participant_smwa_steps_vs_most_steps_in_a_day = MergeOperator(on='healthCode').process(
-    participant_smwa_steps,
-    participant_most_steps_in_a_day
-)
+if participant_most_steps_in_a_day:
+    participant_most_steps_in_a_day = participant_most_steps_in_a_day[0]
 
-# %%
-# We finally have a dataframe that tells us, for each participant:
-# - The number of steps taken in the six minute walk activity
-# - The most steps taken in a day
-participant_smwa_steps_vs_most_steps_in_a_day
+    # For each participant, merge his six minute walk activity steps with his most steps taken in a day.
+    participant_smwa_steps_vs_most_steps_in_a_day = MergeOperator(on='healthCode').process(
+        participant_smwa_steps,
+        participant_most_steps_in_a_day
+    )
 
-# %%
-import matplotlib.pyplot as plt
+    # We finally have a dataframe that tells us, for each participant:
+    # - The number of steps taken in the six minute walk activity
+    # - The most steps taken in a day
+    participant_smwa_steps_vs_most_steps_in_a_day
 
-# Prune outliers with max steps > 20,000
-data = participant_smwa_steps_vs_most_steps_in_a_day
-data = data[data['HKQuantityTypeIdentifierStepCount_max'] < 20000]
+    import matplotlib.pyplot as plt
 
-plt.scatter(data['HKQuantityTypeIdentifierStepCount_max'], data['smwaSteps_max'], alpha=0.5)
-plt.xlabel("Most steps taken in a day")
-plt.ylabel("Six Minute Walk Activity steps")
+    # Prune outliers with max steps > 20,000
+    data = participant_smwa_steps_vs_most_steps_in_a_day
+    data = data[data['HKQuantityTypeIdentifierStepCount_max'] < 20000]
 
-# The plot shows that there seems to be no significant correlation between
-# the most steps taken in a day vs the steps walked in a six minute walk activity
-# for a participant.
-plt.show()
+    plt.scatter(data['HKQuantityTypeIdentifierStepCount_max'], data['smwaSteps_max'], alpha=0.5)
+    plt.xlabel("Most steps taken in a day")
+    plt.ylabel("Six Minute Walk Activity steps")
+
+    # The plot shows that there seems to be no significant correlation between
+    # the most steps taken in a day vs the steps walked in a six minute walk activity
+    # for a participant.
+    plt.show()

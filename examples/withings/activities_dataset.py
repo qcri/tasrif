@@ -4,7 +4,6 @@ from tasrif.data_readers.withings_dataset import WithingsDataset
 from tasrif.processing_pipeline.pandas import ConvertToDatetimeOperator, SetIndexOperator
 from tasrif.processing_pipeline.custom import JsonPivotOperator
 
-os.environ['WITHINGS_PATH'] = '/mnt/datafabric/withings-data/'
 withings_data_filename = os.environ['WITHINGS_PATH']+'activities.csv'
 
 pipeline = SequenceOperator([

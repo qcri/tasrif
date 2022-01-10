@@ -11,7 +11,7 @@ pipeline = SequenceOperator([
     WithingsDataset(withings_data_filename, table_name="Quality_Score"),
     ConvertToDatetimeOperator(feature_names=["from", "to"], infer_datetime_format=True, utc=True),
     SetIndexOperator("from"),
-    AsTypeOperator({"quality_score": "int32"})
+    AsTypeOperator({"quality__score": "int32"})
 ])
 
 df = pipeline.process()

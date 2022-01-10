@@ -26,10 +26,10 @@ class WithingsDataset(ProcessingOperator):
     """Base class for all withings datasets
     """
 
-    valid_table_names = ["Activities", "Sleep", "Steps", "Vertical_Radius", "Sleep_State",
+    valid_table_names = ["Activities", "Sleep", "Steps", "Vertical_Radius", "Sleep_State", "Heart_Rate",
                         "Quality_Score", "Lap_Pool", "Horizontal_Radius", "Gps_Speed", "Elevation",
                         "Distance", "Duration", "Calories", "SpO2", "Altitude", "Weight", "Height",
-                        "Blood_Pressure", "Lat_Long"]
+                        "Blood_Pressure", "Lat_Long", "Quality_Score"]
 
     def __init__(self, file_name, table_name):
         """Initializes a dataset reader with the input parameters.

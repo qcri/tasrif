@@ -36,7 +36,7 @@ from tasrif.processing_pipeline.pandas import (
     DropFeaturesOperator
 )
 
-siha_folder_path = os.environ.get('SIHA_PATH') or '/mnt/datafabric/qcri-hmc__profast__2020-2021-03-17T13:00:44'
+siha_folder_path = os.environ.get('SIHA_PATH')
 
 
 class _FlattenOperator(MapProcessingOperator):

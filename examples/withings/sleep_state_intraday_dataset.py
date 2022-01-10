@@ -11,7 +11,7 @@ pipeline = SequenceOperator([
     WithingsDataset(withings_data_filename, table_name="Sleep_State"),
     ConvertToDatetimeOperator(feature_names=["from", "to"], infer_datetime_format=True, utc=True),
     SetIndexOperator("from"),
-    AsTypeOperator({"sleep_state": "int32"})
+    AsTypeOperator({"sleep__state": "int32"})
 ])
 
 df = pipeline.process()

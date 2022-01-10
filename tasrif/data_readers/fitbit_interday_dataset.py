@@ -31,7 +31,7 @@ class FitbitInterdayDataset(ProcessingOperator):
         # Accumulate dataframes from all files and concat them all at once
         dfs = []
         for export_file in pathlib.Path(
-                self.folder_path).glob('fitbit_export_*.csv'):
+                self.folder_path).glob('*.csv'):
             dfs.append(self._extract_data_from_file(export_file))
         return [pd.concat(dfs)]
 

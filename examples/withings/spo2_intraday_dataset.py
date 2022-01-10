@@ -11,7 +11,7 @@ pipeline = SequenceOperator([
     WithingsDataset(withings_data_filename, table_name="SpO2"),
     ConvertToDatetimeOperator(feature_names=["from", "to"], infer_datetime_format=True, utc=True),
     SetIndexOperator("from"),
-    AsTypeOperator({"spo2": "int32"})
+    AsTypeOperator({"sp_o2": "int32"})
 ])
 
 df = pipeline.process()

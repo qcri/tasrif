@@ -45,7 +45,7 @@ pipeline = SequenceOperator([
     SetIndexOperator("dateTime"),
     DropIndexDuplicatesOperator(keep="first"),
     ResampleOperator("30s", "ffill"),
-    SetFeaturesValueOperator(features=["seconds"], value=30),
+    SetFeaturesValueOperator(feature_names=["seconds"], value=30),
 ])
 
 df = pipeline.process()

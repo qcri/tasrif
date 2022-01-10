@@ -11,7 +11,7 @@ pipeline = SequenceOperator([
     WithingsDataset(withings_data_filename, table_name="Lap_Pool"),
     ConvertToDatetimeOperator(feature_names=["from", "to"], infer_datetime_format=True, utc=True),
     SetIndexOperator("from"),
-    AsTypeOperator({"lap_pool": "int32"})
+    AsTypeOperator({"lap__pool": "int32"})
 ])
 
 df = pipeline.process()

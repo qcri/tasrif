@@ -102,9 +102,9 @@ jobs:
     - name: Run integration tests
       run:  |
           docker run --env PYTHONPATH=/home/ \
-            --env FITBIT_INTERDAY_PATH=/mnt/data/fitbit-data/fitbit-interday-sample.csv/ \
+            --env FITBIT_INTERDAY_PATH=/mnt/data/fitbit-data/ \
             --env FITBIT_INTRADAY_PATH=/mnt/data/fitbit-data/VolunteerFitbitData-1March21/Fitbit-Volunteer-Data/ \
-            --env SIHA_PATH=/mnt/data/qcri-hmc__profast__2020-2021-03-17T13:00:44/ \
+            --env SIHA_PATH=/mnt/data/qcri-hmc__profast__2020-2021-03-17T13:00:44 \
             --env SLEEPHEALTH=/mnt/data/sleephealth/ \
             --env WITHINGS_PATH=/mnt/data/withings-data/ \
             --env MYHEARTCOUNTS=/mnt/data/MyHeartCounts/ \
@@ -113,7 +113,7 @@ jobs:
             -v /tmp/integrationtest-results:/home/integrationtest-results/ \
             -v /mnt/data/:/mnt/data/ \
             tasrif:latest \
-            -c "pytest -v tasrif/test_scripts/entrypoint.py  --junitxml=/home/integrationtest-results/notebook-tests.xml"
+            -c "pytest -v entrypoint.py  --junitxml=/home/integrationtest-results/notebook-tests.xml"
     - uses: actions/upload-artifact@master
       with:
         name: integrationtest-results
