@@ -23,7 +23,7 @@ mhc_folder_path = os.environ['MYHEARTCOUNTS']
 # Read myHeartCounts
 mhc = MyHeartCountsDataset(path_name=mhc_folder_path,
                            table_name='healthkitdata',
-                           participants=100,
+                           participants=10,
                            sources=['phone'],
                            types=['HKQuantityTypeIdentifierDistanceWalkingRunning'],
                            split=True

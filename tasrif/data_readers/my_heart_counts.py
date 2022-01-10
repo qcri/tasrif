@@ -6,7 +6,7 @@ import warnings
 import pandas as pd
 from tasrif.processing_pipeline import ProcessingOperator, SequenceOperator
 from tasrif.processing_pipeline.pandas import ConvertToDatetimeOperator, AsTypeOperator, DropNAOperator, SortOperator
-from tasrif.processing_pipeline.custom import ReadNestedCsvOperator
+from tasrif.processing_pipeline.custom import ReadNestedCsvOperator, ReadNestedJsonOperator
 from tasrif.processing_pipeline.custom import FilterOperator
 
 
@@ -44,8 +44,8 @@ class MyHeartCountsDataset(ProcessingOperator):  # pylint: disable=R0902
         types=None,
         sources=None,
         split=False,
-        csvs_path_name=None,
-        csv_pipeline=Defaults.CSV_PIPELINE):
+        nested_files_path=None,
+        nested_files_pipeline=Defaults.CSV_PIPELINE):
         """Initializes a dataset reader with the input parameters.
 
         Args:
@@ -65,9 +65,9 @@ class MyHeartCountsDataset(ProcessingOperator):  # pylint: disable=R0902
                 used when participants is set. If None, retrieve all sources.
             split (bool):
                 used when participants is set. If true, return split dataset by type and sources
-            csvs_path_name (str):
+            nested_files_path (str):
                 Path to participants data
-            csv_pipeline (ProcessingOperator):
+            nested_files_pipeline (ProcessingOperator):
                 operators to process each csv file
 
         Warns:
@@ -84,11 +84,11 @@ class MyHeartCountsDataset(ProcessingOperator):  # pylint: disable=R0902
         self.types = types
         self.sources = sources
         self.split = split
-        self.csvs_path_name = csvs_path_name
-        self.csv_pipeline = csv_pipeline
+        self.nested_files_path = nested_files_path
+        self.nested_files_pipeline = nested_files_pipeline
 
-        if not self.csvs_path_name:
-            self.csvs_path_name = self.path_name + 'HealthKit Data/data.csv/'
+        if not self.nested_files_path:
+            self.nested_files_path = self.path_name + 'HealthKit Data/data.csv/'
 
     def process(self, *data_frames):
         if self.table_name == "activitysleepsurvey":
@@ -102,9 +102,21 @@ class MyHeartCountsDataset(ProcessingOperator):  # pylint: disable=R0902
         elif self.table_name == "demographics":
             path = pathlib.Path(self.path_name, 'Demographics Survey.csv')
         elif self.table_name == "healthkitdata":
-            return self._process_healthkitdata()
+            path = pathlib.Path(self.path_name, 'HealthKit Data.csv')
+            dataframe = pd.read_csv(path)
+            files_column = 'data.csv'
+            dataframe[files_column] = dataframe[files_column].astype(str)
+            dataframe['file_name'] = dataframe[files_column] + '.gz'
+            return self._process_nested_files(dataframe=dataframe,
+                                              field='_6')
         elif self.table_name == "healthkitsleep":
             path = pathlib.Path(self.path_name, 'HealthKit Sleep.csv')
+            dataframe = pd.read_csv(path)
+            files_column = 'data.csv'
+            dataframe[files_column] = dataframe[files_column].astype(str)
+            dataframe['file_name'] = dataframe[files_column] + '.gz'
+            return self._process_nested_files(dataframe=dataframe,
+                                              field='file_name')
         elif self.table_name == "heartagesurvey":
             path = pathlib.Path(self.path_name, 'APH Heart Age Survey.csv')
         elif self.table_name == "parqsurvey":
@@ -115,6 +127,14 @@ class MyHeartCountsDataset(ProcessingOperator):  # pylint: disable=R0902
             path = pathlib.Path(self.path_name, 'Risk Factor Survey.csv')
         elif self.table_name == "sixminutewalkactivity":
             path = pathlib.Path(self.path_name, 'Six Minute Walk Activity.csv')
+            dataframe = pd.read_csv(path)
+            files_column = 'pedometer_fitness.walk.items'
+            dataframe[files_column] = dataframe[files_column].astype(str)
+            dataframe[files_column] = dataframe[files_column].str[:-2] # Remove .0 from string
+            dataframe['file_name'] = dataframe[files_column] + '.gz'
+            return self._process_nested_files(dataframe=dataframe,
+                                              field='file_name',
+                                              files_type='json')
 
         return [pd.read_csv(path)]
 
@@ -123,19 +143,22 @@ class MyHeartCountsDataset(ProcessingOperator):  # pylint: disable=R0902
             raise RuntimeError(
                 f"Invalid table_name, must be from the following: {self.valid_table_names}")
 
-    def _process_healthkitdata(self):
-        path = pathlib.Path(self.path_name, 'HealthKit Data.csv')
-        dataframe = pd.read_csv(path)
-        dataframe['data.csv'] = dataframe['data.csv'].astype(str)
-        csv_folder_path = pathlib.Path(self.csvs_path_name)
+    def _process_nested_files(self, dataframe, field, files_type='csv'):
+        nested_files_folder_path = pathlib.Path(self.nested_files_path)
 
         if self.types or self.sources:
             filter_op = FilterOperator(epoch_filter=lambda df, func=self._filter_data_func: func(df))
-            self.csv_pipeline.processing_operators.append(filter_op)
+            self.nested_files_pipeline.processing_operators.append(filter_op)
 
-        operator = ReadNestedCsvOperator(folder_path=csv_folder_path,
-                                         field='_6',
-                                         pipeline=self.csv_pipeline)
+        if files_type == 'csv':
+            operator = ReadNestedCsvOperator(folder_path=nested_files_folder_path,
+                                             field=field,
+                                             pipeline=self.nested_files_pipeline)
+        else:
+            operator = ReadNestedJsonOperator(folder_path=nested_files_folder_path,
+                                              field=field,
+                                              pipeline=self.nested_files_pipeline)
+
 
         if not self.participants:
             return [dataframe]
@@ -164,9 +187,9 @@ class MyHeartCountsDataset(ProcessingOperator):  # pylint: disable=R0902
                 output = [self._join_columns(data[0], data[1]) for data in output]
                 output = pd.concat(output)
 
-        if self.split and output:
+        if self.split and (output is not None):
             output = self._split_groups(output)
-        elif output:
+        elif output is not None:
             output = [output]
 
         return output
@@ -199,8 +222,10 @@ class MyHeartCountsDataset(ProcessingOperator):  # pylint: disable=R0902
 
     @staticmethod
     def _file_exists(row, data):
-        if not data:
+        if data is None:
             warnings.warn('file not found for participant:' + str(row.recordId))
+            return False
+        return True
 
     @staticmethod
     def _join_columns(row, data):
