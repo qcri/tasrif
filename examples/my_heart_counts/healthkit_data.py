@@ -21,9 +21,10 @@ csv_pipeline = SequenceOperator([
 pipeline = SequenceOperator([
     MyHeartCountsDataset(mhc_file_path,
                          table_name="healthkitsleep",
-                         nested_files_path=csv_folder_path, 
+                         nested_files_path=csv_folder_path,
                          participants=5,
                          nested_files_pipeline=csv_pipeline),
 ])
 
-gen = pipeline.process()
+if __name__=='__main__':
+    pipeline.process()

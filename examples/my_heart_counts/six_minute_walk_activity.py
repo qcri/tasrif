@@ -11,7 +11,7 @@ smwa_pipeline = SequenceOperator([ConvertToDatetimeOperator(['startDate', 'endDa
                                   DropNAOperator(),
                                   SortOperator(by='startDate')])
 
-smwa_pipeline = SequenceOperator([
+pipeline = SequenceOperator([
     MyHeartCountsDataset(path_name=mhc_file_path, table_name='sixminutewalkactivity',
                          nested_files_path=json_files_path, participants=5,
                          nested_files_pipeline=smwa_pipeline),
@@ -21,4 +21,6 @@ smwa_pipeline = SequenceOperator([
     )
 ])
 
-smwa_pipeline.process()
+
+if __name__=='__main__':
+    pipeline.process()
