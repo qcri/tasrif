@@ -57,9 +57,6 @@ hkd_pipeline = SequenceOperator([
                                  table_name='healthkitdata', 
                                  nested_files_path=csv_folder_path,
                                  participants=5),
-            AggregateOperator(
-                groupby_feature_names=["recordId", "type"],
-                aggregation_definition={'value': 'max'})
 ])
 
 participant_most_steps_in_a_day = hkd_pipeline.process()
