@@ -8,7 +8,7 @@ fitbit_intraday_data_folder = os.environ['FITBIT_INTRADAY_PATH']
 
 pipeline = SequenceOperator([
     FitbitIntradayDataset(fitbit_intraday_data_folder,
-                          table_name="Time_in_Heart_Rate_Zones"),
+                          table_name="Time_in_Heart_Rate_Zones", num_files=5),
     JsonNormalizeOperator(),
     ConvertToDatetimeOperator(feature_names=["dateTime"],
                               infer_datetime_format=True),

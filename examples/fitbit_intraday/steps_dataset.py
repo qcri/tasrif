@@ -8,7 +8,7 @@ from tasrif.processing_pipeline.custom import DistributedUpsampleOperator
 fitbit_intraday_data_folder = os.environ['FITBIT_INTRADAY_PATH']
 
 pipeline = SequenceOperator([
-    FitbitIntradayDataset(fitbit_intraday_data_folder, table_name="Steps"),
+    FitbitIntradayDataset(fitbit_intraday_data_folder, table_name="Steps", num_files=5),
     JsonNormalizeOperator(),
     ConvertToDatetimeOperator(feature_names=["dateTime"],
                               infer_datetime_format=True),
