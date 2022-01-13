@@ -5,7 +5,7 @@ from tasrif.processing_pipeline.custom import AggregateOperator
 from tasrif.processing_pipeline.pandas import DropNAOperator, SortOperator, ConvertToDatetimeOperator
 
 mhc_file_path = os.environ['MYHEARTCOUNTS']
-json_files_path = os.environ['MYHEARTCOUNTS'] + 'Six Minute Walk Activity/'
+json_files_path = os.environ['MYHEARTCOUNTS'] + 'Six Minute Walk Activity/pedometer_fitness.walk.items/'
 
 smwa_pipeline = SequenceOperator([ConvertToDatetimeOperator(['startDate', 'endDate'], utc=True),
                                   DropNAOperator(),
