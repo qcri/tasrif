@@ -108,7 +108,7 @@ class MyHeartCountsDataset(ProcessingOperator):  # pylint: disable=R0902
             dataframe[files_column] = dataframe[files_column].astype(str)
             dataframe['file_name'] = dataframe[files_column] + '.gz'
             return self._process_nested_files(dataframe=dataframe,
-                                              field='_6')
+                                              field='file_name')
         elif self.table_name == "healthkitsleep":
             path = pathlib.Path(self.path_name, 'HealthKit Sleep.csv')
             dataframe = pd.read_csv(path)
