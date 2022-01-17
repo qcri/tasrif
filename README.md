@@ -205,16 +205,16 @@ Reading a single csv file
 ```python
 from tasrif.processing_pipeline.pandas import ReadCsvOperator
 
-operator = ReadCsvOperator('/path/to/file')
+operator = ReadCsvOperator('examples/quick_start/csvs/participant1.csv')
 df = operator.process()[0]
 ```
 
 Reading multiple csvs in a folder
 
 ```python
-from tasrif.processing_pipeline.pandas import ReadCsvOperator
+from tasrif.processing_pipeline.custom import ReadCsvFolderOperator
 
-operator = ReadCsvFolderOperator(name_pattern='/path/to/folder/*.csv'),
+operator = ReadCsvFolderOperator(name_pattern='examples/quick_start/csvs/*.csv')
 df = operator.process()[0]
 ```
 
@@ -229,9 +229,10 @@ from tasrif.processing_pipeline.custom import ReadNestedCsvOperator
 
 df = pd.DataFrame({"name": ['Alfred', 'Roy'],
                    "age": [43, 32],
-                   "csv_files_column": ['details1.csv', 'details2.csv']})
+                   "csv_files_column": ['participant1.csv', 'participant2.csv']})
 
-operator = ReadNestedCsvOperator(folder_path='/path/to/csv/files', field='csv_files_column')
+operator = ReadNestedCsvOperator(folder_path='examples/quick_start/csvs/', 
+                                 field='csv_files_column')
 generator = operator.process(df)[0]
 
 for record, details in generator:
@@ -247,9 +248,11 @@ from tasrif.processing_pipeline.custom import IterateJsonOperator
 
 df = pd.DataFrame({"name": ['Alfred', 'Roy'],
                    "age": [43, 32],
-                   "json_files_column": ['details1.json', 'details2.json']})
+                   "json_files_column": ['participant1.json', 'participant2.json']})
 
-operator = IterateJsonOperator(folder_path='/path/to/json/files', field='json_files_column')
+operator = IterateJsonOperator(folder_path='examples/quick_start/jsons/', 
+                               field='json_files_column', 
+                               pipeline=None)
 generator = operator.process(df)[0]
 
 for record, details in generator:
@@ -278,7 +281,8 @@ filter_features = {
 }
 
 sop = StatisticsOperator(participant_identifier='PersonId', 
-                         date_feature_name='Day', filter_features=filter_features)
+                         date_feature_name='Day',
+                         filter_features=filter_features)
 sop.process(df)[0]
 ```
 
@@ -304,7 +308,7 @@ from tasrif.processing_pipeline.custom import AggregateOperator
 
 operator = AggregateOperator(groupby_feature_names ="PersonId",
                             aggregation_definition= {"Steps": ["mean", "std"],
-                                                     "Calories:": ["sum"]
+                                                     "Calories": ["sum"]
                                                     })
 operator.process(df)[0]
 
@@ -318,10 +322,16 @@ Convert time columns into cyclical features, which are more efficiently grasped 
 ```python
 
 from tasrif.processing_pipeline.custom import EncodeCyclicalFeaturesOperator
+from tasrif.processing_pipeline.pandas import ReadCsvOperator
 
-operator = EncodeCyclicalFeaturesOperator(date_feature_name="startTime", 
+df = ReadCsvOperator('examples/quick_start/steps_per_day.csv', 
+                     parse_dates=['Date']).process()[0]
+
+operator = EncodeCyclicalFeaturesOperator(date_feature_name="Date", 
                                           category_definition="day")
 operator.process(df)[0]
+
+
 ```
 
 
@@ -329,9 +339,14 @@ Extract timeseries features using `CalculateTimeseriesPropertiesOperator` which 
 
 ```python
 
-from tasrif.processing_pipeline.custom import CalculateTimeseriesPropertiesOperator
+from tasrif.processing_pipeline.kats import CalculateTimeseriesPropertiesOperator
+from tasrif.processing_pipeline.pandas import ReadCsvOperator
 
-operator = CalculateTimeseriesPropertiesOperator(date_feature_name="startTime", value_column='Steps')
+df = ReadCsvOperator('examples/quick_start/long_ts.csv', 
+                     parse_dates=['Date']).process()[0]
+
+
+operator = CalculateTimeseriesPropertiesOperator(date_feature_name="Date", value_column='Steps')
 operator.process(df)[0]
 
 ```
@@ -340,14 +355,28 @@ Extract using features using `tsfresh` package
 
 ```python
 
+from tasrif.processing_pipeline.custom import SlidingWindowOperator
+from tasrif.processing_pipeline.pandas import ReadCsvOperator
 from tasrif.processing_pipeline.tsfresh import TSFreshFeatureExtractorOperator
 
-operator = TSFreshFeatureExtractorOperator(seq_id_col="seq_id", date_feature_name='startTime', value_col='Steps')
-operator.process(df)[0]
+df = ReadCsvOperator('examples/quick_start/cgm.csv', 
+                     parse_dates=['dateTime']).process()[0]
+
+
+op = SlidingWindowOperator(winsize="1h15t",
+                           time_col="dateTime",
+                           label_col="CGM",
+                           participant_identifier="patientID")
+
+df_timeseries, df_labels, df_label_time, df_pids = op.process(df)[0]
+
+op = TSFreshFeatureExtractorOperator(seq_id_col="seq_id", date_feature_name='dateTime', value_col='CGM')
+features = op.process(df_timeseries)[0]
+features.dropna(axis=1)
 
 ```
 
-Note that `TSFreshFeatureExtractorOperator` requires a column`seq_id`. This column indicates which entities the time series belong to. Features will be extracted individually for each entity (id). The resulting feature matrix will contain one row per id. The column can be created manually or be created via `SlidingWindowOperator`.
+Note that `TSFreshFeatureExtractorOperator` requires a column `seq_id`. This column indicates which entities the time series belong to. Features will be extracted individually for each entity (id). The resulting feature matrix will contain one row per id. The column can be created manually or be created via `SlidingWindowOperator`.
 
 
 ### Filter data
@@ -355,9 +384,13 @@ Note that `TSFreshFeatureExtractorOperator` requires a column`seq_id`. This colu
 filter rows, days, or participants with a custom condition using `FilterOperator`
 
 ```python
+from tasrif.processing_pipeline.pandas import ReadCsvOperator
 from tasrif.processing_pipeline.custom import FilterOperator
 
-operator = FilterOperator(participant_identifier="PersonId",
+df = ReadCsvOperator('examples/quick_start/filter_example.csv', 
+                     parse_dates=['Hours']).process()[0]
+
+operator = FilterOperator(participant_identifier="Id",
                           date_feature_name="Hours",
                           epoch_filter=lambda df: df['Steps'] > 10,
                           day_filter={
@@ -366,7 +399,9 @@ operator = FilterOperator(participant_identifier="PersonId",
                               "consecutive_days": (7, 12) # 7 minimum consecutive days, and 12 max
                           },
                           filter_type="include")
+
 operator.process(df)[0]
+
 ```
 
 ### Wrangle data
@@ -397,21 +432,31 @@ operator.process(df)[0]
 Upsample or downsample date features using `ResampleOperator`. The first argument `rule` can be minutes `min`, hours `H`, days `D`, and more. See details of resampling [here](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.resample.html) 
 
 ```python
+from tasrif.processing_pipeline.pandas import ReadCsvOperator
 from tasrif.processing_pipeline.custom import ResampleOperator
 
+df = ReadCsvOperator('examples/quick_start/sleep.csv',
+                     parse_dates=['timestamp'],
+                     index_col=['timestamp']).process()[0]
+
 op = ResampleOperator('D', {'sleep_level': 'mean'})
-op.process(df)[0]
+op.process(df)
 ```
 
+Note that, currently, the index of the dataframe has to be of type `DatetimeIndex` so that `ResampleOperator` can be called correctly.
 Set the start hour of the day to some hour using `SetStartHourOfDayOperator`
 
 ```python
-operator = SetStartHourOfDayOperator(date_feature_name='startTime',
-                                     participant_identifier='personId',
-                                     shift=6)
- 
-operator.process(df)[0]
+from tasrif.processing_pipeline.pandas import ReadCsvOperator
+from tasrif.processing_pipeline.custom import SetStartHourOfDayOperator
 
+df = ReadCsvOperator('examples/quick_start/filter_example.csv',
+                     parse_dates=['Hours']).process()[0]
+
+operator = SetStartHourOfDayOperator(date_feature_name='Hours',
+                                     participant_identifier='Id',
+                                     shift=6)
+operator.process(df)[0]
 ```
 
 a new column `shifted_time_col` will be created. This can be useful if the user wants to calculate statistics at a redefined times of the day instead of midnight-to-midnight (e.g. 8:00 AM - 8:00 AM).
@@ -420,13 +465,23 @@ Concatenate multiple dataframes or a generator using `ConcatOperator`
 
 ```python
 
+import pandas as pd
 from tasrif.processing_pipeline.pandas import ConcatOperator
+
+df = pd.DataFrame([
+ [Timestamp('2016-12-31 00:00:00'), Timestamp('2017-01-01 09:03:00'), 5470, 2968, 1],
+ [Timestamp('2017-01-01 00:00:00'), Timestamp('2017-01-01 23:44:00'), 9769, 2073, 1],
+ [Timestamp('2017-01-02 00:00:00'), Timestamp('2017-01-02 16:54:00'), 9444, 2883, 1],
+ [Timestamp('2017-01-03 00:00:00'), Timestamp('2017-01-05 22:49:00'), 20064, 2287, 1],
+ [Timestamp('2017-01-04 00:00:00'), Timestamp('2017-01-06 07:27:00'),16771, 2716, 1]],
+    columns = ['startTime', 'endTime', 'steps', 'calories', 'personId']
+)
 
 df1 = df.copy()
 df2 = df.copy()
 
 concatenated_df = ConcatOperator().process(df1, df2)[0]
-concatenated_df = ConcatOperator().process(generator)[0]
+
 ```
 
 Normalize selected columns
@@ -434,6 +489,8 @@ Normalize selected columns
 ```python
 import pandas as pd
 from tasrif.processing_pipeline.custom import NormalizeOperator
+from tasrif.processing_pipeline.custom import NormalizeTransformOperator
+
 df = pd.DataFrame([
     [1, "2020-05-01 00:00:00", 10],
     [1, "2020-05-01 01:00:00", 15], 
@@ -450,19 +507,69 @@ Use the fit normalizer on different data using `NormalizeTransformOperator`
 
 ```python
 
-trained_model = output1[0][1]
+trained_model = output[0][1]
+
 op = NormalizeTransformOperator('all', trained_model)
-op.process(df.to_frame())
+
+output = op.process(df)
+output
 ```
 
 You can use `jqOperator` to process JSON data
 
 ```python
+import pandas as pd
 from tasrif.processing_pipeline.custom import JqOperator
+df = [
+  {
+    "date": "2020-01-01",
+    "sleep": [
+      {
+        "sleep_data": [
+          {
+            "level": "rem",
+            "minutes": 180
+          },
+          {
+            "level": "deep",
+            "minutes": 80
+          },
+          {
+            "level": "light",
+            "minutes": 300
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "date": "2020-01-02",
+    "sleep": [
+      {
+        "sleep_data": [
+          {
+            "level": "rem",
+            "minutes": 280
+          },
+          {
+            "level": "deep",
+            "minutes": 60
+          },
+          {
+            "level": "light",
+            "minutes": 200
+          }
+        ]
+      }
+    ]
+  }
+]
+
+
 
 op = JqOperator("map({date, sleep: .sleep[].sleep_data})")
-op.process(df)[0]
 
+op.process(df)
 ```
 
 ### Test prepared data
@@ -492,17 +599,21 @@ Chain operators using `SequenceOperator`
 ```python
 import pandas as pd
 from tasrif.processing_pipeline import SequenceOperator
-from tasrif.processing_pipeline.custom import AggregateOperator, CreateFeatureOperator
-from tasrif.processing_pipeline.pandas import ConvertToDatetimeOperator, SortOperator
+from tasrif.processing_pipeline.custom import AggregateOperator, CreateFeatureOperator, SetStartHourOfDayOperator
+from tasrif.processing_pipeline.pandas import ConvertToDatetimeOperator, SortOperator, ReadCsvOperator
+
+df = ReadCsvOperator('examples/quick_start/cgm.csv').process()[0]
+
+df
 
 pipeline = SequenceOperator([
-    ConvertToDatetimeOperator(feature_names=["startTime"]),
-    SetStartHourOfDayOperator(date_feature_name='startTime',
-                                     participant_identifier='PersonId',
+    ConvertToDatetimeOperator(feature_names=["dateTime"]),
+    SetStartHourOfDayOperator(date_feature_name='dateTime',
+                                     participant_identifier='patientID',
                                      shift=6),
-    SortOperator(by='startTime'),
-    AggregateOperator(groupby_feature_names ="PersonId",
-                      aggregation_definition= {"Steps": ["mean", "std"], "Calories:": ["sum"]})
+    SortOperator(by='dateTime'),
+    AggregateOperator(groupby_feature_names ="patientID",
+                      aggregation_definition= {"CGM": ["mean", "std"]})
 
 ])
 
