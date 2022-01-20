@@ -515,6 +515,24 @@ output = op.process(df)
 output
 ```
 
+Use `ChangeDateFormatToStartToEnd` to view the start date and end date of a
+dataframe that has a date column per row per participant.
+
+```python
+import pandas as pd
+
+from tasrif.processing_pipeline.custom import ChangeDateFormatToStartToEnd
+from tasrif.processing_pipeline.pandas import ReadCsvOperator
+
+reader = ReadCsvOperator('examples/quick_start/activity_long.csv')
+df = reader.process()[0]
+
+operator = ChangeDateFormatToStartToEnd(date_feature_name="date",
+                                        participant_identifier=['Id', 'logId'])
+df = operator.process(df)[0]
+df
+```
+
 You can use `jqOperator` to process JSON data
 
 ```python
