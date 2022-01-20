@@ -15,10 +15,12 @@
 
 # +
 import pandas as pd
+import os
 
 from tasrif.processing_pipeline.custom import ChangeDateFormatToStartToEnd
 from tasrif.processing_pipeline.pandas import ReadCsvOperator
 
+print(os.getcwd())
 reader = ReadCsvOperator(os.environ['QUICKSTART'] + 'activity_long.csv')
 df = reader.process()[0]
 
