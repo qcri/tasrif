@@ -19,7 +19,7 @@ import pandas as pd
 from tasrif.processing_pipeline.custom import ChangeDateFormatToStartToEnd
 from tasrif.processing_pipeline.pandas import ReadCsvOperator
 
-reader = ReadCsvOperator('../../examples/quick_start/activity_long.csv')
+reader = ReadCsvOperator('examples/quick_start/activity_long.csv')
 df = reader.process()[0]
 
 operator = ChangeDateFormatToStartToEnd(date_feature_name="date",
