@@ -109,7 +109,6 @@ jobs:
             --env WITHINGS_PATH=/mnt/data/withings-data/ \
             --env MYHEARTCOUNTS=/mnt/data/MyHeartCounts/ \
             --env ZENODOFITBIT_PATH=/mnt/data/Zenodo_Fitbit/ \
-            --env QUICKSTART=/home/examples/quick_start/ \
             --entrypoint "/bin/bash" \
             -v /tmp/integrationtest-results:/home/integrationtest-results/ \
             -v /mnt/data/:/mnt/data/ \
