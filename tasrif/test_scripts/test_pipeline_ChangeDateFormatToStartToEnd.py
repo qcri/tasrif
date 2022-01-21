@@ -1,3 +1,18 @@
+# ---
+# jupyter:
+#   jupytext:
+#     formats: ipynb,py:light
+#     text_representation:
+#       extension: .py
+#       format_name: light
+#       format_version: '1.5'
+#       jupytext_version: 1.11.2
+#   kernelspec:
+#     display_name: Python 3
+#     language: python
+#     name: python3
+# ---
+
 import pandas as pd
 
 from tasrif.processing_pipeline.custom import ChangeDateFormatToStartToEnd
@@ -75,7 +90,9 @@ df = pd.DataFrame([
     [167,4,'2016-03-15 04:07:00',1],
 ], columns=['Id','logId','date','value'])
 
+import numpy as np
 operator = ChangeDateFormatToStartToEnd(date_feature_name="date",
-                                        participant_identifier=['Id', 'logId'])
-df = operator.process(df)[0]
-df
+                                        participant_identifier=['Id', 'logId'],
+                                        aggregation_definition={'value': [np.sum,
+                                                                          lambda x: x[x == 1].sum()]})
+operator.process(df)[0]
