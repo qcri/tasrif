@@ -1,6 +1,7 @@
 """
 Module that provides mixins for commonly-used validations.
 """
+import types
 import pandas as pd
 
 
@@ -32,6 +33,23 @@ class GroupbyCompatibleValidatorMixin:
         inputs_are_pandas_objects = [
             isinstance(df, (pd.DataFrame, pd.Series,
                             pd.core.groupby.generic.DataFrameGroupBy))
+            for df in data_frames
+        ]
+        if not all(inputs_are_pandas_objects):
+            raise ValidationError(
+                "Some inputs are not of the following types: \
+                pandas.DataFrames, pandas.Series or pandas.DataFrameGroupBy!"
+            )
+
+#pylint: disable=too-few-public-methods
+class GeneratorCompatibleValidatorMixin:
+    """
+    Validates whether the inputs to the operator are compatible.
+    """
+    def _validate(self, *data_frames):  #pylint: disable=no-self-use
+        inputs_are_pandas_objects = [
+            isinstance(df, (pd.DataFrame, pd.Series,
+                            types.GeneratorType))
             for df in data_frames
         ]
         if not all(inputs_are_pandas_objects):
