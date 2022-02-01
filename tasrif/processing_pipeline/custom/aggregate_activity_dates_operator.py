@@ -117,7 +117,7 @@ class AggregateActivityDatesOperator(ProcessingOperator):
                  aggregation_definition=None,
                  start_column_name='start',
                  end_column_name='end'):
-        """Creates a new instance of ChangeDateFormatToStartToEnd
+        """Creates a new instance of AggregateActivityDatesOperator
 
         Args:
             date_feature_name : str
