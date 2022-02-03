@@ -1,5 +1,6 @@
 """Module that defines the SequenceOperator class
 """
+import pandas as pd
 from tasrif.processing_pipeline.processing_operator import ProcessingOperator
 
 class SequenceOperator(ProcessingOperator):
@@ -66,9 +67,22 @@ class SequenceOperator(ProcessingOperator):
         """
         data = args
         for operator in self.processing_operators:
-            data = operator.process(*data)
+            if isinstance(data, pd.DataFrame):
+                data = operator.process(data)
+            elif SequenceOperator._is_iterable(data):
+                data = operator.process(*data)
+            else:
+                data = operator.process(data)
 
         return data
+
+    @staticmethod
+    def _is_iterable(data):
+        try:
+            _ = iter(data)
+            return True
+        except TypeError:
+            return False
 
     def is_functional(self):
         """
