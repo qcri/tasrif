@@ -15,7 +15,7 @@
 
 import pandas as pd
 import numpy as np
-from tasrif.processing_pipeline.custom import MergeGapsBetweenActivityOperator
+from tasrif.processing_pipeline.custom import MergeFragmentedActivityOperator
 from tasrif.processing_pipeline.custom import CreateFeatureOperator
 
 # +
@@ -62,7 +62,7 @@ aggregation_definition = {
     'Total Minutes in Bed': np.sum,
 }
 
-operator = MergeGapsBetweenActivityOperator(
+operator = MergeFragmentedActivityOperator(
                                 participant_identifier='Id',
                                 start_date_feature_name='Sleep Start',
                                 end_date_feature_name='Sleep End',
@@ -78,12 +78,11 @@ df
 # seq3: a sequence of [0, 1] merge
 # seq4: a sequence of [1, 1] no merge
 
-operator = MergeGapsBetweenActivityOperator(
+operator = MergeFragmentedActivityOperator(
                                 participant_identifier='Id',
                                 start_date_feature_name='Sleep Start',
                                 end_date_feature_name='Sleep End',
                                 threshold="3 hour",
-                                aggregation_definition=aggregation_definition,
                                 return_before_merging=False)
 
 seq1 = pd.DataFrame([

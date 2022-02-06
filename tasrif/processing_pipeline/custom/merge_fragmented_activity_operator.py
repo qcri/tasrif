@@ -1,5 +1,5 @@
 """
-Operator to fill gaps between activity.
+Operator to merge gaps between activity.
 """
 
 import pandas as pd
@@ -7,9 +7,10 @@ import pandas as pd
 from tasrif.processing_pipeline import ProcessingOperator
 
 
-class MergeGapsBetweenActivityOperator(ProcessingOperator):
+class MergeFragmentedActivityOperator(ProcessingOperator):
+
     """
-    Operator to fill gaps between activity. A gap is a time period of activity less than a given threshold.
+    Operator to merge gaps between activity. A gap is a time period of activity less than a given threshold.
     A period of activity that is larger than threshold is considered the end of an activity.
     Gaps found before the end of the activity will be merged with the activity.
     The end date of the activity will be set to the merged `end_date_feature_name`
@@ -19,7 +20,7 @@ class MergeGapsBetweenActivityOperator(ProcessingOperator):
 
     >>> import pandas as pd
     >>> import numpy as np
-    >>> from tasrif.processing_pipeline.custom import MergeGapsBetweenActivityOperator
+    >>> from tasrif.processing_pipeline.custom import MergeFragmentedActivityOperator
     >>> from tasrif.processing_pipeline.custom import CreateFeatureOperator
     >>> df = pd.DataFrame([
     ...    [0,2,354,27,5,386,0.91,'2016-03-27 03:33:00', '2016-03-27 09:02:00'],
@@ -56,7 +57,7 @@ class MergeGapsBetweenActivityOperator(ProcessingOperator):
     ...    'Total Minutes in Bed': np.sum,
     ... }
     >>>
-    >>> operator = MergeGapsBetweenActivityOperator(
+    >>> operator = MergeFragmentedActivityOperator(
     ...                                participant_identifier='Id',
     ...                                start_date_feature_name='Sleep Start',
     ...                                end_date_feature_name='Sleep End',
@@ -64,14 +65,13 @@ class MergeGapsBetweenActivityOperator(ProcessingOperator):
     ...                                aggregation_definition=aggregation_definition)
     >>> df = operator.process(df)[0]
     >>> df
-    Id  logId   Total Minutes Asleep    Total Minutes Restless  Total Minutes Awake ...
-    0   0   1   411     15  0   426     0.960   2016-03-26 23:45:00     2016-03-27 00:46:00
-    1   0   20  354     27  5   386     0.910   2016-03-27 01:15:00     2016-03-27 03:23:00
-    2   0   2   354     27  5   386     0.910   2016-03-27 03:33:00     2016-03-27 09:02:00
-    3   0   3   312     16  7   335     0.930   2016-03-28 00:40:00     2016-03-28 01:56:00
-    4   1   3   312     16  7   335     0.930   2016-03-14 08:12:00     2016-03-14 10:15:00
-    5   1   4   272     26  5   303     0.890   2016-03-16 03:12:00     2016-03-16 08:14:00
-    6   1   5   61  2   0   63  0.960   2016-03-16 19:43:00     2016-03-16 20:45:00
+    Id  logId   Total Minutes Asleep    ...
+    0   0   2   354     27  5   386     0.91    2016-03-27 03:33:00     2016-03-27 09:02:00
+    1   0   4   312     23  7   321     0.93    2016-03-28 00:40:00     2016-03-28 01:56:00
+    2   0   5   312     35  7   193     0.93    2016-03-29 00:40:00     2016-03-29 01:56:00
+    3   0   7   312     52  7   200     0.93    2016-05-21 00:40:00     2016-05-21 01:56:00
+    4   0   8   936     75  21  445     0.93    2016-05-23 01:57:00     2016-05-23 03:59:30
+    7   0   10  312     16  7   335     0.93    2016-05-23 10:57:00     2016-05-23 20:58:00
     ...
     """
     def __init__( # pylint: disable=R0913
@@ -82,7 +82,7 @@ class MergeGapsBetweenActivityOperator(ProcessingOperator):
             threshold="1 hour",
             aggregation_definition=None,
             return_before_merging=False):
-        """Creates a new instance of MergeGapsBetweenActivityOperator
+        """Creates a new instance of MergeFragmentedActivityOperator
 
         Args:
             participant_identifier : str or list of str
