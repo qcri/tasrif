@@ -140,6 +140,14 @@ class MergeFragmentedActivityOperator(ProcessingOperator):
         - gaps is a 0 that becomes 1 when shifted
         - main_acivity is 1 encountered after a series of 0
         - main_acivity is 1 that becomes 0 when shifted
+
+        Args:
+            dataframe (pd.DataFrame):
+              pandas dataframes to be processed
+
+        Returns:
+            output_dataframe (pd.DataFrame)
+                merged dataframe
         '''
         output_dataframe = dataframe.copy()
         output_dataframe = output_dataframe.groupby(
@@ -181,7 +189,16 @@ class MergeFragmentedActivityOperator(ProcessingOperator):
 
     def _calculate_time_delta(self, dataframe):
         '''timedelta is the time taken to start the next activity
-        pulls next row\'s starting date and takes the difference with the current row\'s end date'''
+        pulls next row\'s starting date and takes the difference with the current row\'s end date
+
+        Args:
+            dataframe (pd.DataFrame):
+              pandas dataframes to be processed
+
+        Returns:
+            dataframe (pd.DataFrame)
+                dataframe with `timedelta` column added
+        '''
         dataframe['timedelta'] = \
             (dataframe[self.start_date_feature_name].shift(-1) - dataframe[self.end_date_feature_name]).fillna(
             pd.Timedelta("99 days"))
