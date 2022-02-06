@@ -45,8 +45,8 @@ Since the :code:`DropNAOperator` is built on top of
 `pandas.DataFrame.dropna`_, the same parameters can also be passed in.
 
 Next, we call the :code:`.process` method on the newly created Operator, and
-then pass in the input DataFrames. The Operator replaces all instances of :code:`red`
-with :code:`green` in both DataFrames, and returns them both in a list.
+then pass in the input DataFrames. The Operator drops each row with 
+missing values in both DataFrames, and returns them both in a list.
 
 Operators are more useful when combined together to execute a processing
 workflow. In the next section, we will see how to chain together multiple
