@@ -12,8 +12,8 @@ The interface for an Operator is simple:
             pass
 
 By subclassing from :code:`ProcessingOperator`, a user can build their own
-Operators. For example, suppose we needed an Operator that computes the rows of
-each DataFrame passed to it:
+Operators. For example, suppose we needed an Operator that computes the number of
+rows of each DataFrame passed to it:
 
 .. code-block:: python
 
@@ -24,7 +24,7 @@ each DataFrame passed to it:
             output = []
 
             for df in data_frames:
-                len(df.index)
+                output.append(len(df.index))
 
             return output
 

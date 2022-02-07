@@ -17,3 +17,4 @@ tasrif.egg-info/
 docs/build
 docs/source/tasrif.*.rst
 docs/_build/
+tasrif-env
