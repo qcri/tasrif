@@ -1,0 +1,29 @@
+modules:
+  - tasrif.processing_pipeline: [sequence]
+  - tasrif.data_readers.fitbit_interday_dataset: [fitbit_interday_dataset]
+  - tasrif.processing_pipeline.pandas: [convert_to_datetime, set_index]
+  - tasrif.processing_pipeline.custom: [create_feature, aggregate]
+
+pipeline:
+  - $sequence:
+    - $fitbit_interday_dataset:
+        folder_path: !ENV FITBIT_INTERDAY_PATH /mnt/data/fitbit-data/
+        table_name: Sleep
+    - $convert_to_datetime:
+        feature_names: [Start Time, End Time]
+        infer_datetime_format: true
+    - $create_feature:
+        feature_name: Date
+        feature_creator: lambda df:df['End Time'].date()
+    - $aggregate:
+        groupby_feature_names: Date
+        aggregation_definition:
+          Minutes Asleep: 'sum'
+          Minutes Awake: 'sum'
+          Number of Awakenings: 'sum'
+          Time in Bed: 'sum'
+          Minutes REM Sleep: 'sum'
+          Minutes Light Sleep: 'sum'
+          Minutes Deep Sleep: 'sum'
+    - $set_index:
+        keys: Date
