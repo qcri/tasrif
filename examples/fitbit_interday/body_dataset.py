@@ -3,7 +3,7 @@ from tasrif.processing_pipeline import SequenceOperator
 from tasrif.data_readers.fitbit_interday_dataset import FitbitInterdayDataset
 from tasrif.processing_pipeline.pandas import ConvertToDatetimeOperator, SetIndexOperator
 
-interday_folder_path = os.environ['FITBIT_INTERDAY_PATH']
+interday_folder_path = os.environ.get('FITBIT_INTERDAY_PATH', '/mnt/data/fitbit-data/')
 
 pipeline = SequenceOperator([
     FitbitInterdayDataset(interday_folder_path, table_name="Body"),
