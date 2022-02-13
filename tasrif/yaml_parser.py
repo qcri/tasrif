@@ -26,7 +26,7 @@ def from_yaml(stream):
     """
     yaml_file = yaml.load(stream, Loader=get_loader())
     context = load_modules(yaml_file['modules'])
-    return parse(yaml_file['pipeline'], context)[0]
+    return parse(yaml_file['pipeline'], context)
 
 
 def from_json(stream):

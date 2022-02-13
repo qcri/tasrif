@@ -5,7 +5,7 @@ modules:
   - tasrif.processing_pipeline.custom: [drop_index_duplicates, resample]
 
 pipeline:
-  - $sequence:
+  $sequence:
     - $fitbit_intraday_dataset:
         folder_path: ${FITBIT_INTRADAY_PATH}
         table_name: Heart_Rate

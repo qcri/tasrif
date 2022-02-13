@@ -5,7 +5,7 @@ modules:
   - tasrif.processing_pipeline.custom: [create_feature, aggregate]
 
 pipeline:
-  - $sequence:
+  $sequence:
     - $fitbit_interday_dataset:
         folder_path: ${FITBIT_INTERDAY_PATH}
         table_name: Sleep

@@ -4,7 +4,7 @@ modules:
   - tasrif.processing_pipeline.pandas: [convert_to_datetime, set_index, json_normalize, as_type]
 
 pipeline:
-  - $sequence:
+  $sequence:
     - $fitbit_intraday_dataset:
         folder_path: ${FITBIT_INTRADAY_PATH}
         table_name: Very_Active_Minutes

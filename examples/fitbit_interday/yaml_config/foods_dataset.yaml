@@ -4,7 +4,7 @@ modules:
   - tasrif.processing_pipeline.pandas: [convert_to_datetime, set_index]
 
 pipeline:
-  - $sequence:
+  $sequence:
     - $fitbit_interday_dataset:
         folder_path: ${FITBIT_INTERDAY_PATH}
         table_name: Foods

@@ -6,7 +6,7 @@ modules:
 
 
 pipeline:
-  - $sequence:
+  $sequence:
     - $fitbit_intraday_dataset:
         folder_path: ${FITBIT_INTRADAY_PATH}
         table_name: Steps
