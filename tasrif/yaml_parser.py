@@ -9,16 +9,14 @@ import importlib
 
 env_pattern = re.compile(r".*?\${(.*?)}.*?")
 def env_constructor(loader, node):
-    components = loader.construct_scalar(node).split()
-    for group in env_pattern.findall(components[0]):
-        if len(components) == 2:
-            value = components[0].replace(f"${{{group}}}", os.environ.get(group, components[1]))
-        else:
-            value = components[0].replace(f"${{{group}}}", os.environ.get(group))
+    value = loader.construct_scalar(node)
+    for group in env_pattern.findall(value):
+        value = value.replace(f"${{{group}}}", os.environ.get(group))
     return value
 
 def get_loader():
     loader = yaml.SafeLoader
+    loader.add_implicit_resolver("!ENV", env_pattern, None)
     loader.add_constructor("!ENV", env_constructor)
     return loader
 
@@ -88,9 +86,7 @@ def create_operator(key, value, context):
     operator_specs = key[1:].split('.')
     operator = None
 
-    # print(key, value)
     for i, operator_spec in enumerate(operator_specs):
-        # print(i, operator_spec)
         if i == 0:
             if isinstance(value, list):
                 if operator_spec == "sequence" or operator_spec == "compose":
@@ -140,7 +136,7 @@ def load_modules(modules):
 
 if __name__ == "__main__":
     # with open("example.yaml", "r") as stream:
-    with open("./examples/fitbit_intraday/yaml_config/sleep_dataset.yaml", "r") as stream:
+    with open("./examples/my_heart_counts/yaml_config/healthkit_dataset.yaml", "r") as stream:
         try:
             p = from_yaml(stream)
             df = p.process()

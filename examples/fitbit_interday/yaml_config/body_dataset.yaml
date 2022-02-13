@@ -6,7 +6,7 @@ modules:
 pipeline:
   - $sequence:
     - $fitbit_interday_dataset:
-        folder_path: !ENV ${FITBIT_INTERDAY_PATH} /mnt/data/fitbit-data/
+        folder_path: ${FITBIT_INTERDAY_PATH}
         table_name: Body
     - $convert_to_datetime:
         feature_names: [Date]
