@@ -25,7 +25,7 @@ from tasrif.processing_pipeline.custom import (
 from tasrif.processing_pipeline.tsfresh import TSFreshFeatureExtractorOperator
 
 
-df = pd.read_csv("./minuteSleep_merged_2.csv")
+df = pd.read_csv("../quick_start/activity_long.csv")
 df['date'] = pd.to_datetime(df['date'])
 
 
@@ -128,22 +128,34 @@ aggregate
 aggregate_ids = aggregate.Id.unique()
 
 pipeline = SequenceOperator([
-    ReadCsvOperator('./fifteenMinuteSteps_merged.csv'),
+    ReadCsvOperator('../quick_start/steps_long.csv'),
     ConvertToDatetimeOperator(['ActivityMinute']),
 ])
 
 steps = pipeline.process()[0]
 steps['time'] = steps['ActivityMinute'].dt.strftime("%H:%M")
 
-# Filter aggregate set
+# # Filter aggregate set
 aggregate = aggregate[aggregate.Id.isin(steps.Id.unique())]
 
 # Need logId in steps, so that X, y samples are equal in number
-steps = steps.merge(aggregate, how='inner', on='Id')
-steps['between_time'] = (steps['ActivityMinute'] <= steps['end']) & ((steps['ActivityMinute'] >= steps['start']))
-steps = steps[steps['between_time'] == True] # This let's us know which logId belongs to the current ActivityMinute
-steps = steps[steps['main sleep'] == True]
-steps['tsfresh_id'] = steps['Id'].astype(str) + '_' + steps['logId'].astype(str)
+between_sleep = steps.merge(aggregate, how='inner', on='Id')
+between_sleep['between_time'] = (between_sleep['ActivityMinute'] <= between_sleep['end']) & ((between_sleep['ActivityMinute'] >= between_sleep['start']))
+between_sleep = between_sleep[between_sleep['between_time'] == True] # This let's us know which logId belongs to the current ActivityMinute
+between_sleep = between_sleep[between_sleep['main sleep'] == True]
+between_sleep['tsfresh_Id'] = between_sleep['Id'].astype(str) + '_' + between_sleep['logId'].astype(str)
+
+steps = steps.merge(between_sleep, how='left', on=['Id', 'ActivityMinute'])
+
+steps = steps.rename(columns={
+    'time_x': 'time',
+    'Steps_x': 'Steps',
+})
+
+steps = steps.drop(columns=['time_y', 'Steps_y'])
+steps['logId'] = steps['logId'].fillna(0).astype(int) # Indicate that non sleep has logId of 0
+steps['between_time'] = steps['between_time'].fillna(False)
+steps['tsfresh_Id'] = steps['Id'].astype(str) + '_' + steps['logId'].astype(str)
 # -
 
 # Form y
@@ -158,10 +170,22 @@ y
 # Form X
 
 operator = TSFreshFeatureExtractorOperator(
-    seq_id_col="tsfresh_id", 
+    seq_id_col="tsfresh_Id", 
     date_feature_name='time',
     value_col='Steps',
     labels=y['Sleep Efficiency'],
 )
 
-X = operator.process(steps)[0]
+if not between_sleep.empty:
+    X_sleep = operator.process(between_sleep)[0]
+
+# +
+# Form X
+# There can be an additional step where we add seq_id to steps[steps['logId'] == 0]
+operator = TSFreshFeatureExtractorOperator(
+    seq_id_col="tsfresh_Id", 
+    date_feature_name='time',
+    value_col='Steps'
+)
+
+X_activity = operator.process(steps[steps['logId'] == 0])[0]
