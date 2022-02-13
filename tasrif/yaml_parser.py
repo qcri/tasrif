@@ -120,7 +120,7 @@ def create_operator(key, value, context):
 
 def get_operator_name(spec):
     components = spec.split('_')
-    name = ''.join(x.title() for x in components)
+    name = ''.join(x[:1].upper() + x[1:] for x in components)
     if spec.endswith('dataset'):
         return name
     return name + 'Operator'
