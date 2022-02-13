@@ -7,19 +7,19 @@ pipeline:
   - $sequence:
     - $compose:
       - $fitbit_intraday_dataset:
-          folder_path: !ENV FITBIT_INTRADAY_PATH /mnt/data/fitbit-data/fitbit-interday-sample.csv/
+          folder_path: !ENV ${FITBIT_INTRADAY_PATH} /mnt/data/fitbit-data/fitbit-interday-sample.csv/
           table_name: Very_Active_Minutes
           num_files: 5
       - $fitbit_intraday_dataset:
-          folder_path: !ENV FITBIT_INTRADAY_PATH /mnt/data/fitbit-data/fitbit-interday-sample.csv/
+          folder_path: !ENV ${FITBIT_INTRADAY_PATH} /mnt/data/fitbit-data/fitbit-interday-sample.csv/
           table_name: Lightly_Active_Minutes
           num_files: 5
       - $fitbit_intraday_dataset:
-          folder_path: !ENV FITBIT_INTRADAY_PATH /mnt/data/fitbit-data/fitbit-interday-sample.csv/
+          folder_path: !ENV ${FITBIT_INTRADAY_PATH} /mnt/data/fitbit-data/fitbit-interday-sample.csv/
           table_name: Moderately_Active_Minutes
           num_files: 5
       - $fitbit_intraday_dataset:
-          folder_path: !ENV FITBIT_INTRADAY_PATH /mnt/data/fitbit-data/fitbit-interday-sample.csv/
+          folder_path: !ENV ${FITBIT_INTRADAY_PATH} /mnt/data/fitbit-data/fitbit-interday-sample.csv/
           table_name: Sedentary_Minutes
           num_files: 5
     - $json_normalize

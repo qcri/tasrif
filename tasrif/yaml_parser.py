@@ -3,17 +3,19 @@ from importlib.abc import Loader
 import json
 
 import os
+import re
 import yaml
 import importlib
 
+env_pattern = re.compile(r".*?\${(.*?)}.*?")
 def env_constructor(loader, node):
     components = loader.construct_scalar(node).split()
-    try:
-        return os.environ[components[0]]
-    except KeyError:
+    for group in env_pattern.findall(components[0]):
         if len(components) == 2:
-            return components[1]
-        return KeyError
+            value = components[0].replace(f"${{{group}}}", os.environ.get(group, components[1]))
+        else:
+            value = components[0].replace(f"${{{group}}}", os.environ.get(group))
+    return value
 
 def get_loader():
     loader = yaml.SafeLoader
@@ -86,11 +88,12 @@ def create_operator(key, value, context):
     operator_specs = key[1:].split('.')
     operator = None
 
+    # print(key, value)
     for i, operator_spec in enumerate(operator_specs):
+        # print(i, operator_spec)
         if i == 0:
             if isinstance(value, list):
                 if operator_spec == "sequence" or operator_spec == "compose":
-                    # TODO: error message when not imported
                     operator = get_operator(operator_spec, context)(value)
                 else:
                     args = []
@@ -137,7 +140,7 @@ def load_modules(modules):
 
 if __name__ == "__main__":
     # with open("example.yaml", "r") as stream:
-    with open("./examples/fitbit_interday/yaml_config/sleep_dataset.yaml", "r") as stream:
+    with open("./examples/fitbit_intraday/yaml_config/sleep_dataset.yaml", "r") as stream:
         try:
             p = from_yaml(stream)
             df = p.process()
