@@ -1,0 +1,22 @@
+modules:
+  - tasrif.processing_pipeline: [sequence]
+  - tasrif.data_readers.fitbit_intraday_dataset: [fitbit_intraday_dataset]
+  - tasrif.processing_pipeline.pandas: [convert_to_datetime, set_index, json_normalize, as_type]
+  - tasrif.processing_pipeline.custom: [distributed_upsample]
+
+pipeline:
+  - $sequence:
+    - $fitbit_intraday_dataset:
+        folder_path: !ENV FITBIT_INTRADAY_PATH /mnt/data/fitbit-data/fitbit-interday-sample.csv/
+        table_name: Calories
+    - $json_normalize
+    - $convert_to_datetime:
+        feature_names: [dateTime]
+        infer_datetime_format: true
+    - $set_index:
+        keys: dateTime
+    - $as_type:
+        dtype:
+          value: float32
+    - $distributed_upsample:
+        rule: 30s

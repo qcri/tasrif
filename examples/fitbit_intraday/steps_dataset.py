@@ -20,3 +20,17 @@ pipeline = SequenceOperator([
 df = pipeline.process()
 
 print(df)
+
+import tasrif.yaml_parser as yaml_parser
+import yaml
+
+with open("yaml_config/steps_dataset.yaml", "r") as stream:
+    try:
+#         print(json.dumps(yaml.safe_load(stream), indent=4, sort_keys=True))
+        p = yaml_parser.from_yaml(stream)
+    except yaml.YAMLError as exc:
+        print(exc)
+
+df = p.process()
+
+print(df)

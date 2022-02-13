@@ -1,0 +1,20 @@
+modules:
+  - tasrif.processing_pipeline: [sequence]
+  - tasrif.data_readers.fitbit_intraday_dataset: [fitbit_intraday_dataset]
+  - tasrif.processing_pipeline.pandas: [convert_to_datetime, set_index, json_normalize, as_type]
+
+pipeline:
+  - $sequence:
+    - $fitbit_intraday_dataset:
+        folder_path: !ENV FITBIT_INTRADAY_PATH /mnt/data/fitbit-data/fitbit-interday-sample.csv/
+        table_name: Lightly_Active_Minutes
+        num_files: 5
+    - $json_normalize
+    - $convert_to_datetime:
+        feature_names: [dateTime]
+        infer_datetime_format: true
+    - $set_index:
+        keys: dateTime
+    - $as_type:
+        dtype:
+          value: int32
