@@ -1,0 +1,25 @@
+modules:
+  - tasrif.processing_pipeline: [sequence]
+  - tasrif.data_readers.my_heart_counts: [my_heart_counts_dataset]
+  - tasrif.processing_pipeline.custom: [create_feature, read_nested_csv, aggregate]
+  - tasrif.processing_pipeline.pandas: [convert_to_datetime, drop_NA, drop_features, set_index, pivot_reset_columns]
+
+csv_pipeline: &csv_pipeline
+  $sequence:
+    - $drop_NA
+    - $aggregate:
+        groupby_feature_names: [startTime, type]
+        aggregation_definition:
+          value: sum
+    - $pivot_reset_columns:
+        level: 1
+        columns: type
+
+pipeline:
+  $sequence:
+    - $my_heart_counts_dataset:
+        path_name: ${MYHEARTCOUNTS}
+        table_name: healthkitsleep
+        nested_files_path: ${MYHEARTCOUNTS}HealthKit Sleep/data.csv/
+        participants: 5
+        nested_files_pipeline: *csv_pipeline

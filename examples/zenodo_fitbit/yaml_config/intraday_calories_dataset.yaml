@@ -1,0 +1,33 @@
+modules:
+  - tasrif.processing_pipeline: [sequence, compose, noop]
+  - tasrif.data_readers.zenodo_fitbit_dataset: [zenodo_fitbit_dataset]
+  - tasrif.processing_pipeline.custom: [aggregate, resample]
+  - tasrif.processing_pipeline.pandas: [convert_to_datetime, set_index, groupby, reset_index]
+
+HOURLY_AGGREGATION_DEFINITION: &HOURLY_AGGREGATION_DEFINITION
+  Calories: sum
+
+TOTAL_AGGREGATION_DEFINITION: &TOTAL_AGGREGATION_DEFINITION
+  Calories: [mean, std]
+
+pipeline:
+  $sequence:
+    - $zenodo_fitbit_dataset:
+        folder_path: ${ZENODOFITBIT_PATH}
+        table_name: IntradayCalories
+    - $convert_to_datetime:
+        feature_names: [ActivityMinute]
+        format: '%m/%d/%Y %I:%M:%S %p'
+    - $set_index:
+        keys: ActivityMinute
+    - $groupby:
+        by: Id
+    - $resample:
+        rule: H
+        aggregation_definition: *HOURLY_AGGREGATION_DEFINITION
+    - $reset_index
+    - $compose:
+        - $noop
+        - $aggregate:
+            groupby_feature_names: [Id]
+            aggregation_definition: *TOTAL_AGGREGATION_DEFINITION
