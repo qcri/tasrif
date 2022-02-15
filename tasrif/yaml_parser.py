@@ -1,3 +1,23 @@
+"""
+Package for parsing YAML specifications for tasrif pipelines
+
+The YAML file defines 2 sections, modules and pipeline.
+
+modules:
+Packages that are used in the pipeline are defined.
+
+For operators imported from Tasrif, simply separate each word
+in the operator name with an underscore, and use lowercase.
+You should also omit 'Operator' from the end.
+
+e.g. ConvertToDatetimeOperator -> convert_to_datetime
+
+
+pipeline:
+All operators should be preceeded by $ to identify them as operators.
+"""
+
+
 from asyncore import readwrite
 from importlib.abc import Loader
 import json
@@ -8,11 +28,14 @@ import yaml
 import importlib
 
 env_pattern = re.compile(r".*?\${(.*?)}.*?")
+
+
 def env_constructor(loader, node):
     value = loader.construct_scalar(node)
     for group in env_pattern.findall(value):
         value = value.replace(f"${{{group}}}", os.environ.get(group))
     return value
+
 
 def get_loader():
     loader = yaml.SafeLoader
@@ -20,13 +43,14 @@ def get_loader():
     loader.add_constructor("!ENV", env_constructor)
     return loader
 
-def from_yaml(stream):
+
+def from_yaml(stream, pipeline_name='pipeline'):
     """
     Runs parser for YAML files
     """
     yaml_file = yaml.load(stream, Loader=get_loader())
     context = load_modules(yaml_file['modules'])
-    return parse(yaml_file['pipeline'], context)
+    return parse(yaml_file[pipeline_name], context)
 
 
 def from_json(stream):
@@ -74,12 +98,15 @@ def parse(obj, context):
 
     return parsed
 
+
 def get_operator(spec, context):
     try:
         return context[spec]
     except KeyError as error:
-        print(f"Error: Operator ${spec} is not defined. Make sure you are importing it in the modules section.")
+        print(
+            f"Error: Operator ${spec} is not defined. Make sure you are importing it in the modules section.")
         raise
+
 
 def create_operator(key, value, context):
     key = key.replace('map', 'map_iterable')
@@ -99,7 +126,8 @@ def create_operator(key, value, context):
                             kwargs[item[0]] = item[1]
                         else:
                             args.append(item)
-                    operator = get_operator(operator_spec, context)(*args, **kwargs)
+                    operator = get_operator(
+                        operator_spec, context)(*args, **kwargs)
             elif isinstance(value, dict):
                 operator = get_operator(operator_spec, context)(**value)
             else:
@@ -135,8 +163,7 @@ def load_modules(modules):
 
 
 if __name__ == "__main__":
-    # with open("example.yaml", "r") as stream:
-    with open("./examples/my_heart_counts/yaml_config/healthkit_dataset.yaml", "r") as stream:
+    with open("example.yaml", "r") as stream:
         try:
             p = from_yaml(stream)
             df = p.process()
