@@ -21,4 +21,7 @@ RUN pip3 install --use-deprecated=legacy-resolver -e .
 COPY run-pylint.sh /home
 COPY run-darglint.sh /home
 
+# copy quick start example files
+COPY examples/quick_start /home/examples/quick_start
+
 COPY / /home

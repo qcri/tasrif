@@ -24,8 +24,7 @@ from tasrif.processing_pipeline.custom import (
 
 from tasrif.processing_pipeline.tsfresh import TSFreshFeatureExtractorOperator
 
-
-df = pd.read_csv("../quick_start/activity_long.csv")
+df = pd.read_csv(os.environ['EXAMPLES_PATH'] + "activity_long.csv")
 df['date'] = pd.to_datetime(df['date'])
 
 
@@ -128,7 +127,7 @@ aggregate
 aggregate_ids = aggregate.Id.unique()
 
 pipeline = SequenceOperator([
-    ReadCsvOperator('../quick_start/steps_long.csv'),
+    ReadCsvOperator(os.environ['EXAMPLES_PATH'] + 'steps_long.csv'),
     ConvertToDatetimeOperator(['ActivityMinute']),
 ])
 
