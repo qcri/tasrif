@@ -1,7 +1,5 @@
 """Module that defines the MapProcessingOperator class
 """
-import abc
-
 import ray
 
 from tasrif.processing_pipeline.map_processing_operator import MapProcessingOperator
