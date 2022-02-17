@@ -16,8 +16,11 @@
 # %%
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from tasrif.processing_pipeline.custom import NormalizeOperator
-from tasrif.processing_pipeline.custom import NormalizeTransformOperator
+
+from tasrif.processing_pipeline.custom import (
+    NormalizeOperator,
+    NormalizeTransformOperator,
+)
 
 df = pd.DataFrame([
     [1, "2020-05-01 00:00:00", 10],

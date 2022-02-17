@@ -2,9 +2,11 @@
 Operator that returns an iterator of json data.
 """
 import json
+
 import pandas as pd
 
 from tasrif.processing_pipeline import ProcessingOperator
+
 
 class JsonPivotOperator(ProcessingOperator):
     """

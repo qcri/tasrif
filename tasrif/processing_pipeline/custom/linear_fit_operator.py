@@ -2,8 +2,8 @@
 Operator to fit features to target columns using sklearn's linear regression
 """
 import numpy as np
-from sklearn.linear_model import LinearRegression
-from sklearn.linear_model import LogisticRegression
+from sklearn.linear_model import LinearRegression, LogisticRegression
+
 from tasrif.processing_pipeline import ProcessingOperator
 
 

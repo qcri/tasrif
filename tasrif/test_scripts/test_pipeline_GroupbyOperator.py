@@ -12,13 +12,12 @@
 #     name: python3
 # ---
 
-# %%
-import pandas as pd
 import numpy as np
 
+# %%
+import pandas as pd
+
 from tasrif.processing_pipeline.pandas import GroupbyOperator
-
-
 
 df = pd.DataFrame([
     [1,'2016-03-12 01:00:00',10],

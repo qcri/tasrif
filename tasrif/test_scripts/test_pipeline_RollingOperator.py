@@ -14,6 +14,7 @@
 
 # %%
 import pandas as pd
+
 from tasrif.processing_pipeline.pandas import RollingOperator
 
 df = pd.DataFrame({'B': [0, 1, 2, 3, 4]})

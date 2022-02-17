@@ -16,8 +16,13 @@
 # %load_ext autoreload
 # %autoreload 2
 import pandas as pd
-from tasrif.processing_pipeline import SequenceOperator, ProcessingOperator, ScopedProcessingOperator, Variable
 
+from tasrif.processing_pipeline import (
+    ProcessingOperator,
+    ScopedProcessingOperator,
+    SequenceOperator,
+    Variable,
+)
 
 # %%
 df1 = pd.DataFrame({'id': [1, 2, 3], 'cities': ['Rome', 'Barcelona', 'Stockholm']})

@@ -16,11 +16,11 @@ collected by crowd sourcing.
 """
 
 import pathlib
+
 import pandas as pd
 
-from tasrif.processing_pipeline import (
-    ProcessingOperator,
-)
+from tasrif.processing_pipeline import ProcessingOperator
+
 
 class ZenodoFitbitDataset(ProcessingOperator):
     """Base class for all Zenodo fitbit datasets

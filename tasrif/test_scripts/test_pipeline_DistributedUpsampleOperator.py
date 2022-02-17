@@ -14,7 +14,9 @@
 
 # %%
 import pandas as pd
+
 from tasrif.processing_pipeline.custom import DistributedUpsampleOperator
+
 df = pd.DataFrame([
     ["2020-05-01", 16.5],
     ["2020-05-02", 19.1],

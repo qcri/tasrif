@@ -15,10 +15,12 @@ Module that provides classes to work with a exported withings dataset
 
 """
 
-import pathlib
 import datetime
+import pathlib
 import re
+
 import pandas as pd
+
 from tasrif.processing_pipeline import ProcessingOperator
 
 

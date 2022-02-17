@@ -17,11 +17,12 @@
 # %autoreload 2
 
 from datetime import timedelta
+
 import numpy as np
 import pandas as pd
 import seaborn as sns
-from tasrif.processing_pipeline.custom import CategorizeDurationOperator
 
+from tasrif.processing_pipeline.custom import CategorizeDurationOperator
 
 dates = pd.date_range('2016-12-31', '2017-01-08', freq='D').to_series()
 df = pd.DataFrame()

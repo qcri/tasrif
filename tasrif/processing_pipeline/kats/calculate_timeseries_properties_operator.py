@@ -4,7 +4,9 @@ Operator to aggregate column features based on a column
 
 from kats.consts import TimeSeriesData
 from kats.tsfeatures.tsfeatures import TsFeatures
+
 from tasrif.processing_pipeline import ProcessingOperator
+
 
 class CalculateTimeseriesPropertiesOperator(ProcessingOperator):
     """

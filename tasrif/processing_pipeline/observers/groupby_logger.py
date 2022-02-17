@@ -2,6 +2,7 @@
 """
 from tasrif.processing_pipeline.observers.functional_observer import FunctionalObserver
 
+
 class GroupbyLogger(FunctionalObserver):
     """GroupbyLogger class to log a dataframe after grouping
     """

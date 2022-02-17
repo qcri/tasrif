@@ -9,8 +9,9 @@ Available datasets
     - Sleep
 """
 
-import pathlib
 import json
+import pathlib
+
 from tasrif.processing_pipeline import ProcessingOperator
 
 

@@ -2,6 +2,7 @@
 """
 from tasrif.processing_pipeline.processing_operator import ProcessingOperator
 
+
 class ScopedProcessingOperator(ProcessingOperator):
     """ Class represented a scoped operation where the operation is strictly defined as a lambda function
     taking any arguments and returning a ProcessingOperator

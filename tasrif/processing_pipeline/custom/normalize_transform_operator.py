@@ -2,10 +2,13 @@
 Operator to normalize the integer/float values in a dataframe
 """
 import numpy as np
-from sklearn.preprocessing import StandardScaler
-from sklearn.preprocessing import MinMaxScaler
-from sklearn.preprocessing import MaxAbsScaler
-from sklearn.preprocessing import RobustScaler
+from sklearn.preprocessing import (
+    MaxAbsScaler,
+    MinMaxScaler,
+    RobustScaler,
+    StandardScaler,
+)
+
 from tasrif.processing_pipeline import ProcessingOperator
 
 

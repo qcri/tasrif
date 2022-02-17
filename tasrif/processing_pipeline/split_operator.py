@@ -2,8 +2,10 @@
 """
 
 import ray
-from tasrif.processing_pipeline.processing_operator import ProcessingOperator
+
 from tasrif.processing_pipeline.parallel_operator import ParallelOperator
+from tasrif.processing_pipeline.processing_operator import ProcessingOperator
+
 
 class SplitOperator(ParallelOperator):
     """Class representing a split operation. The input coming into this operator is split into

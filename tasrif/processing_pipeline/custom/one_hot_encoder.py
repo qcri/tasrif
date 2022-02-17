@@ -2,8 +2,8 @@
 Operator to encode (transform) categorical features as a one-hot numeric array.
 """
 import pandas as pd
-from tasrif.processing_pipeline import ProcessingOperator
 
+from tasrif.processing_pipeline import ProcessingOperator
 
 
 class OneHotEncoderOperator(ProcessingOperator):

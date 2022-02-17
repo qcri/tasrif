@@ -2,6 +2,7 @@
 """
 from tasrif.processing_pipeline.processing_operator import ProcessingOperator
 
+
 class PandasOperator(ProcessingOperator):
     """Interface specification of a pandas operator
     """

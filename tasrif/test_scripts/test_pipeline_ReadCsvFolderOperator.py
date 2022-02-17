@@ -16,14 +16,14 @@
 # # In order to test ReadCsvFolderOperator, the following is required:
 # - Two small csv files to be saved in disk in order to test 
 
-# %%
-import pandas as pd
 import numpy as np
 
+# %%
+import pandas as pd
+
+from tasrif.processing_pipeline import SequenceOperator
 from tasrif.processing_pipeline.custom import ReadCsvFolderOperator
 from tasrif.processing_pipeline.pandas import ConcatOperator
-from tasrif.processing_pipeline import SequenceOperator
-
 
 details1 = pd.DataFrame({'calories': [360, 540],
                          'time': [pd.Timestamp("2015-04-25"), pd.Timestamp("2015-04-26")]

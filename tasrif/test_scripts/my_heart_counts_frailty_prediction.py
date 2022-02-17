@@ -14,14 +14,35 @@
 
 # %%
 import os
+
 import pandas as pd
+
 from tasrif.data_readers.my_heart_counts import MyHeartCountsDataset
-from tasrif.processing_pipeline import SequenceOperator, MapProcessingOperator, ReduceProcessingOperator
-from tasrif.processing_pipeline.pandas import DropNAOperator, ConvertToDatetimeOperator, DropFeaturesOperator, \
-                                              SetIndexOperator, PivotResetColumnsOperator, ConcatOperator, \
-                                              MergeOperator, AsTypeOperator, JsonNormalizeOperator, SortOperator
-from tasrif.processing_pipeline.custom import CreateFeatureOperator, AggregateOperator, FilterOperator, \
-                                              ReadNestedCsvOperator, IterateJsonOperator, FlattenOperator
+from tasrif.processing_pipeline import (
+    MapProcessingOperator,
+    ReduceProcessingOperator,
+    SequenceOperator,
+)
+from tasrif.processing_pipeline.custom import (
+    AggregateOperator,
+    CreateFeatureOperator,
+    FilterOperator,
+    FlattenOperator,
+    IterateJsonOperator,
+    ReadNestedCsvOperator,
+)
+from tasrif.processing_pipeline.pandas import (
+    AsTypeOperator,
+    ConcatOperator,
+    ConvertToDatetimeOperator,
+    DropFeaturesOperator,
+    DropNAOperator,
+    JsonNormalizeOperator,
+    MergeOperator,
+    PivotResetColumnsOperator,
+    SetIndexOperator,
+    SortOperator,
+)
 
 # %%
 # First, we extract six minute walk activity step count for each participant. Note that

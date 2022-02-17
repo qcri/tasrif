@@ -4,14 +4,14 @@
 import calendar
 from datetime import timedelta
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-from matplotlib import dates
+from matplotlib import cm, dates
 from matplotlib.colors import LinearSegmentedColormap
-from matplotlib import cm
 
 from tasrif.processing_pipeline.observers.functional_observer import FunctionalObserver
+
 
 class VisualizeDaysObserver(FunctionalObserver):  # pylint: disable=R0902
     """DataprepObserver class to create a report for a dataframe

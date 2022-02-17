@@ -14,7 +14,9 @@
 
 # +
 import pandas as pd
+
 from tasrif.processing_pipeline.pandas import PivotResetColumnsOperator
+
 df = pd.DataFrame([
     [1, "2020-05-01 00:00:00", 1],
     [1, "2020-05-01 01:00:00", 1],

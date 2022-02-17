@@ -5,6 +5,7 @@ Renames dataframe elements (rows, columns) using Pandas rename method.
 from tasrif.processing_pipeline import PandasOperator
 from tasrif.processing_pipeline.validators import InputsAreDataFramesValidatorMixin
 
+
 class RenameOperator(InputsAreDataFramesValidatorMixin, PandasOperator):
     """
 

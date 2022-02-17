@@ -26,7 +26,9 @@ Wearable Data:
 
 """
 import pathlib
+
 import pandas as pd
+
 from tasrif.processing_pipeline import ProcessingOperator
 
 

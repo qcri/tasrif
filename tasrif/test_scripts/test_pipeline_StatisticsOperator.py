@@ -19,6 +19,7 @@
 
 # %% pycharm={"name": "#%%\n"}
 import pandas as pd
+
 from tasrif.processing_pipeline.custom import StatisticsOperator
 
 df = pd.DataFrame( [

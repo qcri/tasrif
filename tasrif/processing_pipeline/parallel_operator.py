@@ -1,7 +1,9 @@
 """Module that defines the RayOperator class
 """
 import ray
+
 from tasrif.processing_pipeline.processing_operator import ProcessingOperator
+
 
 class ParallelOperator(ProcessingOperator):
     """Interface specification of an operator that uses ray

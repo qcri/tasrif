@@ -2,6 +2,7 @@
 Operator to visualize participant ID activity per day
 """
 import pandas as pd
+
 from tasrif.processing_pipeline import ProcessingOperator
 
 

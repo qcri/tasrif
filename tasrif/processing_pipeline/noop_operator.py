@@ -3,6 +3,7 @@
 
 from tasrif.processing_pipeline.processing_operator import ProcessingOperator
 
+
 class NoopOperator(ProcessingOperator):
     """Class representing a noop operator. This operator does nothing to the input and simply passes the input.
     """

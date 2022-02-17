@@ -12,12 +12,12 @@
 #     name: python3
 # ---
 
-# %%
-import pandas as pd
 import numpy as np
 
-from tasrif.processing_pipeline.custom import AggregateOperator
-from tasrif.processing_pipeline.custom import LinearFitOperator
+# %%
+import pandas as pd
+
+from tasrif.processing_pipeline.custom import AggregateOperator, LinearFitOperator
 
 df = pd.DataFrame([['001', 25, 30], ['001', 17, 50], ['002', 20, 40], ['002', 21, 42]],
                      columns=['pid', 'min_activity', 'max_activity'])

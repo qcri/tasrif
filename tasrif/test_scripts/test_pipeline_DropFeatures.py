@@ -13,9 +13,10 @@
 #     name: python3
 # ---
 
+import numpy as np
+
 # %%
 import pandas as pd
-import numpy as np
 
 # import tasrif.processing_pipeline
 from tasrif.processing_pipeline.pandas import DropFeaturesOperator

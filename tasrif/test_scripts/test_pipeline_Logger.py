@@ -16,9 +16,14 @@
 # %load_ext autoreload
 # %autoreload 2
 import pandas as pd
+
+from tasrif.processing_pipeline import Observer, SequenceOperator
+from tasrif.processing_pipeline.observers import (
+    FunctionalObserver,
+    GroupbyLogger,
+    Logger,
+)
 from tasrif.processing_pipeline.pandas import RenameOperator
-from tasrif.processing_pipeline.observers import FunctionalObserver, Logger, GroupbyLogger
-from tasrif.processing_pipeline import SequenceOperator, Observer
 
 # %%
 df = pd.DataFrame([

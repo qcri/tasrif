@@ -14,7 +14,9 @@
 
 # %%
 import pandas as pd
+
 from tasrif.processing_pipeline.custom import JqOperator
+
 df = [
   {
     "date": "2020-01-01",

@@ -1,10 +1,12 @@
 # +
 import numpy as np
 import pandas as pd
-from tasrif.processing_pipeline import SequenceOperator, NoopOperator
+
+from tasrif.processing_pipeline import NoopOperator, SequenceOperator
 from tasrif.processing_pipeline.custom import SetStartHourOfDayOperator
 from tasrif.processing_pipeline.observers import VisualizeDaysObserver
 from tasrif.processing_pipeline.pandas import FillNAOperator
+
 
 def generate_days(periods, freq, participant=1, start_day="2018-01-01", name='startTime'):
     idx = pd.date_range(start_day, periods=periods, freq=freq, name='startTime')

@@ -3,8 +3,11 @@
 
 import pathlib
 from io import StringIO
+
 import pandas as pd
+
 from tasrif.processing_pipeline import ProcessingOperator
+
 
 class FitbitInterdayDataset(ProcessingOperator):
     """Base class for all fitbit interday datasets

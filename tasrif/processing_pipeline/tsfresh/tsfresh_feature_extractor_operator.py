@@ -3,6 +3,7 @@ Operator to extract features from a dataframe
 """
 
 from tsfresh import extract_features, extract_relevant_features
+
 from tasrif.processing_pipeline import ProcessingOperator
 
 

@@ -4,7 +4,9 @@ Operator to aggregate column features based on a column
 import pandas as pd
 
 from tasrif.processing_pipeline import ProcessingOperator
-from tasrif.processing_pipeline.custom.participation_overview_operator import ParticipationOverviewOperator
+from tasrif.processing_pipeline.custom.participation_overview_operator import (
+    ParticipationOverviewOperator,
+)
 
 
 class StatisticsOperator(ProcessingOperator):

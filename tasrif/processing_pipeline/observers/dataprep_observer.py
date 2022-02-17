@@ -1,7 +1,9 @@
 """Module that defines the Dataprep class
 """
-from dataprep.eda import plot, plot_correlation, plot_missing, create_report
+from dataprep.eda import create_report, plot, plot_correlation, plot_missing
+
 from tasrif.processing_pipeline.observers.functional_observer import FunctionalObserver
+
 
 class DataprepObserver(FunctionalObserver):
     """DataprepObserver class to create a report for a dataframe

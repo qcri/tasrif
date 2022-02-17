@@ -15,9 +15,9 @@
 
 # %%
 import pandas as pd
+
 from tasrif.processing_pipeline import MapIterableOperator
 from tasrif.processing_pipeline.pandas import DropNAOperator
-
 
 df1 = pd.DataFrame({
     'Date':   ['05-06-2021', '06-06-2021', '07-06-2021', '08-06-2021'],

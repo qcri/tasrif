@@ -2,6 +2,7 @@
 Operator to convert a column feature from string to datetime
 """
 import pandas as pd
+
 from tasrif.processing_pipeline import PandasOperator
 from tasrif.processing_pipeline.validators import InputsAreDataFramesValidatorMixin
 

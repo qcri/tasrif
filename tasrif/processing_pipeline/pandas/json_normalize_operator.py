@@ -2,7 +2,9 @@
 Normalize semi-structured JSON data into a flat table.
 """
 import pandas as pd
+
 from tasrif.processing_pipeline import PandasOperator
+
 
 class JsonNormalizeOperator(PandasOperator):
     """

@@ -13,10 +13,12 @@
 #     name: python3
 # ---
 
+import datetime
+
+import numpy as np
+
 # +
 import pandas as pd
-import numpy as np
-import datetime
 
 from tasrif.processing_pipeline.custom import FilterOperator
 

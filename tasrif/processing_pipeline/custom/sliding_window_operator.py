@@ -2,8 +2,8 @@
 Operator to slide a fixed length window across a timeseries dataframe
 """
 import pandas as pd
-
 from tqdm import tqdm
+
 from tasrif.processing_pipeline import ProcessingOperator
 
 

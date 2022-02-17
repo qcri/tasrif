@@ -3,12 +3,21 @@ Module that provides class to work with the MyHeartCounts dataset.
 """
 import pathlib
 import warnings
-import pandas as pd
-from tasrif.processing_pipeline import ProcessingOperator, SequenceOperator
-from tasrif.processing_pipeline.pandas import ConvertToDatetimeOperator, AsTypeOperator, DropNAOperator, SortOperator
-from tasrif.processing_pipeline.custom import ReadNestedCsvOperator, ReadNestedJsonOperator
-from tasrif.processing_pipeline.custom import FilterOperator
 
+import pandas as pd
+
+from tasrif.processing_pipeline import ProcessingOperator, SequenceOperator
+from tasrif.processing_pipeline.custom import (
+    FilterOperator,
+    ReadNestedCsvOperator,
+    ReadNestedJsonOperator,
+)
+from tasrif.processing_pipeline.pandas import (
+    AsTypeOperator,
+    ConvertToDatetimeOperator,
+    DropNAOperator,
+    SortOperator,
+)
 
 
 class MyHeartCountsDataset(ProcessingOperator):  # pylint: disable=R0902

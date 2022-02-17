@@ -4,6 +4,7 @@ Pivots a dataframe
 from tasrif.processing_pipeline import PandasOperator
 from tasrif.processing_pipeline.validators import InputsAreDataFramesValidatorMixin
 
+
 class PivotOperator(InputsAreDataFramesValidatorMixin, PandasOperator):
     """
     Pivots a dataframe.

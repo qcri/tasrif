@@ -16,6 +16,7 @@
 # %load_ext autoreload
 # %autoreload 2
 import pandas as pd
+
 from tasrif.processing_pipeline.custom import ParticipationOverviewOperator
 
 # %% pycharm={"name": "#%%\n"}

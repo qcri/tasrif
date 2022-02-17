@@ -1,9 +1,12 @@
 """Module that defines the MapProcessingOperator class
 """
 import abc
+
 import ray
-from tasrif.processing_pipeline.processing_operator import ProcessingOperator
+
 from tasrif.processing_pipeline.map_processing_operator import MapProcessingOperator
+from tasrif.processing_pipeline.processing_operator import ProcessingOperator
+
 
 class MapIterableOperator(MapProcessingOperator):
     """

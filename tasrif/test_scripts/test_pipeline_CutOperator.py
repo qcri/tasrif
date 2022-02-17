@@ -13,13 +13,14 @@
 #     name: python3
 # ---
 
-# +
-import pandas as pd
-import numpy as np
 import datetime
 
-from tasrif.processing_pipeline.pandas import CutOperator
+import numpy as np
 
+# +
+import pandas as pd
+
+from tasrif.processing_pipeline.pandas import CutOperator
 
 df = pd.DataFrame({
         'Time': pd.date_range('2018-01-01', '2018-01-10', freq='1H', closed='left'),

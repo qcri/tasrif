@@ -2,6 +2,7 @@
 Module that provides mixins for commonly-used validations.
 """
 import types
+
 import pandas as pd
 
 

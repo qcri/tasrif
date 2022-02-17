@@ -21,6 +21,7 @@
 
 # %%
 from tasrif.processing_pipeline.pandas import JsonNormalizeOperator
+
 data = [
     {
         "date": "2019-05-02",

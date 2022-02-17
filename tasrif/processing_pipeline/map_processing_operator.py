@@ -1,8 +1,11 @@
 """Module that defines the MapProcessingOperator class
 """
 import abc
+
 import ray
+
 from tasrif.processing_pipeline.parallel_operator import ParallelOperator
+
 
 class MapProcessingOperator(ParallelOperator, metaclass=abc.ABCMeta):
     """

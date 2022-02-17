@@ -5,6 +5,7 @@ Sum operator
 from tasrif.processing_pipeline import PandasOperator
 from tasrif.processing_pipeline.validators import GroupbyCompatibleValidatorMixin
 
+
 class SumOperator(GroupbyCompatibleValidatorMixin, PandasOperator):
     """
 

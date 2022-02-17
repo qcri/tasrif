@@ -11,12 +11,10 @@ Module that provides classes to work with a fitbit dataset dumped from SIHA
         - TimeInHeartRateZones, SedentaryActiveMinutes, LightlyActiveMinutes, ModerateActiveMinutes, VeryActiveMinutes
 """
 
-import pathlib
 import json
+import pathlib
 
-from tasrif.processing_pipeline import (
-    ProcessingOperator,
-)
+from tasrif.processing_pipeline import ProcessingOperator
 
 
 class SihaDataset(ProcessingOperator):

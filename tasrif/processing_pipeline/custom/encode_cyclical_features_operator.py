@@ -3,6 +3,7 @@ Operator to aggregate column features based on a column
 """
 
 from calendar import monthrange
+
 import numpy as np
 
 from tasrif.processing_pipeline import ProcessingOperator

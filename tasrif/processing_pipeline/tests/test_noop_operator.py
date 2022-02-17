@@ -1,5 +1,7 @@
 import pandas as pd
+
 from tasrif.processing_pipeline import NoopOperator
+
 
 def test_input_is_not_changed():
     input_dfs = [

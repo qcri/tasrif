@@ -14,7 +14,9 @@
 
 # %%
 import pandas as pd
+
 from tasrif.processing_pipeline.pandas import MeanOperator
+
 df = pd.DataFrame([
     [1, 1, 3],
     [1, 1, 5], 

@@ -1,7 +1,10 @@
 from posixpath import split
-from tasrif.processing_pipeline.processing_operator import ProcessingOperator
+
 import pytest
+
 from tasrif.processing_pipeline import SplitOperator
+from tasrif.processing_pipeline.processing_operator import ProcessingOperator
+
 
 class NotProcessingOperator:
     pass

@@ -1,7 +1,9 @@
-import pandas as pd
 import types
 
+import pandas as pd
+
 from tasrif.processing_pipeline.custom import ReadCsvFolderOperator
+
 
 def test_type_of_return_when_read_csv_folder_is_called(mocker):
     args = ['arg1', 'arg2']

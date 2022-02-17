@@ -5,6 +5,7 @@ import pyjq
 
 from tasrif.processing_pipeline import ProcessingOperator
 
+
 class JqOperator(ProcessingOperator):
     """
 

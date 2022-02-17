@@ -1,5 +1,11 @@
 import pytest
-from tasrif.processing_pipeline import ProcessingOperator, SequenceOperator, sequence_operator
+
+from tasrif.processing_pipeline import (
+    ProcessingOperator,
+    SequenceOperator,
+    sequence_operator,
+)
+
 
 class NotProcessingOperator:
     pass

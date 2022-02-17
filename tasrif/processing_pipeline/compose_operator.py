@@ -2,8 +2,10 @@
 """
 
 import ray
-from tasrif.processing_pipeline.processing_operator import ProcessingOperator
+
 from tasrif.processing_pipeline.parallel_operator import ParallelOperator
+from tasrif.processing_pipeline.processing_operator import ProcessingOperator
+
 
 class ComposeOperator(ParallelOperator):
     """Class representing a composiition of processing operators. The same data flows to all the

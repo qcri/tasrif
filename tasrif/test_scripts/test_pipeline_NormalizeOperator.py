@@ -15,7 +15,9 @@
 
 # %%
 import pandas as pd
+
 from tasrif.processing_pipeline.custom import NormalizeOperator
+
 df = pd.DataFrame([
     [1, "2020-05-01 00:00:00", 10],
     [1, "2020-05-01 01:00:00", 15], 

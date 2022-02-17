@@ -2,6 +2,7 @@
 """
 from tasrif.processing_pipeline.observers.functional_observer import FunctionalObserver
 
+
 class Logger(FunctionalObserver):
     """Logger class to log a dataframe in different ways
     """

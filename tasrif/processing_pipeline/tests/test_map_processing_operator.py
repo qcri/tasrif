@@ -1,5 +1,7 @@
 import pytest
+
 from tasrif.processing_pipeline import MapProcessingOperator
+
 
 class IncorrectMapProcessingOperator(MapProcessingOperator):
     pass

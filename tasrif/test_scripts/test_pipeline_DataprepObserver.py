@@ -12,11 +12,13 @@
 #     name: python3
 # ---
 
+import numpy as np
+
 # %%
 import pandas as pd
-import numpy as np
-from tasrif.processing_pipeline.pandas import RenameOperator
+
 from tasrif.processing_pipeline.observers import DataprepObserver
+from tasrif.processing_pipeline.pandas import RenameOperator
 
 # %%
 # Prepare two days data

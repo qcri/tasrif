@@ -3,6 +3,7 @@ Operator to extract features from a duration column
 """
 
 from datetime import timedelta
+
 from tasrif.processing_pipeline import ProcessingOperator
 
 

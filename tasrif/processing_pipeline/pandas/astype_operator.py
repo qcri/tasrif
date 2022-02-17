@@ -4,6 +4,7 @@ Cast a pandas object to a specified dtype dtype.
 from tasrif.processing_pipeline import PandasOperator
 from tasrif.processing_pipeline.validators import InputsAreDataFramesValidatorMixin
 
+
 class AsTypeOperator(InputsAreDataFramesValidatorMixin, PandasOperator):
     """
     Cast a pandas object to a specified dtype dtype.

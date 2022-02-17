@@ -1,6 +1,7 @@
 import pandas as pd
+
 from tasrif.processing_pipeline import SplitOperator
-from tasrif.processing_pipeline.pandas import DropNAOperator, DropDuplicatesOperator
+from tasrif.processing_pipeline.pandas import DropDuplicatesOperator, DropNAOperator
 
 df0 = pd.DataFrame({
     'Date':  ['05-06-2021', '06-06-2021', '07-06-2021', '08-06-2021'],

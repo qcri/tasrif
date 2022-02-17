@@ -1,6 +1,9 @@
-import pytest
 import random
+
+import pytest
+
 from tasrif.processing_pipeline import ComposeOperator, ProcessingOperator
+
 
 class NotProcessingOperator:
     pass
