@@ -1,11 +1,12 @@
 """
 Concatenate multiple dataframes into a single one.
 """
+import types
 import pandas as pd
 from tasrif.processing_pipeline import PandasOperator
-from tasrif.processing_pipeline.validators import InputsAreDataFramesValidatorMixin
+from tasrif.processing_pipeline.validators import GeneratorCompatibleValidatorMixin
 
-class ConcatOperator(InputsAreDataFramesValidatorMixin, PandasOperator):
+class ConcatOperator(GeneratorCompatibleValidatorMixin, PandasOperator):
     """Concatenate different datasets based on Pandas concat method.
 
     Examples
@@ -54,5 +55,9 @@ class ConcatOperator(InputsAreDataFramesValidatorMixin, PandasOperator):
             data_frame
                 Concatenated dataframe based on the input data_frames.
         """
-        data_frame = pd.concat(list(data_frames), **self.kwargs)
+
+        if isinstance(data_frames[0], types.GeneratorType):
+            data_frame = pd.concat(*list(data_frames), **self.kwargs)
+        else:
+            data_frame = pd.concat(list(data_frames), **self.kwargs)
         return [data_frame]
