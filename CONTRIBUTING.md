@@ -55,13 +55,40 @@ source tasrif-env/bin/activate
 (tasrif-env) pip install -e .
 ```
 
-Make sure you have `qa-requirements.txt` and `requirements.txt` installed, so you can use `pylint` and `darglint` modules
+Make sure you have `qa-requirements.txt` and `requirements.txt` installed, so you can set up our pre-commit hooks for code styling.
 
 ```python
 (tasrif-env) pip install -r requirements.txt
 (tasrif-env) pip install -r qa-requirements.txt
 ```
 
+At this point, you should set up git pre-commit hooks.
+```python
+(tasrif-env) pre-commit install
+```
+The above will run the following to ensure code consistency every time you commit:
+  * [isort](https://github.com/PyCQA/isort)
+  * [black](https://github.com/psf/black)
+  * [pylint](https://github.com/PyCQA/pylint)
+  * [darglint](https://github.com/terrencepreilly/darglint)
+
+
+The hooks can also be directly run without making a commit.
+```python
+# Run all hooks on staged changes
+(tasrif-env) pre-commit run
+
+# Run individual hook on staged changed
+(tasrif-env) pre-commit run <hook_id>
+
+# Run hooks on specifiv file
+(tasrif-env) pre-commit run --files <path_to_file>
+
+# Run hooks on all files
+(tasrif-env) pre-commit run --all-files
+```
+
+The pre-commmit hooks are configured in `.pre-commit-config.yaml`.
 ### Step 2. Make code changes
 
 Make sure that your environment is set from the previous section. You can create your own custom operator by following the [Custom Operators](https://tasrif.qcri.org/custom-operators.html) section in the tutorial.
