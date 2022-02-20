@@ -2,6 +2,7 @@
 Operator to aggregate column features based on a column
 """
 
+# pylint: disable=E0401
 from kats.consts import TimeSeriesData
 from kats.tsfeatures.tsfeatures import TsFeatures
 
