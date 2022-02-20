@@ -22,8 +22,15 @@ repos:
     hooks:
     -   id: system
         name: PyLint
-        entry: python -m pylint.__main__ -rn --score=n
+        entry: python -m pylint.__main__ --rcfile=.pylintrc --score=n
         language: system
         files: ^tasrif/
         types: [file, python]
         exclude: test
+-   repo: https://github.com/terrencepreilly/darglint.git
+    rev: v1.8.0
+    hooks:
+    -   id: darglint
+        args: ["--docstring-style", "google", "--ignore-regex", "^_(.*)"]
+        files: ^tasrif/
+        types: [file, python]

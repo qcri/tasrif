@@ -27,7 +27,7 @@ import yaml
 env_pattern = re.compile(r".*?\${(.*?)}.*?")
 
 
-def env_constructor(loader, node):
+def _env_constructor(loader, node):
     """
     Replaces environment variables in YAML file
     """
@@ -37,21 +37,30 @@ def env_constructor(loader, node):
     return value
 
 
-def get_loader():
+def _get_loader():
     """
     Configures YAML loader
     """
     loader = yaml.SafeLoader
     loader.add_implicit_resolver("!ENV", env_pattern, None)
-    loader.add_constructor("!ENV", env_constructor)
+    loader.add_constructor("!ENV", _env_constructor)
     return loader
 
 
 def from_yaml(stream, pipeline_name="pipeline"):
     """
     Runs parser for YAML files
+
+    Args:
+        stream (TextIOWrapper):
+            yaml file stream
+        pipeline_name (str):
+            key in yaml file where pipeline is defined
+
+    Returns:
+        Tasrif pipeline object
     """
-    yaml_file = yaml.load(stream, Loader=get_loader())
+    yaml_file = yaml.load(stream, Loader=_get_loader())
     context = load_modules(yaml_file["modules"])
     return parse(yaml_file[pipeline_name], context)
 
@@ -85,6 +94,15 @@ def parse(obj, context):
 
     Base Case: string, bool
     Recursive Case: list, dict
+
+    Args:
+        obj:
+            python data to be parsed
+        context (Dict):
+            Python dictionary holding all imported modules
+
+    Returns:
+        Tasrif pipeline object
     """
 
     if isinstance(obj, dict):
@@ -107,7 +125,7 @@ def parse(obj, context):
     return parsed
 
 
-def get_operator(spec, context):
+def _get_operator(spec, context):
     """
     Gets operator from context
     """
@@ -123,6 +141,17 @@ def get_operator(spec, context):
 def create_operator(key, value, context):
     """
     Create operator instance along with its arguments
+
+    Args:
+        key:
+            operator name
+        value:
+            operator arguments
+        context (Dict):
+            Python dictionary holding all imported modules
+
+    Returns:
+        Tasrif pipeline object
     """
     key = key.replace("map", "map_iterable")
     operator_spec = key[1:]
@@ -130,7 +159,7 @@ def create_operator(key, value, context):
 
     if isinstance(value, list):
         if operator_spec in ("sequence", "compose"):
-            operator = get_operator(operator_spec, context)(value)
+            operator = _get_operator(operator_spec, context)(value)
         else:
             args = []
             kwargs = {}
@@ -139,19 +168,19 @@ def create_operator(key, value, context):
                     kwargs[item[0]] = item[1]
                 else:
                     args.append(item)
-            operator = get_operator(operator_spec, context)(*args, **kwargs)
+            operator = _get_operator(operator_spec, context)(*args, **kwargs)
     elif isinstance(value, dict):
-        operator = get_operator(operator_spec, context)(**value)
+        operator = _get_operator(operator_spec, context)(**value)
     else:
         if value:
-            operator = get_operator(operator_spec, context)(value)
+            operator = _get_operator(operator_spec, context)(value)
         else:
-            operator = get_operator(operator_spec, context)()
+            operator = _get_operator(operator_spec, context)()
 
     return operator
 
 
-def get_operator_name(spec):
+def _get_operator_name(spec):
     """
     Gives operator name from YAML short hand naming format
     """
@@ -165,13 +194,20 @@ def get_operator_name(spec):
 def load_modules(modules):
     """
     Import all functions listed in 'modules'
+
+    Args:
+        modules (List):
+            List of modules to be imported
+
+    Returns:
+        Python dictionary holding all imported modules
     """
     context = {}
     for module in modules:
         for key, value in module.items():
             imported_module = importlib.import_module(key)
             for class_ in value:
-                context[class_] = getattr(imported_module, get_operator_name(class_))
+                context[class_] = getattr(imported_module, _get_operator_name(class_))
 
     return context
 
