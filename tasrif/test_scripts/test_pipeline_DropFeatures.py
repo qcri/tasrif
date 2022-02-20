@@ -21,11 +21,17 @@ import pandas as pd
 # import tasrif.processing_pipeline
 from tasrif.processing_pipeline.pandas import DropFeaturesOperator
 
-df0 = pd.DataFrame([['Tom', 10], ['Alfred', 15], ['Alfred', 18], ['Juli', 14]], columns=['name', 'score'])
-df1 = pd.DataFrame({"name": ['Alfred', 'juli', 'Tom', 'Ali'],
-                   "height": [np.nan, 155, 159, 165],
-                   "born": [pd.NaT, pd.Timestamp("2010-04-25"), pd.NaT,
-                            pd.NaT]})
+df0 = pd.DataFrame(
+    [["Tom", 10], ["Alfred", 15], ["Alfred", 18], ["Juli", 14]],
+    columns=["name", "score"],
+)
+df1 = pd.DataFrame(
+    {
+        "name": ["Alfred", "juli", "Tom", "Ali"],
+        "height": [np.nan, 155, 159, 165],
+        "born": [pd.NaT, pd.Timestamp("2010-04-25"), pd.NaT, pd.NaT],
+    }
+)
 
 print(df0)
 print(df1)

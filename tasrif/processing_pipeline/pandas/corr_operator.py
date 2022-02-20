@@ -8,30 +8,31 @@ from tasrif.processing_pipeline.validators import GroupbyCompatibleValidatorMixi
 class CorrOperator(GroupbyCompatibleValidatorMixin, PandasOperator):
     """
 
-      Corr operator
+    Corr operator
 
-      Examples
-      --------
+    Examples
+    --------
 
-      >>> import pandas as pd
-      >>> from tasrif.processing_pipeline.pandas import CorrOperator
-      >>> df = pd.DataFrame([
-      ...     [1, 1, 3],
-      ...     [1, 1, 5],
-      ...     [1, 2, 3],
-      ...     [2, 1, 10],
-      ...     [2, 1, 0]],
-      ...     columns=['logId', 'sleep_level', 'awake_count'])
-      >>>
-      >>> df = df.set_index('logId')
-      >>> op = CorrOperator()
-      >>> df1 = op.process(df)
-      >>> df1[0]
-      sleep_level   awake_count
-      sleep_level   1.000000  -0.181237
-      awake_count   -0.181237   1.000000
+    >>> import pandas as pd
+    >>> from tasrif.processing_pipeline.pandas import CorrOperator
+    >>> df = pd.DataFrame([
+    ...     [1, 1, 3],
+    ...     [1, 1, 5],
+    ...     [1, 2, 3],
+    ...     [2, 1, 10],
+    ...     [2, 1, 0]],
+    ...     columns=['logId', 'sleep_level', 'awake_count'])
+    >>>
+    >>> df = df.set_index('logId')
+    >>> op = CorrOperator()
+    >>> df1 = op.process(df)
+    >>> df1[0]
+    sleep_level   awake_count
+    sleep_level   1.000000  -0.181237
+    awake_count   -0.181237   1.000000
 
     """
+
     def __init__(self, **kwargs):
         """Creates a new instance of CorrOperator
 

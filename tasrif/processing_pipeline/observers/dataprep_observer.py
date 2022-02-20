@@ -6,10 +6,9 @@ from tasrif.processing_pipeline.observers.functional_observer import FunctionalO
 
 
 class DataprepObserver(FunctionalObserver):
-    """DataprepObserver class to create a report for a dataframe
-    """
+    """DataprepObserver class to create a report for a dataframe"""
 
-    def __init__(self, method='full', **kwargs):
+    def __init__(self, method="full", **kwargs):
         """
         DataprepObserver constructor
 
@@ -24,7 +23,7 @@ class DataprepObserver(FunctionalObserver):
         self._methods = []
         self.kwargs = kwargs
         if method:
-            self._methods = method.split(',')
+            self._methods = method.split(",")
 
     def _observe(self, operator, *data_frames):
         """
@@ -39,14 +38,14 @@ class DataprepObserver(FunctionalObserver):
         """
         for data_frame in data_frames:
             for analysis in self._methods:
-                if analysis == 'distribution':
+                if analysis == "distribution":
                     plot(data_frame[0], **self.kwargs).show()
 
-                if analysis == 'correlation':
+                if analysis == "correlation":
                     plot_correlation(data_frame[0], **self.kwargs).show()
 
-                if analysis == 'missing':
+                if analysis == "missing":
                     plot_missing(data_frame[0], **self.kwargs).show()
 
-                if analysis == 'full':
+                if analysis == "full":
                     create_report(data_frame[0], **self.kwargs).show()

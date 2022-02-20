@@ -43,10 +43,10 @@ class NormalizeOperator(ProcessingOperator):
     2020-05-02     1.000000]
 
     """
-    def __init__(self,
-                 feature_names='all',
-                 method='zscore',
-                 normalization_parameters=None):
+
+    def __init__(
+        self, feature_names="all", method="zscore", normalization_parameters=None
+    ):
         """
         Creates a new instance of NormalizeOperator
 
@@ -77,18 +77,19 @@ class NormalizeOperator(ProcessingOperator):
         if not normalization_parameters:
             normalization_parameters = {}
 
-        if method in ['zscore', 'minmax', 'maxabs', 'robust']:
-            if method == 'zscore':
+        if method in ["zscore", "minmax", "maxabs", "robust"]:
+            if method == "zscore":
                 self.scaler = StandardScaler(**normalization_parameters)
-            elif method == 'minmax':
+            elif method == "minmax":
                 self.scaler = MinMaxScaler(**normalization_parameters)
-            elif method == 'maxabs':
+            elif method == "maxabs":
                 self.scaler = MaxAbsScaler(**normalization_parameters)
             else:
                 self.scaler = RobustScaler(**normalization_parameters)
         else:
             raise ValueError(
-                "Incorrect method specified for the NormalizationOperator!")
+                "Incorrect method specified for the NormalizationOperator!"
+            )
 
     def _process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.
@@ -110,11 +111,15 @@ class NormalizeOperator(ProcessingOperator):
             if isinstance(self.feature_names, list):
                 data_frame = data_frame[self.feature_names]
             else:
-                data_frame_feature_names = data_frame[data_frame.select_dtypes(
-                    include=np.number).columns.tolist()]
+                data_frame_feature_names = data_frame[
+                    data_frame.select_dtypes(include=np.number).columns.tolist()
+                ]
 
             processed.append(
-                (self.scaler.fit_transform(data_frame_feature_names),
-                 self.scaler.fit(data_frame_feature_names)))
+                (
+                    self.scaler.fit_transform(data_frame_feature_names),
+                    self.scaler.fit(data_frame_feature_names),
+                )
+            )
 
         return processed

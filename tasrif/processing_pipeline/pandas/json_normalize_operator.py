@@ -117,11 +117,13 @@ class JsonNormalizeOperator(PandasOperator):
 
         processed = []
         for dataframe in data_frames:
-            if isinstance(dataframe, list) and isinstance(dataframe[0], list) and len(dataframe) == 1:
+            if (
+                isinstance(dataframe, list)
+                and isinstance(dataframe[0], list)
+                and len(dataframe) == 1
+            ):
                 dataframe = dataframe[0]
             dataframe = pd.json_normalize(dataframe, **self.kwargs)
             processed.append(dataframe)
-
-
 
         return processed

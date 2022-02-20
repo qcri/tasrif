@@ -23,8 +23,8 @@ from tasrif.processing_pipeline import ProcessingOperator
 
 
 class ZenodoFitbitDataset(ProcessingOperator):
-    """Base class for all Zenodo fitbit datasets
-    """
+    """Base class for all Zenodo fitbit datasets"""
+
     valid_table_names = [
         "Activity",
         "Weight",
@@ -68,7 +68,9 @@ class ZenodoFitbitDataset(ProcessingOperator):
 
         """
         if table_name not in self.valid_table_names:
-            raise RuntimeError(f"Invalid table_name, must be from the following: {self.valid_table_names}")
+            raise RuntimeError(
+                f"Invalid table_name, must be from the following: {self.valid_table_names}"
+            )
 
     def _extract_data_from_file(self):
         """Extracts the table data. Requires 'table_name' attribute to be set.
@@ -101,12 +103,20 @@ class ZenodoFitbitDataset(ProcessingOperator):
                 day_table2 = pathlib.Path(full_path_2, "minuteSleep_merged.csv")
 
             elif table_name == "IntradayCalories":
-                day_table1 = pathlib.Path(full_path_1, "minuteCaloriesNarrow_merged.csv")
-                day_table2 = pathlib.Path(full_path_2, "minuteCaloriesNarrow_merged.csv")
+                day_table1 = pathlib.Path(
+                    full_path_1, "minuteCaloriesNarrow_merged.csv"
+                )
+                day_table2 = pathlib.Path(
+                    full_path_2, "minuteCaloriesNarrow_merged.csv"
+                )
 
             elif table_name == "IntradayIntensities":
-                day_table1 = pathlib.Path(full_path_1, "minuteIntensitiesNarrow_merged.csv")
-                day_table2 = pathlib.Path(full_path_2, "minuteIntensitiesNarrow_merged.csv")
+                day_table1 = pathlib.Path(
+                    full_path_1, "minuteIntensitiesNarrow_merged.csv"
+                )
+                day_table2 = pathlib.Path(
+                    full_path_2, "minuteIntensitiesNarrow_merged.csv"
+                )
 
             elif table_name == "IntradayMETs":
                 day_table1 = pathlib.Path(full_path_1, "minuteMETsNarrow_merged.csv")
@@ -119,15 +129,15 @@ class ZenodoFitbitDataset(ProcessingOperator):
             raw_df1 = pd.read_csv(day_table1)
             raw_df2 = pd.read_csv(day_table2)
             dataframe = pd.concat(
-                            [raw_df1, raw_df2],
-                            axis=0,
-                            ignore_index=False,
-                            keys=None,
-                            levels=None,
-                            names=None,
-                            verify_integrity=False,
-                            copy=True,
-                        )
+                [raw_df1, raw_df2],
+                axis=0,
+                ignore_index=False,
+                keys=None,
+                levels=None,
+                names=None,
+                verify_integrity=False,
+                copy=True,
+            )
 
             dataframes.append(dataframe)
 

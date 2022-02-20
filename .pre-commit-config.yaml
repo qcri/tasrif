@@ -22,7 +22,7 @@ repos:
     hooks:
     -   id: system
         name: PyLint
-        entry: python -m pylint.__main__
+        entry: python -m pylint.__main__ -rn --score=n
         language: system
         files: ^tasrif/
         types: [file, python]

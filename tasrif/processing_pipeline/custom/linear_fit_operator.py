@@ -48,11 +48,8 @@ class LinearFitOperator(ProcessingOperator):
       array([17.78134321]))]
 
     """
-    def __init__(self,
-                 feature_names,
-                 target,
-                 target_type='continuous',
-                 **model_kwargs):
+
+    def __init__(self, feature_names, target, target_type="continuous", **model_kwargs):
         """
         Creates a new instance of LinearFitOperator
 
@@ -75,11 +72,10 @@ class LinearFitOperator(ProcessingOperator):
         self.target_type = target_type
         self.model_kwargs = model_kwargs
 
-        if self.target_type == 'continuous':
+        if self.target_type == "continuous":
             self.model = LinearRegression(**self.model_kwargs)
         else:
             self.model = LogisticRegression(**self.model_kwargs)
-
 
     def _process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.
@@ -99,22 +95,29 @@ class LinearFitOperator(ProcessingOperator):
         processed = []
         for data_frame in data_frames:
 
-            if self.feature_names == 'all':
-                self.feature_names = data_frame.select_dtypes(include=np.number).columns.tolist()
+            if self.feature_names == "all":
+                self.feature_names = data_frame.select_dtypes(
+                    include=np.number
+                ).columns.tolist()
                 if self.target in self.feature_names:
                     self.feature_names.remove(self.target)
 
             if isinstance(self.feature_names, str):
                 self.feature_names = [self.feature_names]
 
-            model_input = data_frame[self.feature_names].values.reshape(-1, len(self.feature_names))
+            model_input = data_frame[self.feature_names].values.reshape(
+                -1, len(self.feature_names)
+            )
             model_target = data_frame[self.target].values.flatten()
 
             self.model.fit(model_input, model_target)
 
-
-            processed.append((self.model.score(model_input, model_target),
-                              self.model.coef_,
-                              self.model.intercept_))
+            processed.append(
+                (
+                    self.model.score(model_input, model_target),
+                    self.model.coef_,
+                    self.model.intercept_,
+                )
+            )
 
         return processed

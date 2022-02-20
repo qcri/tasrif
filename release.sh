@@ -5,7 +5,7 @@ usage() { echo "Usage: $0 [-v <version number in x.y.z format>] [-m <version des
 while getopts ":v:m:" opt;
 do
   case $opt in
-    v) 
+    v)
         tasrif_version=${OPTARG}
         ;;
     m)
@@ -51,9 +51,9 @@ else
 fi
 
 echo -n "Step 4 of 9: Uploading to pypi.."
-echo $TWINE_USERNAME 
+echo $TWINE_USERNAME
 echo $TWINE_PASSWORD
-python3 -m twine upload --repository pypi  dist/*  
+python3 -m twine upload --repository pypi  dist/*
 echo "Done!"
 
 echo -n "Step 5 of 9: Building docker image of Tasrif.."

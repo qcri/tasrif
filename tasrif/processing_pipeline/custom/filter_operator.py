@@ -82,14 +82,16 @@ class FilterOperator(ProcessingOperator):
     4   3   2020-05-02 01:00:00     1   0
 
     """
-    def __init__(  #pylint: disable=too-many-arguments
-            self,
-            participant_identifier="id",
-            date_feature_name="time",
-            epoch_filter=None,
-            day_filter=None,
-            participant_filter=None,
-            filter_type="include"):
+
+    def __init__(  # pylint: disable=too-many-arguments
+        self,
+        participant_identifier="id",
+        date_feature_name="time",
+        epoch_filter=None,
+        day_filter=None,
+        participant_filter=None,
+        filter_type="include",
+    ):
         """
         Initializes the operator
 
@@ -140,7 +142,7 @@ class FilterOperator(ProcessingOperator):
         return processed
 
     def _process_epoch(self, data_frame):
-        """ filters rows based on self.epoch_filter
+        """filters rows based on self.epoch_filter
 
         Args:
             data_frame (pd.DataFrame):
@@ -168,7 +170,7 @@ class FilterOperator(ProcessingOperator):
         return processed_df
 
     def _process_day(self, processed_df):
-        """ filters patient days based on self.day_filter
+        """filters patient days based on self.day_filter
 
         Args:
             processed_df (pd.DataFrame):
@@ -182,39 +184,43 @@ class FilterOperator(ProcessingOperator):
         if self.day_filter:
 
             if isinstance(self.day_filter, dict):
-                index = processed_df.groupby([
-                    self.participant_identifier,
-                    processed_df[self.date_feature_name].dt.date
-                ])[self.day_filter['column']].transform(
-                    self.day_filter['filter'])
+                index = processed_df.groupby(
+                    [
+                        self.participant_identifier,
+                        processed_df[self.date_feature_name].dt.date,
+                    ]
+                )[self.day_filter["column"]].transform(self.day_filter["filter"])
 
                 if self.filter_type == "include":
                     processed_df = processed_df.loc[index]
                 else:
                     processed_df = processed_df.loc[~index]
 
-                if ('consecutive_days'
-                        in self.day_filter) and not processed_df.empty:
+                if ("consecutive_days" in self.day_filter) and not processed_df.empty:
                     processed_df = self._consecutive_days_filter(
-                        processed_df, self.day_filter['consecutive_days'])
+                        processed_df, self.day_filter["consecutive_days"]
+                    )
 
             elif type(self.day_filter == list):
                 for day_filter_item in self.day_filter:
-                    index = processed_df.groupby([
-                        self.participant_identifier,
-                        processed_df[self.date_feature_name].dt.date
-                    ])[day_filter_item['column']].transform(
-                        day_filter_item['filter'])
+                    index = processed_df.groupby(
+                        [
+                            self.participant_identifier,
+                            processed_df[self.date_feature_name].dt.date,
+                        ]
+                    )[day_filter_item["column"]].transform(day_filter_item["filter"])
 
                     if self.filter_type == "include":
                         processed_df = processed_df.loc[index]
                     else:
                         processed_df = processed_df.loc[~index]
 
-                    if ('consecutive_days'
-                            in day_filter_item) and not processed_df.empty:
+                    if (
+                        "consecutive_days" in day_filter_item
+                    ) and not processed_df.empty:
                         processed_df = self._consecutive_days_filter(
-                            processed_df, day_filter_item['consecutive_days'])
+                            processed_df, day_filter_item["consecutive_days"]
+                        )
 
         return processed_df
 
@@ -239,20 +245,32 @@ class FilterOperator(ProcessingOperator):
 
         """
 
-        days_per_id = dataframe.groupby([
-            self.participant_identifier,
-            pd.Grouper(key=self.date_feature_name, freq='D')
-        ]).sum().reset_index()
+        days_per_id = (
+            dataframe.groupby(
+                [
+                    self.participant_identifier,
+                    pd.Grouper(key=self.date_feature_name, freq="D"),
+                ]
+            )
+            .sum()
+            .reset_index()
+        )
 
         # Take the date difference between a row and its previous row
         # If the difference is not 1 day, we start a new label for the sequence using pd.cumsum()
-        label_of_consecutive_days_per_id = days_per_id.groupby(
-            self.participant_identifier)[
-                self.date_feature_name].diff().dt.days.ne(1).cumsum()
-        consecutive_days_per_id = days_per_id.groupby(
-            [self.participant_identifier,
-             label_of_consecutive_days_per_id]).size().reset_index(level=1,
-                                                                   drop=True)
+        label_of_consecutive_days_per_id = (
+            days_per_id.groupby(self.participant_identifier)[self.date_feature_name]
+            .diff()
+            .dt.days.ne(1)
+            .cumsum()
+        )
+        consecutive_days_per_id = (
+            days_per_id.groupby(
+                [self.participant_identifier, label_of_consecutive_days_per_id]
+            )
+            .size()
+            .reset_index(level=1, drop=True)
+        )
 
         # Match the index with the sequence labels
         consecutive_days_per_id = consecutive_days_per_id.reset_index()
@@ -264,20 +282,23 @@ class FilterOperator(ProcessingOperator):
             max_consecutive_days = consecutive_days_range[1]
             sequences_to_keep = consecutive_days_per_id[
                 (consecutive_days_per_id[0] > min_consecutive_days)
-                & (consecutive_days_per_id[0] <= max_consecutive_days
-                   )].index.values
+                & (consecutive_days_per_id[0] <= max_consecutive_days)
+            ].index.values
         else:
             sequences_to_keep = consecutive_days_per_id[
-                consecutive_days_per_id[0] >
-                consecutive_days_range].index.values
+                consecutive_days_per_id[0] > consecutive_days_range
+            ].index.values
 
         # Find days to keep: Given the day sequence labels, include the one's in sequences_to_keep
-        days_to_keep = days_per_id[label_of_consecutive_days_per_id.isin(
-            sequences_to_keep)]
+        days_to_keep = days_per_id[
+            label_of_consecutive_days_per_id.isin(sequences_to_keep)
+        ]
 
-        dataframe = dataframe.groupby(self.participant_identifier).apply(
-            lambda x: self._keep_days_in_df(x, days_to_keep)).reset_index(
-                drop=True)
+        dataframe = (
+            dataframe.groupby(self.participant_identifier)
+            .apply(lambda x: self._keep_days_in_df(x, days_to_keep))
+            .reset_index(drop=True)
+        )
         return dataframe
 
     def _keep_days_in_df(self, dataframe, days_to_keep):
@@ -295,12 +316,14 @@ class FilterOperator(ProcessingOperator):
 
         """
 
-        days = days_to_keep.loc[days_to_keep[self.participant_identifier] ==
-                                dataframe.name, self.date_feature_name].dt.date
+        days = days_to_keep.loc[
+            days_to_keep[self.participant_identifier] == dataframe.name,
+            self.date_feature_name,
+        ].dt.date
         return dataframe[dataframe[self.date_feature_name].dt.date.isin(days)]
 
     def _process_participants(self, data_frame):
-        """ filters rows based on self.epoch_filter
+        """filters rows based on self.epoch_filter
 
         Args:
             data_frame (pd.DataFrame):
@@ -315,7 +338,8 @@ class FilterOperator(ProcessingOperator):
             return data_frame
 
         data_frame_filter = data_frame[self.participant_identifier].isin(
-            self.participant_filter)
+            self.participant_filter
+        )
         if self.filter_type == "include":
             processed_df = data_frame[data_frame_filter]
         else:

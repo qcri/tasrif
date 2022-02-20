@@ -6,14 +6,17 @@ from tasrif.processing_pipeline import MapProcessingOperator
 class IncorrectMapProcessingOperator(MapProcessingOperator):
     pass
 
+
 class CorrectMapProcessingOperator(MapProcessingOperator):
     # This will be replaced with a mock later.
     def _processing_function(self, element):
         return element
 
+
 def test_raises_an_error_if_processing_function_is_not_defined(mocker):
     with pytest.raises(TypeError) as exc:
         IncorrectMapProcessingOperator()
+
 
 def test_processing_function_is_called_correctly(mocker):
     operator = CorrectMapProcessingOperator()
@@ -28,16 +31,9 @@ def test_processing_function_is_called_correctly(mocker):
 
     # Assert that the processing function was called with each of the individual
     # args.
-    operator._processing_function.assert_has_calls([
-        mocker.call(args[0]),
-        mocker.call(args[1])
-    ])
+    operator._processing_function.assert_has_calls(
+        [mocker.call(args[0]), mocker.call(args[1])]
+    )
 
     # Assert that the output is returned in correct order.
-    assert(output == return_values)
-
-
-
-
-
-
+    assert output == return_values

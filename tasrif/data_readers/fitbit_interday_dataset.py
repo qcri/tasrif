@@ -10,8 +10,8 @@ from tasrif.processing_pipeline import ProcessingOperator
 
 
 class FitbitInterdayDataset(ProcessingOperator):
-    """Base class for all fitbit interday datasets
-    """
+    """Base class for all fitbit interday datasets"""
+
     valid_table_names = ["Activities", "Body", "Food Log", "Foods", "Sleep"]
 
     def __init__(self, folder_path, table_name):
@@ -33,14 +33,15 @@ class FitbitInterdayDataset(ProcessingOperator):
     def process(self, *data_frames):
         # Accumulate dataframes from all files and concat them all at once
         dfs = []
-        for export_file in pathlib.Path(
-                self.folder_path).glob('*.csv'):
+        for export_file in pathlib.Path(self.folder_path).glob("*.csv"):
             dfs.append(self._extract_data_from_file(export_file))
         return [pd.concat(dfs)]
 
     def _validate_table_name(self, table_name):
         if table_name not in self.valid_table_names:
-            raise RuntimeError(f"Invalid table_name, must be from the following: {self.valid_table_names}")
+            raise RuntimeError(
+                f"Invalid table_name, must be from the following: {self.valid_table_names}"
+            )
 
     def _extract_data_from_file(self, file_name):
         """Extracts the table data from the interday dump. Requires 'table_name' attribute to be set.
@@ -65,7 +66,9 @@ class FitbitInterdayDataset(ProcessingOperator):
                 if line.strip() == self.table_name:
                     # The start of the table has been found.
                     found = True
-                    table_start_line = line_number + 1  # The data starts from the next line.
+                    table_start_line = (
+                        line_number + 1
+                    )  # The data starts from the next line.
                     continue
                 if found:
                     # If the line is empty, we've hit the end of the table
@@ -76,10 +79,11 @@ class FitbitInterdayDataset(ProcessingOperator):
             # Go back to the start of the file
             file_object.seek(0)
             # Force pandas to skip rows that don't contain the table
-            return pd.read_csv(file_object,
-                            skiprows=lambda l: not (table_start_line <= l <
-                                                    table_end_line),
-                            thousands=',')
+            return pd.read_csv(
+                file_object,
+                skiprows=lambda l: not (table_start_line <= l < table_end_line),
+                thousands=",",
+            )
 
     @staticmethod
     def _extract_food_log_table(file_name):
@@ -114,7 +118,7 @@ class FitbitInterdayDataset(ProcessingOperator):
 
                     # Grab date from table heading
                     date = line.split(" ")[2].strip()
-                    food_log_entry['Date'] = date
+                    food_log_entry["Date"] = date
 
                     next(file_object)  # Skip "Daily Totals" line
 
@@ -122,8 +126,7 @@ class FitbitInterdayDataset(ProcessingOperator):
                     for _ in range(num_measurements_in_entry):
                         measurement_line = next(file_object)
                         _, measurement, value = pd.read_csv(
-                            StringIO(measurement_line),
-                            thousands=','
+                            StringIO(measurement_line), thousands=","
                         )
                         # Get rid of the measurement unit, if any
                         value = value.split(" ")[0]

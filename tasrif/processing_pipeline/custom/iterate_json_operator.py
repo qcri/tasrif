@@ -50,6 +50,7 @@ class IterateJsonOperator(ProcessingOperator):
     \\============================
 
     """
+
     def __init__(self, folder_path, field, pipeline: SequenceOperator):
         """Creates a new instance of IterateJsonOperator
 

@@ -14,7 +14,7 @@
 
 # %% [markdown]
 # # In order to test ReadCsvFolderOperator, the following is required:
-# - Two small csv files to be saved in disk in order to test 
+# - Two small csv files to be saved in disk in order to test
 
 import numpy as np
 
@@ -25,22 +25,30 @@ from tasrif.processing_pipeline import SequenceOperator
 from tasrif.processing_pipeline.custom import ReadCsvFolderOperator
 from tasrif.processing_pipeline.pandas import ConcatOperator
 
-details1 = pd.DataFrame({'calories': [360, 540],
-                         'time': [pd.Timestamp("2015-04-25"), pd.Timestamp("2015-04-26")]
-                        })
+details1 = pd.DataFrame(
+    {
+        "calories": [360, 540],
+        "time": [pd.Timestamp("2015-04-25"), pd.Timestamp("2015-04-26")],
+    }
+)
 
-details2 = pd.DataFrame({'calories': [420, 250],
-                         'time': [pd.Timestamp("2015-05-16"), pd.Timestamp("2015-05-17")]
-                        })
- 
+details2 = pd.DataFrame(
+    {
+        "calories": [420, 250],
+        "time": [pd.Timestamp("2015-05-16"), pd.Timestamp("2015-05-17")],
+    }
+)
+
 
 # Save File 1 and File 2
-details1.to_csv('./details1.csv', index=False)
-details2.to_csv('./details2.csv', index=False)
+details1.to_csv("./details1.csv", index=False)
+details2.to_csv("./details2.csv", index=False)
 
-pipeline = SequenceOperator([
-    ReadCsvFolderOperator(name_pattern='./*.csv', pipeline=None),
-])
+pipeline = SequenceOperator(
+    [
+        ReadCsvFolderOperator(name_pattern="./*.csv", pipeline=None),
+    ]
+)
 
 df = pipeline.process()[0]
 df

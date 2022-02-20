@@ -19,16 +19,19 @@ import pandas as pd
 from tasrif.processing_pipeline import MapIterableOperator
 from tasrif.processing_pipeline.pandas import DropNAOperator
 
-df1 = pd.DataFrame({
-    'Date':   ['05-06-2021', '06-06-2021', '07-06-2021', '08-06-2021'],
-    'Steps':  [        4500,         None,         5690,         6780]
- })
+df1 = pd.DataFrame(
+    {
+        "Date": ["05-06-2021", "06-06-2021", "07-06-2021", "08-06-2021"],
+        "Steps": [4500, None, 5690, 6780],
+    }
+)
 
-df2 = pd.DataFrame({
-    'Date':   ['12-07-2021', '13-07-2021', '14-07-2021', '15-07-2021'],
-    'Steps':  [        2100,         None,         None,         5400]
- })
-
+df2 = pd.DataFrame(
+    {
+        "Date": ["12-07-2021", "13-07-2021", "14-07-2021", "15-07-2021"],
+        "Steps": [2100, None, None, 5400],
+    }
+)
 
 
 operator = MapIterableOperator(DropNAOperator(axis=0))

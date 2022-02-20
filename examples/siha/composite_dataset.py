@@ -18,30 +18,30 @@
 """
 import os
 
+from tasrif.data_readers.siha_dataset import SihaDataset
 from tasrif.processing_pipeline import (
-    SequenceOperator,
-    ProcessingOperator,
     ComposeOperator,
     NoopOperator,
+    ProcessingOperator,
+    SequenceOperator,
 )
-
+from tasrif.processing_pipeline.custom import CreateFeatureOperator, JqOperator
 from tasrif.processing_pipeline.map_processing_operator import MapProcessingOperator
-from tasrif.data_readers.siha_dataset import SihaDataset
-from tasrif.processing_pipeline.custom import JqOperator, CreateFeatureOperator
 from tasrif.processing_pipeline.pandas import (
+    AsTypeOperator,
+    ConvertToDatetimeOperator,
+    DropFeaturesOperator,
     JsonNormalizeOperator,
     SetIndexOperator,
-    ConvertToDatetimeOperator,
-    AsTypeOperator,
-    DropFeaturesOperator
 )
 
-siha_folder_path = os.environ.get('SIHA_PATH')
+siha_folder_path = os.environ.get("SIHA_PATH")
 
 
 class _FlattenOperator(MapProcessingOperator):
     def _processing_function(self, arr):
         return arr[0]
+
 
 # Rename column names
 class _RenameOperator(ProcessingOperator):
@@ -57,32 +57,36 @@ class _RenameOperator(ProcessingOperator):
         return processed
 
 
-
 # %%
 # base_datasets = ["EMR", "CGM", "Steps", "Distance", "Calories"]
-base_datasets = SequenceOperator([
-    SihaDataset(folder_path=siha_folder_path, table_name="EMR"),
-    ComposeOperator([
-        JqOperator("map({patientID} + .data.emr[])"), # EMR
-        JqOperator("map({patientID} + .data.cgm[])"), # CGM
-        JqOperator(
-            'map({patientID} + .data.activities_tracker_steps[].data."activities-tracker-steps"[0])'
-        ), # Steps
-        JqOperator(
-            'map({patientID} + .data.activities_tracker_distance[].data."activities-tracker-distance"[0])'
-        ), # Distance
-        JqOperator(
-            'map({patientID} + .data.activities_tracker_calories[].data."activities-tracker-calories"[0])'
-        ), # Calories
-    ]),
-    _FlattenOperator(),
-    JsonNormalizeOperator(),
-    _RenameOperator(columns={'time': 'dateTime'}, errors='ignore'),
-    ConvertToDatetimeOperator(feature_names=["dateTime"], infer_datetime_format=True),
-    SetIndexOperator("dateTime"),
-    AsTypeOperator({"value": "float32"}, errors='ignore')
-])
-
+base_datasets = SequenceOperator(
+    [
+        SihaDataset(folder_path=siha_folder_path, table_name="EMR"),
+        ComposeOperator(
+            [
+                JqOperator("map({patientID} + .data.emr[])"),  # EMR
+                JqOperator("map({patientID} + .data.cgm[])"),  # CGM
+                JqOperator(
+                    'map({patientID} + .data.activities_tracker_steps[].data."activities-tracker-steps"[0])'
+                ),  # Steps
+                JqOperator(
+                    'map({patientID} + .data.activities_tracker_distance[].data."activities-tracker-distance"[0])'
+                ),  # Distance
+                JqOperator(
+                    'map({patientID} + .data.activities_tracker_calories[].data."activities-tracker-calories"[0])'
+                ),  # Calories
+            ]
+        ),
+        _FlattenOperator(),
+        JsonNormalizeOperator(),
+        _RenameOperator(columns={"time": "dateTime"}, errors="ignore"),
+        ConvertToDatetimeOperator(
+            feature_names=["dateTime"], infer_datetime_format=True
+        ),
+        SetIndexOperator("dateTime"),
+        AsTypeOperator({"value": "float32"}, errors="ignore"),
+    ]
+)
 
 
 df = base_datasets.process()
@@ -90,49 +94,47 @@ df
 
 # %%
 # intraday_datasets = ["HeartRateIntraday", "CaloriesIntraday", "StepsIntraday", "DistanceIntraday"]
-intraday_datasets = SequenceOperator([
-    SihaDataset(folder_path=siha_folder_path, table_name="HeartRateIntraday"),
-    ComposeOperator([
-        JqOperator(
-            'map({patientID} + .data.activities_heart_intraday[].data as $item  | '
-            +
-            '$item."activities-heart-intraday".dataset | '
-            +
-            'map({date: $item."activities-heart"[0].dateTime} + .) | .[])'
-        ), # HeartRateIntraday
-        JqOperator(
-            "map({patientID} + .data.activities_calories_intraday[].data as $item  |"
-            +
-            ' $item."activities-calories-intraday".dataset | '
-            +
-            'map({date: $item."activities-calories"[0].dateTime} + .) | .[])'
-        ), # CaloriesIntraday
-        JqOperator(
-            'map({patientID} + .data.activities_steps_intraday[].data as $item  | '
-            +
-            '$item."activities-steps-intraday".dataset | '
-            +
-            'map({date: $item."activities-steps"[0].dateTime} + .) | .[])'
-        ), # StepsIntraday
-        JqOperator(
-            "map({patientID} + .data.activities_distance_intraday[].data as $item  |"
-            +
-            ' $item."activities-distance-intraday".dataset | '
-            +
-            'map({date: $item."activities-distance"[0].dateTime} + .) | .[])'
-        ), # DistanceIntraday
-    ]),
-    _FlattenOperator(),
-    JsonNormalizeOperator(),
-    CreateFeatureOperator(
-        feature_name="dateTime",
-        feature_creator=lambda df: df["date"] + "T" + df["time"],
-    ),
-    DropFeaturesOperator(["date", "time"]),
-    ConvertToDatetimeOperator(feature_names=["dateTime"], infer_datetime_format=True),
-    SetIndexOperator("dateTime"),
-    AsTypeOperator({"value": "float32"}, errors='ignore')
-])
+intraday_datasets = SequenceOperator(
+    [
+        SihaDataset(folder_path=siha_folder_path, table_name="HeartRateIntraday"),
+        ComposeOperator(
+            [
+                JqOperator(
+                    "map({patientID} + .data.activities_heart_intraday[].data as $item  | "
+                    + '$item."activities-heart-intraday".dataset | '
+                    + 'map({date: $item."activities-heart"[0].dateTime} + .) | .[])'
+                ),  # HeartRateIntraday
+                JqOperator(
+                    "map({patientID} + .data.activities_calories_intraday[].data as $item  |"
+                    + ' $item."activities-calories-intraday".dataset | '
+                    + 'map({date: $item."activities-calories"[0].dateTime} + .) | .[])'
+                ),  # CaloriesIntraday
+                JqOperator(
+                    "map({patientID} + .data.activities_steps_intraday[].data as $item  | "
+                    + '$item."activities-steps-intraday".dataset | '
+                    + 'map({date: $item."activities-steps"[0].dateTime} + .) | .[])'
+                ),  # StepsIntraday
+                JqOperator(
+                    "map({patientID} + .data.activities_distance_intraday[].data as $item  |"
+                    + ' $item."activities-distance-intraday".dataset | '
+                    + 'map({date: $item."activities-distance"[0].dateTime} + .) | .[])'
+                ),  # DistanceIntraday
+            ]
+        ),
+        _FlattenOperator(),
+        JsonNormalizeOperator(),
+        CreateFeatureOperator(
+            feature_name="dateTime",
+            feature_creator=lambda df: df["date"] + "T" + df["time"],
+        ),
+        DropFeaturesOperator(["date", "time"]),
+        ConvertToDatetimeOperator(
+            feature_names=["dateTime"], infer_datetime_format=True
+        ),
+        SetIndexOperator("dateTime"),
+        AsTypeOperator({"value": "float32"}, errors="ignore"),
+    ]
+)
 
 df_intra = intraday_datasets.process()
 df_intra

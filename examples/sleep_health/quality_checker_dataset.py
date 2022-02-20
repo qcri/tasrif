@@ -10,42 +10,44 @@ Some important stats:
 """
 
 import os
-from tasrif.processing_pipeline import SequenceOperator
+
 from tasrif.data_readers.sleep_health import SleepHealthDataset
+from tasrif.processing_pipeline import SequenceOperator
+from tasrif.processing_pipeline.custom import AggregateOperator, CreateFeatureOperator
 from tasrif.processing_pipeline.pandas import ConvertToDatetimeOperator, SortOperator
-from tasrif.processing_pipeline.custom import CreateFeatureOperator, AggregateOperator
 
-sleephealth_path = os.environ['SLEEPHEALTH']
+sleephealth_path = os.environ["SLEEPHEALTH"]
 
-pipeline = SequenceOperator([
-    SleepHealthDataset(sleephealth_path, "sleepqualitychecker"),
-    SortOperator(by=["participantId", "timestamp"]),
-    AggregateOperator(
-        groupby_feature_names="participantId",
-        aggregation_definition={
-            "sq_score": [
-                "count",
-                "mean",
-                "std",
-                "min",
-                "max",
-                "first",
-                "last",
-            ],
-            "timestamp": ["first", "last"],
-        },
-    ),
-    ConvertToDatetimeOperator(
-        feature_names=["timestamp_last", "timestamp_first"],
-        format="%Y-%m-%dT%H:%M:%S%z",
-        utc=True,
-    ),
-    CreateFeatureOperator(
-        feature_name="delta_first_last_timestamp",
-        feature_creator=lambda row: row["timestamp_last"] - row[
-            "timestamp_first"],
-    ),
-])
+pipeline = SequenceOperator(
+    [
+        SleepHealthDataset(sleephealth_path, "sleepqualitychecker"),
+        SortOperator(by=["participantId", "timestamp"]),
+        AggregateOperator(
+            groupby_feature_names="participantId",
+            aggregation_definition={
+                "sq_score": [
+                    "count",
+                    "mean",
+                    "std",
+                    "min",
+                    "max",
+                    "first",
+                    "last",
+                ],
+                "timestamp": ["first", "last"],
+            },
+        ),
+        ConvertToDatetimeOperator(
+            feature_names=["timestamp_last", "timestamp_first"],
+            format="%Y-%m-%dT%H:%M:%S%z",
+            utc=True,
+        ),
+        CreateFeatureOperator(
+            feature_name="delta_first_last_timestamp",
+            feature_creator=lambda row: row["timestamp_last"] - row["timestamp_first"],
+        ),
+    ]
+)
 
 df = pipeline.process()
 

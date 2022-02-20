@@ -66,7 +66,6 @@ class AsTypeOperator(InputsAreDataFramesValidatorMixin, PandasOperator):
                 Processed dataframe(s) resulting from applying the operator
         """
 
-
         processed = []
         for data_frame in data_frames:
             data_frame = data_frame.astype(self.dtype, **self.kwargs)

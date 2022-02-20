@@ -45,7 +45,6 @@ class SumOperator(GroupbyCompatibleValidatorMixin, PandasOperator):
         super().__init__(kwargs)
         self.kwargs = kwargs
 
-
     def _process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.
 

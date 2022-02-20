@@ -20,11 +20,14 @@ from tasrif.processing_pipeline.custom import OneHotEncoderOperator
 
 # %%
 # Full
-df = pd.DataFrame({'id': [1, 2, 3], 'colors': ['red', 'white', 'blue'], 
-                   'cities': ['Doha', 'Vienna', 'Belo Horizonte'],
-                   'multiple': ["1,2", "1", "1,3"]
-                  
-                  })
+df = pd.DataFrame(
+    {
+        "id": [1, 2, 3],
+        "colors": ["red", "white", "blue"],
+        "cities": ["Doha", "Vienna", "Belo Horizonte"],
+        "multiple": ["1,2", "1", "1,3"],
+    }
+)
 df
 
 # %% pycharm={"name": "#%%\n"}
@@ -34,4 +37,6 @@ OneHotEncoderOperator(feature_names=["colors"], drop_first=True).process(df)[0]
 OneHotEncoderOperator(feature_names=["colors"], drop_first=False).process(df)[0]
 
 # %%
-OneHotEncoderOperator(feature_names=["colors", "multiple"], drop_first=False).process(df)[0]
+OneHotEncoderOperator(feature_names=["colors", "multiple"], drop_first=False).process(
+    df
+)[0]

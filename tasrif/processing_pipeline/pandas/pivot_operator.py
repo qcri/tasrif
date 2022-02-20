@@ -44,7 +44,6 @@ class PivotOperator(InputsAreDataFramesValidatorMixin, PandasOperator):
         super().__init__(kwargs)
         self.kwargs = kwargs
 
-
     def _process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.
 
@@ -56,7 +55,6 @@ class PivotOperator(InputsAreDataFramesValidatorMixin, PandasOperator):
             pd.DataFrame -or- list[pd.DataFrame]
                 Processed dataframe(s) resulting from applying the operator
         """
-
 
         processed = []
         for data_frame in data_frames:

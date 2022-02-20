@@ -21,10 +21,16 @@ from tasrif.processing_pipeline.pandas import ConvertToDatetimeOperator
 
 # %%
 # Full
-df0 = pd.DataFrame([[1, "2020-05-01 00:00:00", 1], [1, "2020-05-01 01:00:00", 1],
-                    [1, "2020-05-01 03:00:00", 2], [2, "2020-05-02 00:00:00", 1],
-                    [2, "2020-05-02 01:00:00", 1]],
-                    columns=['logId', 'timestamp', 'sleep_level'])
+df0 = pd.DataFrame(
+    [
+        [1, "2020-05-01 00:00:00", 1],
+        [1, "2020-05-01 01:00:00", 1],
+        [1, "2020-05-01 03:00:00", 2],
+        [2, "2020-05-02 00:00:00", 1],
+        [2, "2020-05-02 01:00:00", 1],
+    ],
+    columns=["logId", "timestamp", "sleep_level"],
+)
 
 df0
 
@@ -37,4 +43,3 @@ df0
 
 # %% pycharm={"name": "#%%\n"}
 df0["timestamp"].dtype
-

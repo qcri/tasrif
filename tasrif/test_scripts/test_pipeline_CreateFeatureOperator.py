@@ -17,11 +17,14 @@ import pandas as pd
 
 from tasrif.processing_pipeline.custom import CreateFeatureOperator
 
-df0 = pd.DataFrame([['tom', 10, 2], ['nick', 15, 2], ['juli', 14, 12]],
-                    columns=['name', 'work_hours', 'off_hours'])
+df0 = pd.DataFrame(
+    [["tom", 10, 2], ["nick", 15, 2], ["juli", 14, 12]],
+    columns=["name", "work_hours", "off_hours"],
+)
 print(df0)
 operator = CreateFeatureOperator(
-   feature_name="total_hours",
-   feature_creator=lambda df: df['work_hours'] + df['off_hours'])
+    feature_name="total_hours",
+    feature_creator=lambda df: df["work_hours"] + df["off_hours"],
+)
 df0 = operator.process(df0)
 print(df0)

@@ -48,10 +48,11 @@ class MapIterableOperator(MapProcessingOperator):
         super().__init__()
 
         if not isinstance(processing_operator, ProcessingOperator):
-                raise ValueError("All operators in a pipeline must derive from ProcessingOperator!")
+            raise ValueError(
+                "All operators in a pipeline must derive from ProcessingOperator!"
+            )
 
         self.processing_operator = processing_operator
-
 
     def _processing_function(self, element):
         return self.processing_operator.process(element)

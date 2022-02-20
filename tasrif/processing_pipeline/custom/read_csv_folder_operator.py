@@ -49,12 +49,14 @@ class ReadCsvFolderOperator(ProcessingOperator):
 
     """
 
-    def __init__(self,
-                 pipeline: SequenceOperator = None,
-                 name_pattern='*.csv',
-                 filename_column_name='filename',
-                 concatenate=True,
-                 **read_csv_kwargs):
+    def __init__(
+        self,
+        pipeline: SequenceOperator = None,
+        name_pattern="*.csv",
+        filename_column_name="filename",
+        concatenate=True,
+        **read_csv_kwargs
+    ):
         """Creates a new instance of ReadCsvFolderOperator
 
         Args:

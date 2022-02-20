@@ -4,8 +4,7 @@ from tasrif.processing_pipeline.observers.functional_observer import FunctionalO
 
 
 class GroupbyLogger(FunctionalObserver):
-    """GroupbyLogger class to log a dataframe after grouping
-    """
+    """GroupbyLogger class to log a dataframe after grouping"""
 
     def __init__(self, groupby_args, method=""):
         """
@@ -23,7 +22,7 @@ class GroupbyLogger(FunctionalObserver):
         self.groupby_args = groupby_args
         self._logging_methods = []
         if method:
-            self._logging_methods = method.split(',')
+            self._logging_methods = method.split(",")
 
     def _observe(self, operator, *data_frames):
         """
@@ -39,7 +38,11 @@ class GroupbyLogger(FunctionalObserver):
         for data_frame in data_frames:
             if self._logging_methods:
                 for logging_method in self._logging_methods:
-                    print(getattr(data_frame[0].groupby(self.groupby_args), logging_method)())
+                    print(
+                        getattr(
+                            data_frame[0].groupby(self.groupby_args), logging_method
+                        )()
+                    )
 
     def observe(self, operator, *data_frames):
         """

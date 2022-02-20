@@ -19,22 +19,25 @@ import pandas as pd
 
 from tasrif.processing_pipeline.pandas import GroupbyOperator
 
-df = pd.DataFrame([
-    [1,'2016-03-12 01:00:00',10],
-    [1,'2016-03-12 04:00:00',250],
-    [1,'2016-03-12 06:00:00',30],
-    [1,'2016-03-12 20:00:00',10],
-    [1,'2016-03-12 23:00:00',23],
-    [2,'2016-03-12 00:05:00',20],
-    [2,'2016-03-12 19:06:00',120],
-    [2,'2016-03-12 21:07:00',100],
-    [2,'2016-03-12 23:08:00',50],
-    [3,'2016-03-12 10:00:00',300]
-], columns=['Id', 'ActivityTime', 'Calories'])
+df = pd.DataFrame(
+    [
+        [1, "2016-03-12 01:00:00", 10],
+        [1, "2016-03-12 04:00:00", 250],
+        [1, "2016-03-12 06:00:00", 30],
+        [1, "2016-03-12 20:00:00", 10],
+        [1, "2016-03-12 23:00:00", 23],
+        [2, "2016-03-12 00:05:00", 20],
+        [2, "2016-03-12 19:06:00", 120],
+        [2, "2016-03-12 21:07:00", 100],
+        [2, "2016-03-12 23:08:00", 50],
+        [3, "2016-03-12 10:00:00", 300],
+    ],
+    columns=["Id", "ActivityTime", "Calories"],
+)
 
-df['ActivityTime'] = pd.to_datetime(df['ActivityTime'])
+df["ActivityTime"] = pd.to_datetime(df["ActivityTime"])
 
-operator = GroupbyOperator(by='Id')
+operator = GroupbyOperator(by="Id")
 df = operator.process(df)[0]
 
 print(df.get_group(1))

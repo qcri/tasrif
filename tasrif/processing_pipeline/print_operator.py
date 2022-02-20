@@ -5,8 +5,7 @@ from tasrif.processing_pipeline.processing_operator import ProcessingOperator
 
 
 class PrintOperator(ProcessingOperator):
-    """Class representing a print operator. This operator does prints the input to the console and reutnr it.
-    """
+    """Class representing a print operator. This operator does prints the input to the console and reutnr it."""
 
     def __init__(self, method=""):
         """
@@ -25,10 +24,9 @@ class PrintOperator(ProcessingOperator):
         self._logging_methods = []
 
         if method:
-            self._logging_methods = method.split(',')
+            self._logging_methods = method.split(",")
 
-
-    def _process(self, *args): #pylint: disable=no-self-use
+    def _process(self, *args):  # pylint: disable=no-self-use
         for data_frame in args:
             if self._logging_methods:
                 for logging_method in self._logging_methods:

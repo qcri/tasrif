@@ -18,18 +18,22 @@ The final dataset size after removing all NAs is 7558 (retaining 93% of the orig
 
 
 import os
+
 import numpy as np
-from tasrif.processing_pipeline import SequenceOperator
+
 from tasrif.data_readers.sleep_health import SleepHealthDataset
+from tasrif.processing_pipeline import SequenceOperator
 from tasrif.processing_pipeline.pandas import DropNAOperator, ReplaceOperator
 
-sleephealth_path = os.environ['SLEEPHEALTH']
+sleephealth_path = os.environ["SLEEPHEALTH"]
 
-pipeline = SequenceOperator([
-    SleepHealthDataset(sleephealth_path, "onboardingdemographics"),
-    ReplaceOperator(to_replace="CENSORED", value=np.nan),
-    DropNAOperator()
-])
+pipeline = SequenceOperator(
+    [
+        SleepHealthDataset(sleephealth_path, "onboardingdemographics"),
+        ReplaceOperator(to_replace="CENSORED", value=np.nan),
+        DropNAOperator(),
+    ]
+)
 
 df = pipeline.process()
 

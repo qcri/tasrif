@@ -16,11 +16,20 @@ from tasrif.processing_pipeline import ProcessingOperator
 
 
 class FitbitIntradayDataset(ProcessingOperator):
-    """Base class for all Fitbit Intraday datasets
-    """
-    valid_table_names = ["Sleep", "Calories", "Distance", "Steps", "Time_in_Heart_Rate_Zones", "Heart_Rate",
-                         "Very_Active_Minutes", "Lightly_Active_Minutes", "Moderately_Active_Minutes",
-                         "Sedentary_Minutes"]
+    """Base class for all Fitbit Intraday datasets"""
+
+    valid_table_names = [
+        "Sleep",
+        "Calories",
+        "Distance",
+        "Steps",
+        "Time_in_Heart_Rate_Zones",
+        "Heart_Rate",
+        "Very_Active_Minutes",
+        "Lightly_Active_Minutes",
+        "Moderately_Active_Minutes",
+        "Sedentary_Minutes",
+    ]
 
     def __init__(self, folder_path, table_name, num_files=-1):
         """Initializes a dataset reader with the input parameters.
@@ -52,11 +61,13 @@ class FitbitIntradayDataset(ProcessingOperator):
             full_path = pathlib.Path(self.folder_path, "Physical Activity")
 
         file_paths = []
-        for file_path in pathlib.Path(str(full_path)).glob(self.table_name.lower() + "*.json"):
+        for file_path in pathlib.Path(str(full_path)).glob(
+            self.table_name.lower() + "*.json"
+        ):
             file_paths.append(str(file_path))
 
         if self.num_files != -1:
-            file_paths = file_paths[:self.num_files]
+            file_paths = file_paths[: self.num_files]
 
         for file_path in file_paths:
             with open(file_path) as json_file:
@@ -69,4 +80,5 @@ class FitbitIntradayDataset(ProcessingOperator):
     def _validate_table_name(self, table_name):
         if table_name not in self.valid_table_names:
             raise RuntimeError(
-                f"Invalid table_name, must be from the following: {self.valid_table_names}")
+                f"Invalid table_name, must be from the following: {self.valid_table_names}"
+            )

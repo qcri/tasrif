@@ -19,12 +19,19 @@ import pandas as pd
 
 from tasrif.processing_pipeline.custom import AggregateOperator, LinearFitOperator
 
-df = pd.DataFrame([['001', 25, 30], ['001', 17, 50], ['002', 20, 40], ['002', 21, 42]],
-                     columns=['pid', 'min_activity', 'max_activity'])
+df = pd.DataFrame(
+    [["001", 25, 30], ["001", 17, 50], ["002", 20, 40], ["002", 21, 42]],
+    columns=["pid", "min_activity", "max_activity"],
+)
 # %%
-operator = AggregateOperator(groupby_feature_names ="pid",
-                             aggregation_definition= {"min_activity": ["mean", "std"],
-                                                      "r2,_,intercept": LinearFitOperator(feature_names='min_activity', 
-                                                                        target='max_activity')})
+operator = AggregateOperator(
+    groupby_feature_names="pid",
+    aggregation_definition={
+        "min_activity": ["mean", "std"],
+        "r2,_,intercept": LinearFitOperator(
+            feature_names="min_activity", target="max_activity"
+        ),
+    },
+)
 
 operator.process(df)

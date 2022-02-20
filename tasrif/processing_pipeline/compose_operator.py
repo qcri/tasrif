@@ -53,7 +53,9 @@ class ComposeOperator(ParallelOperator):
 
         for operator in processing_operators:
             if not isinstance(operator, ProcessingOperator):
-                raise ValueError("All operators in a pipeline must derive from ProcessingOperator!")
+                raise ValueError(
+                    "All operators in a pipeline must derive from ProcessingOperator!"
+                )
 
         self.processing_operators = processing_operators
         self.set_observers(observers)

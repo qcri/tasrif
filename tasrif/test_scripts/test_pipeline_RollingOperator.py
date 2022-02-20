@@ -17,6 +17,6 @@ import pandas as pd
 
 from tasrif.processing_pipeline.pandas import RollingOperator
 
-df = pd.DataFrame({'B': [0, 1, 2, 3, 4]})
+df = pd.DataFrame({"B": [0, 1, 2, 3, 4]})
 op = RollingOperator(2)
 op.process(df)[0].sum()

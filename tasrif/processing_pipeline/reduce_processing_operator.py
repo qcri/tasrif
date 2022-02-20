@@ -55,6 +55,7 @@ class ReduceProcessingOperator(ProcessingOperator, metaclass=abc.ABCMeta):
 
 
     """
+
     initial = None
 
     @abc.abstractmethod

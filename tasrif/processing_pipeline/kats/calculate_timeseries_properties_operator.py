@@ -82,7 +82,10 @@ class CalculateTimeseriesPropertiesOperator(ProcessingOperator):
      'hw_gamma': 0.03427295918367347}
 
     """
-    def __init__(self, date_feature_name="time", value_column='value', method='kats', **kwargs):
+
+    def __init__(
+        self, date_feature_name="time", value_column="value", method="kats", **kwargs
+    ):
         """Creates a new instance of ExtractTimeseriesFeaturesOperator
 
         Args:
@@ -116,10 +119,14 @@ class CalculateTimeseriesPropertiesOperator(ProcessingOperator):
         processed = []
         for data_frame in data_frames:
 
-            if self.method == 'kats':
+            if self.method == "kats":
                 # convert to TimeSeriesData object
-                timeseries_data = data_frame[[self.date_feature_name, self.value_column]]
-                timeseries_data = TimeSeriesData(timeseries_data, time_col_name=self.date_feature_name)
+                timeseries_data = data_frame[
+                    [self.date_feature_name, self.value_column]
+                ]
+                timeseries_data = TimeSeriesData(
+                    timeseries_data, time_col_name=self.date_feature_name
+                )
 
                 # calculate the TsFeatures
                 features = TsFeatures(**self.kwargs).transform(timeseries_data)

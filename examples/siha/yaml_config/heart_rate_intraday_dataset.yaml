@@ -11,8 +11,8 @@ pipeline:
         table_name: HeartRateIntraday
     - $jq:
         expression: >-
-          map({patientID} + .data.activities_heart_intraday[].data as $item  | 
-          $item."activities-heart-intraday".dataset | 
+          map({patientID} + .data.activities_heart_intraday[].data as $item  |
+          $item."activities-heart-intraday".dataset |
           map({date: $item."activities-heart"[0].dateTime} + .) | .[])
     - $json_normalize
     - $create_feature:

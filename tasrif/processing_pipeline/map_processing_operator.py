@@ -49,7 +49,7 @@ class MapProcessingOperator(ParallelOperator, metaclass=abc.ABCMeta):
                 The element of the list the processing function acts on.
         """
 
-    #pylint: disable=W0212
+    # pylint: disable=W0212
     @staticmethod
     @ray.remote
     def _processing_function_ray(instance, element):
@@ -67,7 +67,6 @@ class MapProcessingOperator(ParallelOperator, metaclass=abc.ABCMeta):
 
         """
         return instance._processing_function(element)
-
 
     def _process(self, *list_of_inputs):
         output = []

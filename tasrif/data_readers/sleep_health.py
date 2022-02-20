@@ -33,11 +33,20 @@ from tasrif.processing_pipeline import ProcessingOperator
 
 
 class SleepHealthDataset(ProcessingOperator):
-    """Base class for all Sleep fitbit datasets
-    """
+    """Base class for all Sleep fitbit datasets"""
 
-    valid_table_names = ["aboutme", "amcheckin", "myfamily", "myhealth", "onboardingdemographics", "pmcheckin",
-                         "researchinterest", "sleepassessment", "sleephabits", "sleepqualitychecker"]
+    valid_table_names = [
+        "aboutme",
+        "amcheckin",
+        "myfamily",
+        "myhealth",
+        "onboardingdemographics",
+        "pmcheckin",
+        "researchinterest",
+        "sleepassessment",
+        "sleephabits",
+        "sleepqualitychecker",
+    ]
 
     def __init__(self, file_name, table_name):
         """Initializes a dataset reader with the input parameters.
@@ -83,4 +92,5 @@ class SleepHealthDataset(ProcessingOperator):
     def _validate_table_name(self, table_name):
         if table_name not in self.valid_table_names:
             raise RuntimeError(
-                f"Invalid table_name, must be from the following: {self.valid_table_names}")
+                f"Invalid table_name, must be from the following: {self.valid_table_names}"
+            )

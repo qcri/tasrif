@@ -18,8 +18,16 @@ import pandas as pd
 from tasrif.processing_pipeline.pandas import SortOperator
 
 # %%
-df1 = pd.DataFrame({'id': [1, 2, 3], 'colors': ['red', 'white', 'blue'], "importance": [1, 3, 2]})
-df2 = pd.DataFrame({'id': [1, 2, 3], 'cities': ['Doha', 'Vienna', 'Belo Horizonte'], "importance": [3, 2, 1]})
+df1 = pd.DataFrame(
+    {"id": [1, 2, 3], "colors": ["red", "white", "blue"], "importance": [1, 3, 2]}
+)
+df2 = pd.DataFrame(
+    {
+        "id": [1, 2, 3],
+        "cities": ["Doha", "Vienna", "Belo Horizonte"],
+        "importance": [3, 2, 1],
+    }
+)
 
 # %% pycharm={"name": "#%%\n"}
 sorted = SortOperator(by="importance").process(df1, df2)

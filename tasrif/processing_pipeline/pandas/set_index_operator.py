@@ -46,6 +46,7 @@ class SetIndexOperator(InputsAreDataFramesValidatorMixin, PandasOperator):
     2020-05-02 01:00:00      2            1]
 
     """
+
     def __init__(self, keys, **kwargs):
         """
         Initializes the operator.

@@ -61,11 +61,17 @@ class ConvertToDatetimeOperator(InputsAreDataFramesValidatorMixin, PandasOperato
             pd.DataFrame -or- list[pd.DataFrame]
                 Processed dataframe(s) resulting from applying the operator
         """
-        columns = self.feature_names.copy() if isinstance(self.feature_names, list) else [self.feature_names]
+        columns = (
+            self.feature_names.copy()
+            if isinstance(self.feature_names, list)
+            else [self.feature_names]
+        )
 
         processed = []
         for data_frame in data_frames:
             for col in columns:
-                data_frame[col] = pd.to_datetime(data_frame[col], errors='coerce', **self.kwargs)
+                data_frame[col] = pd.to_datetime(
+                    data_frame[col], errors="coerce", **self.kwargs
+                )
             processed.append(data_frame)
         return processed

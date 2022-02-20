@@ -52,6 +52,7 @@ class RenameOperator(InputsAreDataFramesValidatorMixin, PandasOperator):
 
 
     """
+
     def __init__(self, **kwargs):
         """
         Initializes the operator
