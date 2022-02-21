@@ -30,6 +30,9 @@ from tasrif.processing_pipeline.custom.iterate_json_operator import IterateJsonO
 from tasrif.processing_pipeline.custom.jq_operator import JqOperator
 from tasrif.processing_pipeline.custom.json_pivot_operator import JsonPivotOperator
 from tasrif.processing_pipeline.custom.linear_fit_operator import LinearFitOperator
+from tasrif.processing_pipeline.custom.merge_fragmented_activity_operator import (
+    MergeFragmentedActivityOperator,
+)
 from tasrif.processing_pipeline.custom.normalize_operator import NormalizeOperator
 from tasrif.processing_pipeline.custom.normalize_transform_operator import (
     NormalizeTransformOperator,
