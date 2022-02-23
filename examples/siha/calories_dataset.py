@@ -3,7 +3,7 @@
 import os
 
 from tasrif.data_readers.siha_dataset import SihaDataset
-from tasrif.processing_pipeline import PrintOperator, SequenceOperator
+from tasrif.processing_pipeline import SequenceOperator
 from tasrif.processing_pipeline.custom import JqOperator
 from tasrif.processing_pipeline.pandas import (
     AsTypeOperator,
@@ -17,7 +17,6 @@ siha_folder_path = os.environ.get("SIHA_PATH")
 pipeline = SequenceOperator(
     [
         SihaDataset(folder_path=siha_folder_path, table_name="Calories"),
-        PrintOperator(),
         JqOperator(
             'map({patientID} + .data.activities_tracker_calories[].data."activities-tracker-calories"[0])'
         ),

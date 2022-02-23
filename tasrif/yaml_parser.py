@@ -210,13 +210,3 @@ def load_modules(modules):
                 context[class_] = getattr(imported_module, _get_operator_name(class_))
 
     return context
-
-
-if __name__ == "__main__":
-    with open("example.yaml", "r") as file_stream:
-        try:
-            p = from_yaml(file_stream)
-            df = p.process()
-            print(df)
-        except yaml.YAMLError as exc:
-            print(exc)

@@ -1,15 +1,19 @@
 modules:
   - tasrif.processing_pipeline: [sequence]
+  - tasrif.processing_pipeline.observers: [LoggingObserver]
   - tasrif.data_readers.fitbit_interday_dataset: [fitbit_interday_dataset]
   - tasrif.processing_pipeline.pandas: [convert_to_datetime, set_index]
 
 pipeline:
   $sequence:
-    - $fitbit_interday_dataset:
-        folder_path: ${FITBIT_INTERDAY_PATH}
-        table_name: Food Log
-    - $convert_to_datetime:
-        feature_names: [Date]
-        infer_datetime_format: true
-    - $set_index:
-        keys: Date
+    processing_operators:
+      - $fitbit_interday_dataset:
+          folder_path: ${FITBIT_INTERDAY_PATH}
+          table_name: Food Log
+      - $convert_to_datetime:
+          feature_names: [Date]
+          infer_datetime_format: true
+      - $set_index:
+          keys: Date
+    observers:
+      - $LoggingObserver
