@@ -10,9 +10,16 @@ from tasrif.processing_pipeline import ProcessingOperator
 class MergeFragmentedActivityOperator(ProcessingOperator):
 
     """
-    Operator to merge gaps between activity. A gap is a time period of activity less than a given threshold.
+    Operator to merge gaps between activity. Suppose a participant had two sleep preiods of 4 hours data
+    stored in two rows consecutively, calling this operator will merge the two sleep periods into one
+    row of 8 hours of sleep.
+
+    Specifically, A gap is a time period of activity less than a given threshold.
     A period of activity that is larger than threshold is considered the end of an activity.
     Gaps found before the end of the activity will be merged with the activity.
+    A gap is identified by comparing the end time of an activity and comparing it
+    with the start time of the following activity.
+
     The end date of the activity will be set to the merged `end_date_feature_name`
     The input of this operator needs to have two datetime columns that represent the starting time of the
     activity and end time of the activity, respectively.
