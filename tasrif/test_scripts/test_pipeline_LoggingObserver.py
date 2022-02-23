@@ -5,9 +5,9 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.11.1
+#       jupytext_version: 1.13.2
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: Python 3 (ipykernel)
 #     language: python
 #     name: python3
 # ---
@@ -20,8 +20,8 @@ import pandas as pd
 from tasrif.processing_pipeline import Observer, SequenceOperator
 from tasrif.processing_pipeline.observers import (
     FunctionalObserver,
-    GroupbyLogger,
-    Logger,
+    GroupbyLoggingOperator,
+    LoggingObserver,
 )
 from tasrif.processing_pipeline.pandas import RenameOperator
 
@@ -38,14 +38,14 @@ df = pd.DataFrame(
 )
 
 # %%
-df = RenameOperator(columns={"logId": "id"}, observers=[Logger()]).process(df)
+df = RenameOperator(columns={"logId": "id"}, observers=[LoggingObserver()]).process(df)
 
 df = df[0]
 
 # %%
 df = RenameOperator(
     columns={"sleep_level": "sleep"},
-    observers=[GroupbyLogger("id", method="first,last")],
+    observers=[GroupbyLoggingOperator("id", method="first,last")],
 ).process(df)
 
 # %% pycharm={"name": "#%%\n"}
@@ -54,7 +54,7 @@ pipeline = SequenceOperator(
         RenameOperator(columns={"timestamp": "time"}),
         RenameOperator(columns={"time": "time_difference"}),
     ],
-    observers=[Logger("head,tail")],
+    observers=[LoggingObserver("head,tail")],
 )
 result = pipeline.process(df[0])
 result

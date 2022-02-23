@@ -18,7 +18,7 @@
 import pandas as pd
 
 from tasrif.processing_pipeline import Observer, SequenceOperator
-from tasrif.processing_pipeline.observers import FunctionalObserver, Logger
+from tasrif.processing_pipeline.observers import FunctionalObserver, LoggingObserver
 from tasrif.processing_pipeline.pandas import ReplaceOperator
 
 # %%

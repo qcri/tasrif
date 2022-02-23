@@ -647,7 +647,7 @@ Tasrif contains observers under `tasrif/processing_pipeline/observers/` that are
 
 import pandas as pd
 from tasrif.processing_pipeline.pandas import RenameOperator
-from tasrif.processing_pipeline.observers import FunctionalObserver, Logger, GroupbyLogger
+from tasrif.processing_pipeline.observers import FunctionalObserver, LoggingObserver, GroupbyLoggingObserver
 from tasrif.processing_pipeline import SequenceOperator, Observer
 
 df = pd.DataFrame([
@@ -660,7 +660,7 @@ df = pd.DataFrame([
 
 pipeline = SequenceOperator([RenameOperator(columns={"timestamp": "time"}),
                              RenameOperator(columns={"time": "time_difference"})],
-                             observers=[Logger("head,tail")])
+                             observers=[LoggingObserver("head,tail")])
 result = pipeline.process(df[0])
 result
 
