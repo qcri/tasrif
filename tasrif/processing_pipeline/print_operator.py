@@ -5,7 +5,7 @@ from tasrif.processing_pipeline.processing_operator import ProcessingOperator
 
 
 class PrintOperator(ProcessingOperator):
-    """Class representing a print operator. This operator does prints the input to the console and reutnr it."""
+    """Class representing a print operator. This operator prints the input to the console and returns it."""
 
     def __init__(self, method=""):
         """
