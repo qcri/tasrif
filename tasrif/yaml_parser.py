@@ -191,6 +191,13 @@ def _get_operator_name(spec):
     return name + "Operator"
 
 
+def _get_observer_name(spec):
+    """
+    Gives observer name from YAML short hand naming format
+    """
+    return spec[:1].upper() + spec[1:] + "Observer"
+
+
 def load_modules(modules):
     """
     Import all functions listed in 'modules'
@@ -206,6 +213,12 @@ def load_modules(modules):
     for module in modules:
         for key, value in module.items():
             imported_module = importlib.import_module(key)
+            if key == "tasrif.processing_pipeline.observers":
+                for class_ in value:
+                    context[class_] = getattr(
+                        imported_module, _get_observer_name(class_)
+                    )
+                continue
             for class_ in value:
                 context[class_] = getattr(imported_module, _get_operator_name(class_))
 
