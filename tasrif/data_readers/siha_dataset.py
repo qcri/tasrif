@@ -11,12 +11,10 @@ Module that provides classes to work with a fitbit dataset dumped from SIHA
         - TimeInHeartRateZones, SedentaryActiveMinutes, LightlyActiveMinutes, ModerateActiveMinutes, VeryActiveMinutes
 """
 
-import pathlib
 import json
+import pathlib
 
-from tasrif.processing_pipeline import (
-    ProcessingOperator,
-)
+from tasrif.processing_pipeline import ProcessingOperator
 
 
 class SihaDataset(ProcessingOperator):
@@ -59,7 +57,9 @@ class SihaDataset(ProcessingOperator):
 
     def _validate_table_name(self, table_name):
         if table_name not in self.valid_table_names:
-            raise RuntimeError(f"Invalid table_name, must be from the following: {self.valid_table_names}")
+            raise RuntimeError(
+                f"Invalid table_name, must be from the following: {self.valid_table_names}"
+            )
 
     def process(self, *data_frames):
 

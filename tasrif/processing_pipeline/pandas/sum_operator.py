@@ -5,6 +5,7 @@ Sum operator
 from tasrif.processing_pipeline import PandasOperator
 from tasrif.processing_pipeline.validators import GroupbyCompatibleValidatorMixin
 
+
 class SumOperator(GroupbyCompatibleValidatorMixin, PandasOperator):
     """
 
@@ -43,7 +44,6 @@ class SumOperator(GroupbyCompatibleValidatorMixin, PandasOperator):
         """
         super().__init__(kwargs)
         self.kwargs = kwargs
-
 
     def _process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.

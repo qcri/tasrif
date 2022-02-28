@@ -1,0 +1,30 @@
+modules:
+  - tasrif.processing_pipeline: [sequence]
+  - tasrif.data_readers.siha_dataset: [siha_dataset]
+  - tasrif.processing_pipeline.custom: [jq, create_feature]
+  - tasrif.processing_pipeline.pandas: [json_normalize, set_index, convert_to_datetime, as_type, drop_features]
+
+pipeline:
+  $sequence:
+    - $siha_dataset:
+        folder_path: ${SIHA_PATH}
+        table_name: HeartRateIntraday
+    - $jq:
+        expression: >-
+          map({patientID} + .data.activities_heart_intraday[].data as $item  |
+          $item."activities-heart-intraday".dataset |
+          map({date: $item."activities-heart"[0].dateTime} + .) | .[])
+    - $json_normalize
+    - $create_feature:
+        feature_name: dateTime
+        feature_creator: 'lambda df: df["date"] + "T" + df["time"]'
+    - $drop_features:
+        feature_names: [date, time]
+    - $convert_to_datetime:
+        feature_names: [dateTime]
+        infer_datetime_format: true
+    - $set_index:
+        keys: dateTime
+    - $as_type:
+        dtype:
+          value: float32

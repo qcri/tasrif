@@ -27,9 +27,9 @@ analysis. Currently, the only Operator present is the
 :code:`CalculateTimeSeriesOperator`. This operator is used to extract useful features,
 such as, seasonality strength, entropy (how predictable is a time-series), and more.
 
-**Tsfresh Operators** are built on top of `TSFresh library`_. Currently, the only Operator present is the 
-:code:`TSFreshFeatureExtractorOperator`. The operator extracts time-series features based on 
-scalable hypothesis tests. The default features returned from the operators are 
+**Tsfresh Operators** are built on top of `TSFresh library`_. Currently, the only Operator present is the
+:code:`TSFreshFeatureExtractorOperator`. The operator extracts time-series features based on
+scalable hypothesis tests. The default features returned from the operators are
 
 .. code-block:: python
 

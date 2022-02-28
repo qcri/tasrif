@@ -4,6 +4,7 @@ Cast a pandas object to a specified dtype dtype.
 from tasrif.processing_pipeline import PandasOperator
 from tasrif.processing_pipeline.validators import InputsAreDataFramesValidatorMixin
 
+
 class AsTypeOperator(InputsAreDataFramesValidatorMixin, PandasOperator):
     """
     Cast a pandas object to a specified dtype dtype.
@@ -64,7 +65,6 @@ class AsTypeOperator(InputsAreDataFramesValidatorMixin, PandasOperator):
             pd.DataFrame -or- list[pd.DataFrame]
                 Processed dataframe(s) resulting from applying the operator
         """
-
 
         processed = []
         for data_frame in data_frames:

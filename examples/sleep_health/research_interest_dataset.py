@@ -27,52 +27,56 @@ Final dataset shape after default preprocessing pipeline: (2072, 21)
 
 
 import os
+
 import numpy as np
-from tasrif.processing_pipeline import SequenceOperator
+
 from tasrif.data_readers.sleep_health import SleepHealthDataset
+from tasrif.processing_pipeline import SequenceOperator
+from tasrif.processing_pipeline.custom import OneHotEncoderOperator
 from tasrif.processing_pipeline.pandas import (
     ConvertToDatetimeOperator,
-    DropNAOperator,
     DropDuplicatesOperator,
+    DropNAOperator,
     ReplaceOperator,
-    SortOperator
+    SortOperator,
 )
-from tasrif.processing_pipeline.custom import OneHotEncoderOperator
 
-sleephealth_path = os.environ['SLEEPHEALTH']
+sleephealth_path = os.environ["SLEEPHEALTH"]
 
-pipeline = SequenceOperator([
-    SleepHealthDataset(sleephealth_path, "researchinterest"),
-    ConvertToDatetimeOperator(feature_names="timestamp",
-                              format="%Y-%m-%dT%H:%M:%S%z",
-                              utc=True),
-    SortOperator(by=["participantId", "timestamp"]),
-    DropDuplicatesOperator(subset="participantId", keep="last"),
-    ReplaceOperator(to_replace={"research_experience": {
-        3: np.nan
-    }}),
-    DropNAOperator(subset=[
-        "contact_method",
-        "research_experience",
-        "two_surveys_perday",
-        "blood_sample",
-        "taking_medication",
-        "family_survey",
-        "hospital_stay",
-    ]),
-    OneHotEncoderOperator(
-        feature_names=[
-            "contact_method",
-            "research_experience",
-            "two_surveys_perday",
-            "blood_sample",
-            "taking_medication",
-            "family_survey",
-            "hospital_stay",
-        ],
-        drop_first=True,
-    ),
-])
+pipeline = SequenceOperator(
+    [
+        SleepHealthDataset(sleephealth_path, "researchinterest"),
+        ConvertToDatetimeOperator(
+            feature_names="timestamp", format="%Y-%m-%dT%H:%M:%S%z", utc=True
+        ),
+        SortOperator(by=["participantId", "timestamp"]),
+        DropDuplicatesOperator(subset="participantId", keep="last"),
+        ReplaceOperator(to_replace={"research_experience": {3: np.nan}}),
+        DropNAOperator(
+            subset=[
+                "contact_method",
+                "research_experience",
+                "two_surveys_perday",
+                "blood_sample",
+                "taking_medication",
+                "family_survey",
+                "hospital_stay",
+            ]
+        ),
+        OneHotEncoderOperator(
+            feature_names=[
+                "contact_method",
+                "research_experience",
+                "two_surveys_perday",
+                "blood_sample",
+                "taking_medication",
+                "family_survey",
+                "hospital_stay",
+            ],
+            drop_first=True,
+        ),
+    ]
+)
 
 df = pipeline.process()
 

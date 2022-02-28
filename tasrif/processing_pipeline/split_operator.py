@@ -2,15 +2,19 @@
 """
 
 import ray
-from tasrif.processing_pipeline.processing_operator import ProcessingOperator
+
 from tasrif.processing_pipeline.parallel_operator import ParallelOperator
+from tasrif.processing_pipeline.processing_operator import ProcessingOperator
+
 
 class SplitOperator(ParallelOperator):
     """Class representing a split operation. The input coming into this operator is split into
     multiple branches represented by split operators that are passed in the constructor.
     """
 
-    def __init__(self, split_operators, bind_list=None, observers=None, num_processes=1):
+    def __init__(
+        self, split_operators, bind_list=None, observers=None, num_processes=1
+    ):
         """Constructs a split operator using the provided arguments
 
         Args:
@@ -69,10 +73,14 @@ class SplitOperator(ParallelOperator):
         self._observers = []
         for operator in split_operators:
             if not isinstance(operator, ProcessingOperator):
-                raise ValueError("All split operators must derive from ProcessingOperator!")
+                raise ValueError(
+                    "All split operators must derive from ProcessingOperator!"
+                )
 
         if bind_list and (len(split_operators) != len(bind_list)):
-            raise ValueError("Length of split_operators must equal length of bind_list!")
+            raise ValueError(
+                "Length of split_operators must equal length of bind_list!"
+            )
 
         self.split_operators = split_operators
         self.bind_list = bind_list

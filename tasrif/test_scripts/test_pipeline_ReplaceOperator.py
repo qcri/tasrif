@@ -16,11 +16,14 @@
 # %load_ext autoreload
 # %autoreload 2
 import pandas as pd
+
 from tasrif.processing_pipeline.pandas import ReplaceOperator
 
 # %%
 # Full
-df = pd.DataFrame({'id': [1, 2, 3], 'colors': ['red', 'white', 'blue'], "importance": [1, 3, 2]})
+df = pd.DataFrame(
+    {"id": [1, 2, 3], "colors": ["red", "white", "blue"], "importance": [1, 3, 2]}
+)
 
 
 # %% pycharm={"name": "#%%\n"}
@@ -29,5 +32,3 @@ df = ReplaceOperator(to_replace="red", value="green").process(df)[0]
 
 # %% pycharm={"name": "#%%\n"}
 df
-
-

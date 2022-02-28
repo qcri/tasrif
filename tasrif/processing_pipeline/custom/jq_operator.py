@@ -5,6 +5,7 @@ import pyjq
 
 from tasrif.processing_pipeline import ProcessingOperator
 
+
 class JqOperator(ProcessingOperator):
     """
 
@@ -83,7 +84,6 @@ class JqOperator(ProcessingOperator):
         """
         super().__init__()
         self.expression = expression
-
 
     def _process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.

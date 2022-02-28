@@ -1,0 +1,15 @@
+modules:
+  - tasrif.processing_pipeline: [sequence]
+  - tasrif.data_readers.fitbit_interday_dataset: [fitbit_interday_dataset]
+  - tasrif.processing_pipeline.pandas: [convert_to_datetime, set_index]
+
+pipeline:
+  $sequence:
+    - $fitbit_interday_dataset:
+        folder_path: ${FITBIT_INTERDAY_PATH}
+        table_name: Foods
+    - $convert_to_datetime:
+        feature_names: [Date]
+        infer_datetime_format: true
+    - $set_index:
+        keys: Date

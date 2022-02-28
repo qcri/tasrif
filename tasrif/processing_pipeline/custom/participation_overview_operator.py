@@ -76,11 +76,14 @@ class ParticipationOverviewOperator(ProcessingOperator):
     2  2020-02-22      3         3      3]
 
     """
-    def __init__(self,
-                 participant_identifier="Id",
-                 date_feature_name="Date",
-                 overview_type="participant_vs_features",
-                 filter_features=None):
+
+    def __init__(
+        self,
+        participant_identifier="Id",
+        date_feature_name="Date",
+        overview_type="participant_vs_features",
+        filter_features=None,
+    ):
         """Creates a new instance of ParticipationOverviewOperator
 
         Args:
@@ -118,16 +121,16 @@ class ParticipationOverviewOperator(ProcessingOperator):
         """
 
         if self.overview_type == "date_vs_features":
-            return self._create_overview(self.date_feature_name,
-                                         self.participant_identifier,
-                                         *data_frames)
+            return self._create_overview(
+                self.date_feature_name, self.participant_identifier, *data_frames
+            )
         if self.overview_type == "participant_vs_features":
-            return self._create_overview(self.participant_identifier,
-                                         self.date_feature_name, *data_frames)
+            return self._create_overview(
+                self.participant_identifier, self.date_feature_name, *data_frames
+            )
         raise ValueError(f"Unknown type of overview: {self.overview_type}")
 
-    def _create_overview(self, group_by_feature, counted_feature,
-                         *data_frames):
+    def _create_overview(self, group_by_feature, counted_feature, *data_frames):
 
         count_non_na = lambda x: x.notna().sum()
 
@@ -139,7 +142,9 @@ class ParticipationOverviewOperator(ProcessingOperator):
             for column in columns:
                 if column == counted_feature:
                     filter_features[counted_feature] = (
-                        counted_feature, lambda x: x.notna().sum())
+                        counted_feature,
+                        lambda x: x.notna().sum(),
+                    )
                 elif column == group_by_feature:
                     pass
                 else:
@@ -147,11 +152,13 @@ class ParticipationOverviewOperator(ProcessingOperator):
                         column_map_func = self.filter_features[column]
                         filter_features[column] = (
                             column,
-                            lambda x, func=column_map_func: func(x).sum())
+                            lambda x, func=column_map_func: func(x).sum(),
+                        )
                     else:
                         filter_features[column] = (column, count_non_na)
-            data_frame = data_frame.groupby(
-                group_by_feature, as_index=False).agg(**filter_features)
+            data_frame = data_frame.groupby(group_by_feature, as_index=False).agg(
+                **filter_features
+            )
             processed.append(data_frame)
 
         return processed

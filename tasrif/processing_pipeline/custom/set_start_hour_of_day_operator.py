@@ -2,6 +2,7 @@
 Operator to visualize participant ID activity per day
 """
 import pandas as pd
+
 from tasrif.processing_pipeline import ProcessingOperator
 
 
@@ -10,12 +11,14 @@ class SetStartHourOfDayOperator(ProcessingOperator):
     Operator to set start hour of the day per participant
 
     """
+
     def __init__(  # pylint: disable=too-many-arguments
-            self,
-            date_feature_name,
-            participant_identifier,
-            shift=0,
-            shifted_date_feature_name='shifted_time_col'):
+        self,
+        date_feature_name,
+        participant_identifier,
+        shift=0,
+        shifted_date_feature_name="shifted_time_col",
+    ):
         """
         Creates a new instance of SetStartHourOfDayOperator. The user will provide the hour using
         `shift`, which will make `date_feature_name` to start on the given hour. The operator will create
@@ -87,8 +90,9 @@ class SetStartHourOfDayOperator(ProcessingOperator):
         """
         processed = []
         for data_frame in data_frames:
-            data_frame[self.shifted_date_feature_name] = data_frame.groupby(self.participant_identifier)\
-                [self.date_feature_name].transform(self._change_start_hour_for_day)
+            data_frame[self.shifted_date_feature_name] = data_frame.groupby(
+                self.participant_identifier
+            )[self.date_feature_name].transform(self._change_start_hour_for_day)
             processed.append(data_frame)
 
         return processed

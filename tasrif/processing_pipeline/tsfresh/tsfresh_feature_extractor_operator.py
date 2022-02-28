@@ -2,7 +2,9 @@
 Operator to extract features from a dataframe
 """
 
+# pylint: disable=E0401
 from tsfresh import extract_features, extract_relevant_features
+
 from tasrif.processing_pipeline import ProcessingOperator
 
 
@@ -60,55 +62,67 @@ class TSFreshFeatureExtractorOperator(ProcessingOperator):
 
     """
 
-    class Defaults: #pylint: disable=too-few-public-methods
+    class Defaults:  # pylint: disable=too-few-public-methods
         """Default parameters used by the class."""
 
-        TSFRESH_FEATURES = {'agg_linear_trend': [{'attr': 'slope', 'chunk_len': 50, 'f_agg': 'mean'},
-                                                                {'attr': 'slope', 'chunk_len': 10, 'f_agg': 'var'},
-                                                                {'attr': 'slope', 'chunk_len': 5, 'f_agg': 'max'},
-                                                                {'attr': 'slope', 'chunk_len': 5, 'f_agg': 'mean'},
-                                                                {'attr': 'rvalue', 'chunk_len': 5, 'f_agg': 'max'},
-                                                                {'attr': 'slope', 'chunk_len': 50, 'f_agg': 'var'},
-                                                                {'attr': 'rvalue', 'chunk_len': 5, 'f_agg': 'mean'},
-                                                                {'attr': 'rvalue', 'chunk_len': 5, 'f_agg': 'var'},
-                                                                {'attr': 'slope', 'chunk_len': 10, 'f_agg': 'mean'},
-                                                                {'attr': 'intercept', 'chunk_len': 5, 'f_agg': 'mean'},
-                                                                {'attr': 'slope', 'chunk_len': 50, 'f_agg': 'max'},
-                                                                {'attr': 'slope', 'chunk_len': 5, 'f_agg': 'var'},
-                                                                {'attr': 'rvalue', 'chunk_len': 10, 'f_agg': 'var'},
-                                                                {'attr': 'slope', 'chunk_len': 10, 'f_agg': 'max'},
-                                                                {'attr': 'intercept', 'chunk_len': 5, 'f_agg': 'var'},
-                                                                {'attr': 'rvalue', 'chunk_len': 10, 'f_agg': 'max'},
-                                                                {'attr': 'intercept', 'chunk_len': 5, 'f_agg': 'max'},
-                                                                {'attr': 'rvalue', 'chunk_len': 10, 'f_agg': 'mean'},
-                                                                {'attr': 'intercept', 'chunk_len': 10, 'f_agg': 'mean'},
-                                                                {'attr': 'intercept', 'chunk_len': 10, 'f_agg': 'var'},
-                                                                {'attr': 'intercept', 'chunk_len': 10, 'f_agg': 'max'},
-                                                                {'attr': 'rvalue', 'chunk_len': 50, 'f_agg': 'max'}],
-                                           'linear_trend': [{'attr': 'rvalue'},
-                                                            {'attr': 'slope'},
-                                                            {'attr': 'intercept'}],
-                                           'index_mass_quantile': [{'q': 0.4},
-                                                                   {'q': 0.7},
-                                                                   {'q': 0.6},
-                                                                   {'q': 0.8},
-                                                                   {'q': 0.3}],
-                                           'cwt_coefficients': [{'coeff': 3, 'w': 2, 'widths': (2, 5, 10, 20)},
-                                                                {'coeff': 7, 'w': 2, 'widths': (2, 5, 10, 20)}],
-                                           'last_location_of_maximum': None,
-                                           'fft_coefficient': [{'attr': 'imag', 'coeff': 1},
-                                                               {'attr': 'imag', 'coeff': 8}],
-                                           'first_location_of_maximum': None,
-                                           'energy_ratio_by_chunks': [{'num_segments': 10,
-                                                                       'segment_focus': 9}]}
+        TSFRESH_FEATURES = {
+            "agg_linear_trend": [
+                {"attr": "slope", "chunk_len": 50, "f_agg": "mean"},
+                {"attr": "slope", "chunk_len": 10, "f_agg": "var"},
+                {"attr": "slope", "chunk_len": 5, "f_agg": "max"},
+                {"attr": "slope", "chunk_len": 5, "f_agg": "mean"},
+                {"attr": "rvalue", "chunk_len": 5, "f_agg": "max"},
+                {"attr": "slope", "chunk_len": 50, "f_agg": "var"},
+                {"attr": "rvalue", "chunk_len": 5, "f_agg": "mean"},
+                {"attr": "rvalue", "chunk_len": 5, "f_agg": "var"},
+                {"attr": "slope", "chunk_len": 10, "f_agg": "mean"},
+                {"attr": "intercept", "chunk_len": 5, "f_agg": "mean"},
+                {"attr": "slope", "chunk_len": 50, "f_agg": "max"},
+                {"attr": "slope", "chunk_len": 5, "f_agg": "var"},
+                {"attr": "rvalue", "chunk_len": 10, "f_agg": "var"},
+                {"attr": "slope", "chunk_len": 10, "f_agg": "max"},
+                {"attr": "intercept", "chunk_len": 5, "f_agg": "var"},
+                {"attr": "rvalue", "chunk_len": 10, "f_agg": "max"},
+                {"attr": "intercept", "chunk_len": 5, "f_agg": "max"},
+                {"attr": "rvalue", "chunk_len": 10, "f_agg": "mean"},
+                {"attr": "intercept", "chunk_len": 10, "f_agg": "mean"},
+                {"attr": "intercept", "chunk_len": 10, "f_agg": "var"},
+                {"attr": "intercept", "chunk_len": 10, "f_agg": "max"},
+                {"attr": "rvalue", "chunk_len": 50, "f_agg": "max"},
+            ],
+            "linear_trend": [
+                {"attr": "rvalue"},
+                {"attr": "slope"},
+                {"attr": "intercept"},
+            ],
+            "index_mass_quantile": [
+                {"q": 0.4},
+                {"q": 0.7},
+                {"q": 0.6},
+                {"q": 0.8},
+                {"q": 0.3},
+            ],
+            "cwt_coefficients": [
+                {"coeff": 3, "w": 2, "widths": (2, 5, 10, 20)},
+                {"coeff": 7, "w": 2, "widths": (2, 5, 10, 20)},
+            ],
+            "last_location_of_maximum": None,
+            "fft_coefficient": [
+                {"attr": "imag", "coeff": 1},
+                {"attr": "imag", "coeff": 8},
+            ],
+            "first_location_of_maximum": None,
+            "energy_ratio_by_chunks": [{"num_segments": 10, "segment_focus": 9}],
+        }
 
-
-    def __init__(self,  # pylint: disable=too-many-arguments
-                 seq_id_col="seq_id",
-                 date_feature_name="time",
-                 value_col="Steps",
-                 labels=None,
-                 features=Defaults.TSFRESH_FEATURES):
+    def __init__(  # pylint: disable=too-many-arguments
+        self,
+        seq_id_col="seq_id",
+        date_feature_name="time",
+        value_col="Steps",
+        labels=None,
+        features=Defaults.TSFRESH_FEATURES,
+    ):
         """Creates a new instance of TSFreshFeatureExtractorOperator
 
         Args:
@@ -158,7 +172,7 @@ class TSFreshFeatureExtractorOperator(ProcessingOperator):
         for data_frame in data_frames:
             for column in self.value_col:
                 if column not in data_frame.columns:
-                    raise ValueError(str(column) + ' not in columns')
+                    raise ValueError(str(column) + " not in columns")
 
         kind_to_fc_parameters = {}
         for column in self.value_col:
@@ -167,19 +181,23 @@ class TSFreshFeatureExtractorOperator(ProcessingOperator):
         processed = []
         for data_frame in data_frames:
             if (self.labels is not None) and (not self.labels.empty):
-                tsfresh_features = extract_relevant_features(data_frame[[self.date_feature_name,
-                                                                         self.seq_id_col,
-                                                                         *self.value_col]],
-                                                            y=self.labels,
-                                                            column_id=self.seq_id_col,
-                                                            column_sort=self.date_feature_name)
+                tsfresh_features = extract_relevant_features(
+                    data_frame[
+                        [self.date_feature_name, self.seq_id_col, *self.value_col]
+                    ],
+                    y=self.labels,
+                    column_id=self.seq_id_col,
+                    column_sort=self.date_feature_name,
+                )
             else:
-                tsfresh_features = extract_features(data_frame[[self.date_feature_name,
-                                                                self.seq_id_col,
-                                                                *self.value_col]],
-                                                   column_id=self.seq_id_col,
-                                                   column_sort=self.date_feature_name,
-                                                   kind_to_fc_parameters=kind_to_fc_parameters)
+                tsfresh_features = extract_features(
+                    data_frame[
+                        [self.date_feature_name, self.seq_id_col, *self.value_col]
+                    ],
+                    column_id=self.seq_id_col,
+                    column_sort=self.date_feature_name,
+                    kind_to_fc_parameters=kind_to_fc_parameters,
+                )
             processed.append(tsfresh_features)
 
         return processed

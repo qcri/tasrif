@@ -111,12 +111,15 @@ class AggregateActivityDatesOperator(ProcessingOperator):
     5   167     3   2016-03-15 03:03:00     2016-03-15 03:12:00
     6   167     4   2016-03-15 03:58:00     2016-03-15 04:07:00
     """
-    def __init__(self, # pylint: disable=R0913
-                 date_feature_name,
-                 participant_identifier,
-                 aggregation_definition=None,
-                 start_column_name='start',
-                 end_column_name='end'):
+
+    def __init__(  # pylint: disable=R0913
+        self,
+        date_feature_name,
+        participant_identifier,
+        aggregation_definition=None,
+        start_column_name="start",
+        end_column_name="end",
+    ):
         """Creates a new instance of AggregateActivityDatesOperator
 
         Args:
@@ -154,25 +157,27 @@ class AggregateActivityDatesOperator(ProcessingOperator):
 
         processed = []
         for data_frame in data_frames:
-            start_to_end = data_frame.groupby(self.participant_identifier).apply(self._show_start_to_end)
+            start_to_end = data_frame.groupby(self.participant_identifier).apply(
+                self._show_start_to_end
+            )
             start_to_end = start_to_end.reset_index(level=self.participant_identifier)
             start_to_end = start_to_end.reset_index(drop=True)
             processed.append(start_to_end)
 
         return processed
 
-
     def _show_start_to_end(self, dataframe):
         start = dataframe[self.date_feature_name].iloc[0]
         end = dataframe[self.date_feature_name].iloc[-1]
-        start_to_end = pd.DataFrame([[start, end]],
-                                    columns=[self.start_column_name, self.end_column_name])
+        start_to_end = pd.DataFrame(
+            [[start, end]], columns=[self.start_column_name, self.end_column_name]
+        )
 
         if self.aggregation_definition:
             for key, value in self.aggregation_definition.items():
                 if isinstance(value, list):
                     for idx, function in enumerate(value):
-                        start_to_end[key + '_' + str(idx)] = function(dataframe[key])
+                        start_to_end[key + "_" + str(idx)] = function(dataframe[key])
                 else:
                     start_to_end[key] = value(dataframe[key])
 

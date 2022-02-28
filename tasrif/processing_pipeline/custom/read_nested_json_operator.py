@@ -3,10 +3,11 @@ Operator to aggregate column features based on a column
 """
 
 import pathlib
+
 import pandas as pd
 
-from tasrif.processing_pipeline import ProcessingOperator
-from tasrif.processing_pipeline import SequenceOperator
+from tasrif.processing_pipeline import ProcessingOperator, SequenceOperator
+
 
 class ReadNestedJsonOperator(ProcessingOperator):
     """
@@ -99,7 +100,6 @@ class ReadNestedJsonOperator(ProcessingOperator):
                 yield (row, json_file)
             except FileNotFoundError:
                 yield (row, None)
-
 
     def _process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.

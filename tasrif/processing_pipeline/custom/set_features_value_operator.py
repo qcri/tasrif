@@ -78,7 +78,9 @@ class SetFeaturesValueOperator(ProcessingOperator):
 
     """
 
-    def __init__(self, feature_names: list = None, selector: callable = None, value=None):
+    def __init__(
+        self, feature_names: list = None, selector: callable = None, value=None
+    ):
         """Creates a new instance of CreateFeatureOperator
 
         Args:

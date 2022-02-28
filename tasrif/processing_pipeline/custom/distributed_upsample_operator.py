@@ -45,8 +45,7 @@ class DistributedUpsampleOperator(ProcessingOperator):
         freq = self.rule
         data_frame = data_frame[~data_frame.index.duplicated(keep="first")]
         data_frame["group"] = data_frame.index
-        data_frame["count"] = data_frame.resample(
-            freq).ffill()["group"].value_counts()
+        data_frame["count"] = data_frame.resample(freq).ffill()["group"].value_counts()
         data_frame = data_frame.resample(freq).ffill()
         data_frame = data_frame.drop("group", axis=1)
         data_frame = data_frame.div(data_frame["count"], axis=0)

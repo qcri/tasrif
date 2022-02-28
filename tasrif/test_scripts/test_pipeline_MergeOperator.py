@@ -19,8 +19,8 @@ from tasrif.processing_pipeline.pandas import MergeOperator
 
 # %%
 # Full
-df1 = pd.DataFrame({'id': [1, 2, 3], 'colors': ['red', 'white', 'blue']})
-df2 = pd.DataFrame({'id': [1, 2, 3], 'cities': ['Doha', 'Vienna', 'Belo Horizonte']})
+df1 = pd.DataFrame({"id": [1, 2, 3], "colors": ["red", "white", "blue"]})
+df2 = pd.DataFrame({"id": [1, 2, 3], "cities": ["Doha", "Vienna", "Belo Horizonte"]})
 
 # %% pycharm={"name": "#%%\n"}
 df1.head()
@@ -31,4 +31,3 @@ df2.head()
 # %% pycharm={"name": "#%%\n"}
 merged = MergeOperator().process(df1, df2)
 merged
-

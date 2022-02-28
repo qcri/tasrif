@@ -2,13 +2,14 @@
 Operator to read multiple csvs in a folder
 """
 
-import pathlib
 import glob
 import os
+import pathlib
+
 import pandas as pd
 
-from tasrif.processing_pipeline import ProcessingOperator
-from tasrif.processing_pipeline import SequenceOperator
+from tasrif.processing_pipeline import ProcessingOperator, SequenceOperator
+
 
 class ReadCsvFolderOperator(ProcessingOperator):
     """
@@ -48,12 +49,14 @@ class ReadCsvFolderOperator(ProcessingOperator):
 
     """
 
-    def __init__(self,
-                 pipeline: SequenceOperator = None,
-                 name_pattern='*.csv',
-                 filename_column_name='filename',
-                 concatenate=True,
-                 **read_csv_kwargs):
+    def __init__(
+        self,
+        pipeline: SequenceOperator = None,
+        name_pattern="*.csv",
+        filename_column_name="filename",
+        concatenate=True,
+        **read_csv_kwargs
+    ):
         """Creates a new instance of ReadCsvFolderOperator
 
         Args:

@@ -3,6 +3,7 @@ Operator to aggregate column features based on a column
 """
 
 from calendar import monthrange
+
 import numpy as np
 
 from tasrif.processing_pipeline import ProcessingOperator
@@ -42,7 +43,8 @@ class EncodeCyclicalFeaturesOperator(ProcessingOperator):
     2017-01-08  2017-01-08  9702    2772    -0.781831   0.623490    9.987165e-01    -0.050649
 
     """
-    def __init__(self, date_feature_name="date", category_definition='hour'):
+
+    def __init__(self, date_feature_name="date", category_definition="hour"):
         """Creates a new instance of EncodeCyclicalFeaturesOperator
 
         Args:
@@ -105,43 +107,52 @@ class EncodeCyclicalFeaturesOperator(ProcessingOperator):
 
     def _month(self, data_frame, column_name="month"):
         # retain cyclic nature of time
-        data_frame[column_name + '_sin'] = np.sin(
-            2 * np.pi * data_frame[self.date_feature_name].dt.month / 12)
-        data_frame[column_name + '_cos'] = np.cos(
-            2 * np.pi * data_frame[self.date_feature_name].dt.month / 12)
+        data_frame[column_name + "_sin"] = np.sin(
+            2 * np.pi * data_frame[self.date_feature_name].dt.month / 12
+        )
+        data_frame[column_name + "_cos"] = np.cos(
+            2 * np.pi * data_frame[self.date_feature_name].dt.month / 12
+        )
         return data_frame
 
     def _day_in_month(self, data_frame, column_name="day_in_month"):
         # some months have 28, 29, 30, and 31 days
         days_in_month = data_frame[self.date_feature_name].apply(
-            lambda x: monthrange(x.year, x.month)[1])
-        data_frame[column_name + '_sin'] = np.sin(
-            2 * np.pi * data_frame[self.date_feature_name].dt.day /
-            days_in_month)
-        data_frame[column_name + '_cos'] = np.cos(
-            2 * np.pi * data_frame[self.date_feature_name].dt.day /
-            days_in_month)
+            lambda x: monthrange(x.year, x.month)[1]
+        )
+        data_frame[column_name + "_sin"] = np.sin(
+            2 * np.pi * data_frame[self.date_feature_name].dt.day / days_in_month
+        )
+        data_frame[column_name + "_cos"] = np.cos(
+            2 * np.pi * data_frame[self.date_feature_name].dt.day / days_in_month
+        )
         return data_frame
 
     def _day(self, data_frame, column_name="day"):
-        data_frame[column_name + '_sin'] = np.sin(
-            2 * np.pi * data_frame[self.date_feature_name].dt.dayofweek / 7)
-        data_frame[column_name + '_cos'] = np.cos(
-            2 * np.pi * data_frame[self.date_feature_name].dt.dayofweek / 7)
+        data_frame[column_name + "_sin"] = np.sin(
+            2 * np.pi * data_frame[self.date_feature_name].dt.dayofweek / 7
+        )
+        data_frame[column_name + "_cos"] = np.cos(
+            2 * np.pi * data_frame[self.date_feature_name].dt.dayofweek / 7
+        )
         return data_frame
 
     def _hour(self, data_frame, column_name="hour"):
         # retain cyclic nature of time
-        data_frame[column_name + '_sin'] = np.sin(
-            2 * np.pi * data_frame[self.date_feature_name].dt.hour / 24)
-        data_frame[column_name + '_cos'] = np.cos(
-            2 * np.pi * data_frame[self.date_feature_name].dt.hour / 24)
+        data_frame[column_name + "_sin"] = np.sin(
+            2 * np.pi * data_frame[self.date_feature_name].dt.hour / 24
+        )
+        data_frame[column_name + "_cos"] = np.cos(
+            2 * np.pi * data_frame[self.date_feature_name].dt.hour / 24
+        )
         return data_frame
 
     def _minute(self, data_frame, column_name="minute"):
         # retain cyclic nature of time
-        data_frame[column_name + '_sin'] = np.sin(
-            2 * np.pi * data_frame[self.date_feature_name].dt.minute / 60)
-        data_frame[column_name + '_cos'] = np.cos(
-            2 * np.pi * data_frame[self.date_feature_name].dt.minute / 60)
+        data_frame[column_name + "_sin"] = np.sin(
+            2 * np.pi * data_frame[self.date_feature_name].dt.minute / 60
+        )
+        data_frame[column_name + "_cos"] = np.cos(
+            2 * np.pi * data_frame[self.date_feature_name].dt.minute / 60
+        )
         return data_frame

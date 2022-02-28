@@ -4,18 +4,17 @@
 import calendar
 from datetime import timedelta
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-from matplotlib import dates
+from matplotlib import cm, dates
 from matplotlib.colors import LinearSegmentedColormap
-from matplotlib import cm
 
 from tasrif.processing_pipeline.observers.functional_observer import FunctionalObserver
 
+
 class VisualizeDaysObserver(FunctionalObserver):  # pylint: disable=R0902
-    """DataprepObserver class to create a report for a dataframe
-    """
+    """DataprepObserver class to create a report for a dataframe"""
 
     def __init__(  # pylint: disable=too-many-arguments
         self,
@@ -26,9 +25,10 @@ class VisualizeDaysObserver(FunctionalObserver):  # pylint: disable=R0902
         signals_as_area=None,
         start_hour_col=None,
         end_date_feature_name=None,
-        granularity='T',
+        granularity="T",
         log_scale=False,
-        figsize=(7, 4)):
+        figsize=(7, 4),
+    ):
         """
         VisualizeDaysObserver constructor
 
@@ -203,8 +203,7 @@ class VisualizeDaysObserver(FunctionalObserver):  # pylint: disable=R0902
             df_plot = data_frame[0]
 
             if self.date_feature_name in df_plot.columns:
-                df_plot = df_plot.set_index(
-                    df_plot[self.date_feature_name])
+                df_plot = df_plot.set_index(df_plot[self.date_feature_name])
             else:
                 assert df_plot.index.name == self.date_feature_name
 
@@ -212,16 +211,16 @@ class VisualizeDaysObserver(FunctionalObserver):  # pylint: disable=R0902
                 first_participant = df_plot[self.participant_identifier].iloc[0]
                 self.participant_filter = [first_participant]
 
-
             if self.participant_filter != -2:
                 df_plot_filter = df_plot[self.participant_identifier].isin(
-                    self.participant_filter)
+                    self.participant_filter
+                )
 
                 df_plot = df_plot[df_plot_filter]
 
             df_plot.groupby(self.participant_identifier).apply(self._plot_days)
 
-    def _plot_days(self, df_plot): # pylint: disable=R0914,R0912,R0915,R0913
+    def _plot_days(self, df_plot):  # pylint: disable=R0914,R0912,R0915,R0913
         """plots days of participant in df_plot
 
         Args:
@@ -236,13 +235,10 @@ class VisualizeDaysObserver(FunctionalObserver):  # pylint: disable=R0902
             ]
         else:
             dfs_per_group = [
-                pd.DataFrame(group[1])
-                for group in df_plot.groupby(df_plot.index.date)
+                pd.DataFrame(group[1]) for group in df_plot.groupby(df_plot.index.date)
             ]
 
-        fig, ax1 = plt.subplots(len(dfs_per_group),
-                                1,
-                                figsize=self.figsize)
+        fig, ax1 = plt.subplots(len(dfs_per_group), 1, figsize=self.figsize)
 
         if len(dfs_per_group) == 1:
             ax1 = [ax1]
@@ -258,22 +254,19 @@ class VisualizeDaysObserver(FunctionalObserver):  # pylint: disable=R0902
                     df_panel[signal] = np.log(df_panel[signal])
 
                 if self.end_date_feature_name:
-                    self._draw_bar(df_panel,
-                                   signal,
-                                   ax1[idx],
-                                   colors[i],
-                                   colors[i])
+                    self._draw_bar(df_panel, signal, ax1[idx], colors[i], colors[i])
                 else:
-                    ax1[idx].plot(df_panel.index,
-                                  df_panel[signal],
-                                  label=signal,
-                                  linewidth=2,
-                                  color=colors[i],
-                                  alpha=1)
+                    ax1[idx].plot(
+                        df_panel.index,
+                        df_panel[signal],
+                        label=signal,
+                        linewidth=2,
+                        color=colors[i],
+                        alpha=1,
+                    )
 
                 if df_panel[signal].max() > maxy:
                     maxy = df_panel[signal].max()
-
 
             if self.signals_as_area:
                 facecolors = self._get_area_colors(len(self.signals_as_area))
@@ -282,41 +275,49 @@ class VisualizeDaysObserver(FunctionalObserver):  # pylint: disable=R0902
                     starty = endy
                     endy = endy + (maxy / len(self.signals_as_area))
                     signal_is_true = df_panel[signal_area]
-                    ax1[idx].fill_between(df_panel.index,
-                                          starty,
-                                          endy,
-                                          where=signal_is_true,
-                                          facecolor=facecolors[i],
-                                          alpha=0.7,
-                                          label=signal_area)
+                    ax1[idx].fill_between(
+                        df_panel.index,
+                        starty,
+                        endy,
+                        where=signal_is_true,
+                        facecolor=facecolors[i],
+                        alpha=0.7,
+                        label=signal_area,
+                    )
 
             ax1[idx].margins(0.1)
-            ax1[idx].tick_params(axis='x',
-                                 which='both',
-                                 bottom=False,
-                                 top=False,
-                                 labelbottom=True,
-                                 rotation=0)
-            ax1[idx].set_facecolor('snow')
-
+            ax1[idx].tick_params(
+                axis="x",
+                which="both",
+                bottom=False,
+                top=False,
+                labelbottom=True,
+                rotation=0,
+            )
+            ax1[idx].set_facecolor("snow")
 
             if self.start_hour_col:
                 shift = df_panel.index[0] - df_panel[self.start_hour_col].iloc[0]
-                shift = shift.seconds // (60*60)
+                shift = shift.seconds // (60 * 60)
                 new_start_datetime = df_panel.index[0] - timedelta(
                     hours=(df_panel.index[0].hour - shift) % 24,
                     minutes=df_panel.index[0].minute,
-                    seconds=df_panel.index[0].second)
+                    seconds=df_panel.index[0].second,
+                )
 
-                new_end_datetime = df_panel.index[0] - timedelta(
-                    hours=(df_panel.index[0].hour - shift) % 24,
-                    minutes=df_panel.index[0].minute,
-                    seconds=df_panel.index[0].second) + timedelta(minutes=1439)
+                new_end_datetime = (
+                    df_panel.index[0]
+                    - timedelta(
+                        hours=(df_panel.index[0].hour - shift) % 24,
+                        minutes=df_panel.index[0].minute,
+                        seconds=df_panel.index[0].second,
+                    )
+                    + timedelta(minutes=1439)
+                )
 
             else:
                 new_start_datetime = df_panel.index[0]
                 new_end_datetime = df_panel.index[0] + timedelta(minutes=1439)
-
 
             new_start_datetime = pd.to_datetime(new_start_datetime)
             new_end_datetime = pd.to_datetime(new_end_datetime)
@@ -325,10 +326,12 @@ class VisualizeDaysObserver(FunctionalObserver):  # pylint: disable=R0902
             ax1[idx].set_ylim(0, maxy)
 
             y_label = self._get_day_label(df_panel)
-            ax1[idx].set_ylabel(f"{y_label}",
-                                rotation=0,
-                                horizontalalignment="right",
-                                verticalalignment="center")
+            ax1[idx].set_ylabel(
+                f"{y_label}",
+                rotation=0,
+                horizontalalignment="right",
+                verticalalignment="center",
+            )
 
             ax1[idx].set_xticks([])
             ax1[idx].yaxis.set_tick_params(labelsize=8)
@@ -336,25 +339,21 @@ class VisualizeDaysObserver(FunctionalObserver):  # pylint: disable=R0902
         participant = df_plot.iloc[0][self.participant_identifier]
         ax1[0].set_title(f"PID = {str(participant)}", fontsize=16)
 
-        ax1[-1].set_xlabel('Time')
-        ax1[-1].xaxis.set_minor_locator(
-            dates.HourLocator(interval=4))  # every 4 hours
+        ax1[-1].set_xlabel("Time")
+        ax1[-1].xaxis.set_minor_locator(dates.HourLocator(interval=4))  # every 4 hours
         ax1[-1].xaxis.set_minor_formatter(
-            dates.DateFormatter('%H:%M'))  # hours and minutes
-
+            dates.DateFormatter("%H:%M")
+        )  # hours and minutes
 
         handles, labels = ax1[-1].get_legend_handles_labels()
-        fig.legend(handles,
-                   labels,
-                   loc='lower right',
-                   ncol=1,
-                   fontsize=8,
-                   shadow=True)
+        fig.legend(handles, labels, loc="lower right", ncol=1, fontsize=8, shadow=True)
 
         plt.show()
         plt.close()
 
-    def _draw_bar(self, data_frame, signal, axes, color, edgecolor): # pylint: disable=R0913
+    def _draw_bar(
+        self, data_frame, signal, axes, color, edgecolor
+    ):  # pylint: disable=R0913
         """Called when `end_datetime_feature` is set. Draws bargraph
         where each bar has a height of signal, and a width of
         `end_datetime_feature` - `date_time_feature`.
@@ -379,13 +378,14 @@ class VisualizeDaysObserver(FunctionalObserver):  # pylint: disable=R0902
         end_time = end_time.dt.round(self.granularity)
 
         width = dates.date2num(end_time) - dates.date2num(data)
-        axes.bar(x=data,
-                 height=data_frame[signal],
-                 width=width,
-                 color=color,
-                 edgecolor=edgecolor,
-                 align='edge')
-
+        axes.bar(
+            x=data,
+            height=data_frame[signal],
+            width=width,
+            color=color,
+            edgecolor=edgecolor,
+            align="edge",
+        )
 
     @staticmethod
     def _get_day_label(data_frame):
@@ -405,22 +405,28 @@ class VisualizeDaysObserver(FunctionalObserver):  # pylint: disable=R0902
         enddate = data_frame.index[-1]
 
         if startdate.day == enddate.day:
-            string = (f"{startdate.day} - "
+            string = (
+                f"{startdate.day} - "
                 f"{calendar.month_name[startdate.month][:3]}\n"
-                f"{calendar.day_name[startdate.dayofweek]}")
+                f"{calendar.day_name[startdate.dayofweek]}"
+            )
 
         else:
             if startdate.month == enddate.month:
-                string = (f"{startdate.day}/{enddate.day} - "
+                string = (
+                    f"{startdate.day}/{enddate.day} - "
                     f"{calendar.month_name[startdate.month][:3]}\n"
                     f"{calendar.day_name[startdate.dayofweek][:3]}/"
-                    f"{calendar.day_name[enddate.dayofweek][:3]}")
+                    f"{calendar.day_name[enddate.dayofweek][:3]}"
+                )
             else:
-                string = (f"{startdate.day} - "
+                string = (
+                    f"{startdate.day} - "
                     f"{calendar.month_name[startdate.month][:3]}/{enddate.day} - "
                     f"{calendar.month_name[enddate.month][:3]}\n "
                     f"{calendar.day_name[startdate.dayofweek][:3]}/"
-                    f"{calendar.day_name[enddate.dayofweek][:3]}")
+                    f"{calendar.day_name[enddate.dayofweek][:3]}"
+                )
 
         return string
 
@@ -456,7 +462,7 @@ class VisualizeDaysObserver(FunctionalObserver):  # pylint: disable=R0902
               list of matplotlib.colors
 
         """
-        colors = ['royalblue', 'green', 'orange']
+        colors = ["royalblue", "green", "orange"]
         cmap1 = LinearSegmentedColormap.from_list("mycmap", colors)
         cmap = cm.get_cmap(cmap1, num_areas)
         color_indices = np.linspace(0.0, 1.0, num_areas, endpoint=False)

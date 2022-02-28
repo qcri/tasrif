@@ -2,5 +2,5 @@
 """
 
 from tasrif.processing_pipeline.tsfresh.tsfresh_feature_extractor_operator import (
-	TSFreshFeatureExtractorOperator
+    TSFreshFeatureExtractorOperator,
 )

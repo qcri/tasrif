@@ -3,10 +3,11 @@ Operator to aggregate column features based on a column
 """
 
 import pathlib
+
 import pandas as pd
 
-from tasrif.processing_pipeline import ProcessingOperator
-from tasrif.processing_pipeline import SequenceOperator
+from tasrif.processing_pipeline import ProcessingOperator, SequenceOperator
+
 
 class ReadNestedCsvOperator(ProcessingOperator):
     """
@@ -15,63 +16,63 @@ class ReadNestedCsvOperator(ProcessingOperator):
     Example
     --------
 
-	>>> import pandas as pd
-	>>> import numpy as np
-	>>>
-	>>> from tasrif.processing_pipeline.custom import ReadNestedCsvOperator
-	>>>
-	>>> df = pd.DataFrame({"name": ['Alfred', 'Roy'],
-	...                    "age": [43, 32],
-	...                    "file_details": ['details1', 'details2']})
-	>>>
-	>>> details1 = pd.DataFrame({'calories': [360, 540],
-	...                          'time': [pd.Timestamp("2015-04-25"), pd.Timestamp("2015-04-26")]
-	...                         })
-	>>>
-	>>> details2 = pd.DataFrame({'calories': [420, 250],
-	...                          'time': [pd.Timestamp("2015-05-16"), pd.Timestamp("2015-05-17")]
-	...                         })
-	>>>
-	>>>
-	>>> # Save File 1 and File 2
-	>>> details1.to_csv('details1.csv', index=False)
-	>>> details2.to_csv('details2.csv', index=False)
-	>>>
-	>>> operator = ReadNestedCsvOperator(folder_path='./', field='file_details', pipeline=None)
-	>>> generator = operator.process(df)
-	>>>
-	>>> # Iterates twice
-	>>> for record, details in generator:
-	...     print('Subject information:')
-	...     print(record)
-	...     print('')
-	...     print('Subject details:')
-	...     print(details)
-	...     print('============================')
-	Subject information:
-	name              Alfred
-	age                   43
-	file_details    details1
-	Name: 0, dtype: object
-	...
-	Subject details:
-	   calories        time
-	0       360  2015-04-25
-	1       540  2015-04-26
-	============================
-	Subject information:
-	name                 Roy
-	age                   32
-	file_details    details2
-	Name: 1, dtype: object
-	...
-	Subject details:
-	   calories        time
-	0       420  2015-05-16
-	1       250  2015-05-17
-	============================
+        >>> import pandas as pd
+        >>> import numpy as np
+        >>>
+        >>> from tasrif.processing_pipeline.custom import ReadNestedCsvOperator
+        >>>
+        >>> df = pd.DataFrame({"name": ['Alfred', 'Roy'],
+        ...                    "age": [43, 32],
+        ...                    "file_details": ['details1', 'details2']})
+        >>>
+        >>> details1 = pd.DataFrame({'calories': [360, 540],
+        ...                          'time': [pd.Timestamp("2015-04-25"), pd.Timestamp("2015-04-26")]
+        ...                         })
+        >>>
+        >>> details2 = pd.DataFrame({'calories': [420, 250],
+        ...                          'time': [pd.Timestamp("2015-05-16"), pd.Timestamp("2015-05-17")]
+        ...                         })
+        >>>
+        >>>
+        >>> # Save File 1 and File 2
+        >>> details1.to_csv('details1.csv', index=False)
+        >>> details2.to_csv('details2.csv', index=False)
+        >>>
+        >>> operator = ReadNestedCsvOperator(folder_path='./', field='file_details', pipeline=None)
+        >>> generator = operator.process(df)
+        >>>
+        >>> # Iterates twice
+        >>> for record, details in generator:
+        ...     print('Subject information:')
+        ...     print(record)
+        ...     print('')
+        ...     print('Subject details:')
+        ...     print(details)
+        ...     print('============================')
+        Subject information:
+        name              Alfred
+        age                   43
+        file_details    details1
+        Name: 0, dtype: object
+        ...
+        Subject details:
+           calories        time
+        0       360  2015-04-25
+        1       540  2015-04-26
+        ============================
+        Subject information:
+        name                 Roy
+        age                   32
+        file_details    details2
+        Name: 1, dtype: object
+        ...
+        Subject details:
+           calories        time
+        0       420  2015-05-16
+        1       250  2015-05-17
+        ============================
 
-	"""
+    """
 
     def __init__(self, folder_path, field, pipeline: SequenceOperator = None):
         """Creates a new instance of ReadNestedCsvOperator
@@ -100,7 +101,6 @@ class ReadNestedCsvOperator(ProcessingOperator):
             except FileNotFoundError:
                 yield (row, None)
 
-
     def _process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.
 
@@ -109,9 +109,9 @@ class ReadNestedCsvOperator(ProcessingOperator):
               Variable number of pandas dataframes to be processed
 
         Returns:
-	        list: Tuple of series, and a Generator.
-	        		The series is the record information (one row of data_frame).
-	        		The generator returns a dataframe per next() call.
+                list: Tuple of series, and a Generator.
+                                The series is the record information (one row of data_frame).
+                                The generator returns a dataframe per next() call.
         """
         output = []
         for data_frame in data_frames:

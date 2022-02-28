@@ -145,125 +145,94 @@ Final dataset shape after default preprocessing pipeline is (1445, 160)
 """
 
 import os
+
 import numpy as np
-from tasrif.processing_pipeline import SequenceOperator
+
 from tasrif.data_readers.sleep_health import SleepHealthDataset
+from tasrif.processing_pipeline import SequenceOperator
+from tasrif.processing_pipeline.custom import OneHotEncoderOperator
 from tasrif.processing_pipeline.pandas import (
     ConvertToDatetimeOperator,
-    DropNAOperator,
     DropDuplicatesOperator,
+    DropNAOperator,
     ReplaceOperator,
-    SortOperator
+    SortOperator,
 )
-from tasrif.processing_pipeline.custom import OneHotEncoderOperator
 
-sleephealth_path = os.environ['SLEEPHEALTH']
+sleephealth_path = os.environ["SLEEPHEALTH"]
 
-pipeline = SequenceOperator([
-    SleepHealthDataset(sleephealth_path, "myhealth"),
-    ConvertToDatetimeOperator(feature_names="timestamp",
-                              format="%Y-%m-%dT%H:%M:%S%z",
-                              utc=True),
-    SortOperator(by=["participantId", "timestamp"]),
-    DropDuplicatesOperator(subset="participantId", keep="last"),
-    ReplaceOperator(
-        to_replace={
-            "allergies": {
-                3: np.nan
-            },
-            "anxiety": {
-                3: np.nan
-            },
-            "apnea": {
-                3: np.nan
-            },
-            "asthma": {
-                3: np.nan
-            },
-            "atrial": {
-                3: np.nan
-            },
-            "hi_blood_pressure": {
-                3: np.nan
-            },
-            "cancer": {
-                3: np.nan
-            },
-            "depression": {
-                3: np.nan
-            },
-            "diabetes": {
-                3: np.nan
-            },
-            "erectile": {
-                3: np.nan
-            },
-            "gastroesophageal": {
-                3: np.nan
-            },
-            "heart_disease": {
-                3: np.nan
-            },
-            "insomnia": {
-                3: np.nan
-            },
-            "lung": {
-                3: np.nan
-            },
-            "narcolepsy": {
-                3: np.nan
-            },
-            "nocturia": {
-                3: np.nan
-            },
-            "restless_legs_syndrome": {
-                3: np.nan
-            },
-            "stroke": {
-                3: np.nan
-            },
-            "uars": {
-                3: np.nan
-            },
-        }),
-    DropNAOperator(subset=[
-        "anxious",
-        "cardiovascular",
-        "compare_one_year",
-        "day_to_day",
-        "depressed",
-        "emotional",
-        "fatigued",
-        "general_health",
-        "mental_health",
-        "physical_activities",
-        "physical_health",
-        "risk",
-        "sleep_trouble",
-        "social_activities",
-        "stressed",
-    ]),
-    OneHotEncoderOperator(
-        feature_names=[
-            "anxious",
-            "cardiovascular",
-            "compare_one_year",
-            "day_to_day",
-            "depressed",
-            "emotional",
-            "fatigued",
-            "general_health",
-            "mental_health",
-            "physical_activities",
-            "physical_health",
-            "risk",
-            "sleep_trouble",
-            "social_activities",
-            "stressed",
-        ],
-        drop_first=True,
-    ),
-])
+pipeline = SequenceOperator(
+    [
+        SleepHealthDataset(sleephealth_path, "myhealth"),
+        ConvertToDatetimeOperator(
+            feature_names="timestamp", format="%Y-%m-%dT%H:%M:%S%z", utc=True
+        ),
+        SortOperator(by=["participantId", "timestamp"]),
+        DropDuplicatesOperator(subset="participantId", keep="last"),
+        ReplaceOperator(
+            to_replace={
+                "allergies": {3: np.nan},
+                "anxiety": {3: np.nan},
+                "apnea": {3: np.nan},
+                "asthma": {3: np.nan},
+                "atrial": {3: np.nan},
+                "hi_blood_pressure": {3: np.nan},
+                "cancer": {3: np.nan},
+                "depression": {3: np.nan},
+                "diabetes": {3: np.nan},
+                "erectile": {3: np.nan},
+                "gastroesophageal": {3: np.nan},
+                "heart_disease": {3: np.nan},
+                "insomnia": {3: np.nan},
+                "lung": {3: np.nan},
+                "narcolepsy": {3: np.nan},
+                "nocturia": {3: np.nan},
+                "restless_legs_syndrome": {3: np.nan},
+                "stroke": {3: np.nan},
+                "uars": {3: np.nan},
+            }
+        ),
+        DropNAOperator(
+            subset=[
+                "anxious",
+                "cardiovascular",
+                "compare_one_year",
+                "day_to_day",
+                "depressed",
+                "emotional",
+                "fatigued",
+                "general_health",
+                "mental_health",
+                "physical_activities",
+                "physical_health",
+                "risk",
+                "sleep_trouble",
+                "social_activities",
+                "stressed",
+            ]
+        ),
+        OneHotEncoderOperator(
+            feature_names=[
+                "anxious",
+                "cardiovascular",
+                "compare_one_year",
+                "day_to_day",
+                "depressed",
+                "emotional",
+                "fatigued",
+                "general_health",
+                "mental_health",
+                "physical_activities",
+                "physical_health",
+                "risk",
+                "sleep_trouble",
+                "social_activities",
+                "stressed",
+            ],
+            drop_first=True,
+        ),
+    ]
+)
 
 
 df = pipeline.process()

@@ -1,7 +1,9 @@
 """Module that defines the ReduceProcessingOperator class
 """
 import abc
+
 from tasrif.processing_pipeline.processing_operator import ProcessingOperator
+
 
 class ReduceProcessingOperator(ProcessingOperator, metaclass=abc.ABCMeta):
     """
@@ -53,6 +55,7 @@ class ReduceProcessingOperator(ProcessingOperator, metaclass=abc.ABCMeta):
 
 
     """
+
     initial = None
 
     @abc.abstractmethod

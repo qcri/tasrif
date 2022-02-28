@@ -4,10 +4,12 @@ Pivots a dataframe and realigns its columns to remove any multi-indices.
 from tasrif.processing_pipeline import PandasOperator
 from tasrif.processing_pipeline.validators import InputsAreDataFramesValidatorMixin
 
+
 class PivotResetColumnsOperator(InputsAreDataFramesValidatorMixin, PandasOperator):
     """
     Pivots a dataframe and realigns its columns to remove any multi-indices.
     """
+
     def __init__(self, level, **kwargs):
         """
         Creates a new instance of PivotResetColumnsOperator
