@@ -4,7 +4,9 @@ Operator to aggregate column features based on a column
 import pandas as pd
 
 from tasrif.processing_pipeline import ProcessingOperator
-from tasrif.processing_pipeline.custom.participation_overview_operator import ParticipationOverviewOperator
+from tasrif.processing_pipeline.custom.participation_overview_operator import (
+    ParticipationOverviewOperator,
+)
 
 
 class StatisticsOperator(ProcessingOperator):
@@ -43,12 +45,13 @@ class StatisticsOperator(ProcessingOperator):
     8  mean_participants_per_day           3           3           4           4]
 
     """
+
     def __init__(
-            self,
-            participant_identifier="Id",
-            date_feature_name="Date",
-            filter_features=None,
-        ):
+        self,
+        participant_identifier="Id",
+        date_feature_name="Date",
+        filter_features=None,
+    ):
         """Creates a new instance of StatisticsOperator
 
         Args:
@@ -95,15 +98,20 @@ class StatisticsOperator(ProcessingOperator):
         dt_data_frame = data_frame.copy()
         dt_feature = self.date_feature_name + "_dt"
         dt_data_frame[dt_feature] = pd.to_datetime(
-            dt_data_frame[self.date_feature_name])
+            dt_data_frame[self.date_feature_name]
+        )
         result.extend(self._get_min_max_day(dt_data_frame, dt_feature))
 
         result.append(
-            self._get_overview("participant_vs_features", data_frame,
-                               "mean_days_per_participant"))
+            self._get_overview(
+                "participant_vs_features", data_frame, "mean_days_per_participant"
+            )
+        )
         result.append(
-            self._get_overview("date_vs_features", data_frame,
-                               "mean_participants_per_day"))
+            self._get_overview(
+                "date_vs_features", data_frame, "mean_participants_per_day"
+            )
+        )
 
         return pd.DataFrame.from_records(result)
 
@@ -114,14 +122,16 @@ class StatisticsOperator(ProcessingOperator):
         for column in columns:
             if self.filter_features and column in self.filter_features:
                 column_map_func = self.filter_features[column]
-                count[column] = data_frame[data_frame.apply(
-                    lambda x, func=column_map_func, column=column: func(x[
-                        column]),
-                    axis=1,
-                )][self.participant_identifier].nunique()
+                count[column] = data_frame[
+                    data_frame.apply(
+                        lambda x, func=column_map_func, column=column: func(x[column]),
+                        axis=1,
+                    )
+                ][self.participant_identifier].nunique()
             else:
                 count[column] = data_frame[data_frame[column].notna()][
-                    self.participant_identifier].nunique()
+                    self.participant_identifier
+                ].nunique()
 
         return count
 
@@ -132,16 +142,26 @@ class StatisticsOperator(ProcessingOperator):
         for column in columns:
             if self.filter_features and column in self.filter_features:
                 column_map_func = self.filter_features[column]
-                dup_count[column] = (data_frame[data_frame.apply(
-                    lambda x, func=column_map_func, column=column: func(x[
-                        column]),
-                    axis=1,
-                )][[self.date_feature_name,
-                    self.participant_identifier]].duplicated().sum())
+                dup_count[column] = (
+                    data_frame[
+                        data_frame.apply(
+                            lambda x, func=column_map_func, column=column: func(
+                                x[column]
+                            ),
+                            axis=1,
+                        )
+                    ][[self.date_feature_name, self.participant_identifier]]
+                    .duplicated()
+                    .sum()
+                )
             else:
-                dup_count[column] = (data_frame[data_frame[column].notna()][[
-                    self.date_feature_name, self.participant_identifier
-                ]].duplicated().sum())
+                dup_count[column] = (
+                    data_frame[data_frame[column].notna()][
+                        [self.date_feature_name, self.participant_identifier]
+                    ]
+                    .duplicated()
+                    .sum()
+                )
 
         return dup_count
 
@@ -152,8 +172,7 @@ class StatisticsOperator(ProcessingOperator):
         columns = list(data_frame.columns)
         row_count = {"statistic": "missing_data_count"}
         for column in columns:
-            row_count[column] = data_frame[
-                data_frame[column].isnull()].shape[0]
+            row_count[column] = data_frame[data_frame[column].isnull()].shape[0]
         return row_count
 
     def _get_row_count(self, data_frame):
@@ -163,14 +182,14 @@ class StatisticsOperator(ProcessingOperator):
         for column in columns:
             if self.filter_features and column in self.filter_features:
                 column_map_func = self.filter_features[column]
-                row_count[column] = data_frame[data_frame.apply(
-                    lambda x, func=column_map_func, column=column: func(x[
-                        column]),
-                    axis=1,
-                )].shape[0]
-            else:
                 row_count[column] = data_frame[
-                    data_frame[column].notna()].shape[0]
+                    data_frame.apply(
+                        lambda x, func=column_map_func, column=column: func(x[column]),
+                        axis=1,
+                    )
+                ].shape[0]
+            else:
+                row_count[column] = data_frame[data_frame[column].notna()].shape[0]
 
         return row_count
 
@@ -184,21 +203,29 @@ class StatisticsOperator(ProcessingOperator):
             if column != dt_feature:
                 if self.filter_features and column in self.filter_features:
                     column_map_func = self.filter_features[column]
-                    min_day[column] = data_frame[data_frame.apply(
-                        lambda x, func=column_map_func, column=column: func(x[
-                            column]),
-                        axis=1,
-                    )][dt_feature].min()
-                    max_day[column] = data_frame[data_frame.apply(
-                        lambda x, func=column_map_func, column=column: func(x[
-                            column]),
-                        axis=1,
-                    )][dt_feature].max()
-                else:
                     min_day[column] = data_frame[
-                        data_frame[column].notna()][dt_feature].min()
+                        data_frame.apply(
+                            lambda x, func=column_map_func, column=column: func(
+                                x[column]
+                            ),
+                            axis=1,
+                        )
+                    ][dt_feature].min()
                     max_day[column] = data_frame[
-                        data_frame[column].notna()][dt_feature].max()
+                        data_frame.apply(
+                            lambda x, func=column_map_func, column=column: func(
+                                x[column]
+                            ),
+                            axis=1,
+                        )
+                    ][dt_feature].max()
+                else:
+                    min_day[column] = data_frame[data_frame[column].notna()][
+                        dt_feature
+                    ].min()
+                    max_day[column] = data_frame[data_frame[column].notna()][
+                        dt_feature
+                    ].max()
                 duration[column] = (max_day[column] - min_day[column]).days
                 min_day[column] = min_day[column].strftime("%Y-%m-%d")
                 max_day[column] = max_day[column].strftime("%Y-%m-%d")
@@ -217,9 +244,11 @@ class StatisticsOperator(ProcessingOperator):
         columns = list(overview.columns)
         aggregation_definition = {}
         for column in columns:
-            skip_column = (self.participant_identifier
-                           if overview_type == "participant_vs_features" else
-                           self.date_feature_name)
+            skip_column = (
+                self.participant_identifier
+                if overview_type == "participant_vs_features"
+                else self.date_feature_name
+            )
             if column != skip_column:
                 aggregation_definition[column] = "mean"
             else:

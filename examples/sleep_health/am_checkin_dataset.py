@@ -38,47 +38,44 @@ Some important stats:
 """
 
 import os
+
 import numpy as np
-from tasrif.processing_pipeline import SequenceOperator
+
 from tasrif.data_readers.sleep_health import SleepHealthDataset
+from tasrif.processing_pipeline import SequenceOperator
+from tasrif.processing_pipeline.custom import EncodeCyclicalFeaturesOperator
 from tasrif.processing_pipeline.pandas import (
     ConvertToDatetimeOperator,
-    DropNAOperator,
     DropFeaturesOperator,
+    DropNAOperator,
     ReplaceOperator,
     SortOperator,
 )
-from tasrif.processing_pipeline.custom import EncodeCyclicalFeaturesOperator
 
-sleephealth_path = os.environ['SLEEPHEALTH']
+sleephealth_path = os.environ["SLEEPHEALTH"]
 
-pipeline = SequenceOperator([
-    SleepHealthDataset(sleephealth_path, "amcheckin"),
-    ConvertToDatetimeOperator(feature_names=["AMCH1", "AMCH4"],
-                              format="%Y-%m-%dT%H:%M:%S%z",
-                              utc=True),
-    SortOperator(by=["participantId"]),
-    ReplaceOperator(
-        to_replace={
-            "AMCH2A": {
-                np.nan: 0
-            },
-            "AMCH3A": {
-                np.nan: 0
-            },
-            "AMCH5": {
-                np.nan: 0
-            },
-        }),
-    DropNAOperator(
-        subset=["participantId", "AMCH1", "AMCH2", "AMCH3", "AMCH4"]),
-    DropFeaturesOperator(['participantId', 'timestamp']),
-    EncodeCyclicalFeaturesOperator(date_feature_name='AMCH4',
-                                   category_definition=[
-                                       "month", "day_in_month", "day",
-                                       "hour", "minute"
-                                   ])
-])
+pipeline = SequenceOperator(
+    [
+        SleepHealthDataset(sleephealth_path, "amcheckin"),
+        ConvertToDatetimeOperator(
+            feature_names=["AMCH1", "AMCH4"], format="%Y-%m-%dT%H:%M:%S%z", utc=True
+        ),
+        SortOperator(by=["participantId"]),
+        ReplaceOperator(
+            to_replace={
+                "AMCH2A": {np.nan: 0},
+                "AMCH3A": {np.nan: 0},
+                "AMCH5": {np.nan: 0},
+            }
+        ),
+        DropNAOperator(subset=["participantId", "AMCH1", "AMCH2", "AMCH3", "AMCH4"]),
+        DropFeaturesOperator(["participantId", "timestamp"]),
+        EncodeCyclicalFeaturesOperator(
+            date_feature_name="AMCH4",
+            category_definition=["month", "day_in_month", "day", "hour", "minute"],
+        ),
+    ]
+)
 
 
 df = pipeline.process()

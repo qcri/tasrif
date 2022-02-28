@@ -19,7 +19,7 @@
   </a>
   <a href="https://pypi.org/project/tasrif/">
     <img alt="PyPI - Downloads" src="https://img.shields.io/pypi/dm/tasrif?style=flat">
-  </a>  
+  </a>
   <a href="https://pypi.org/project/tasrif/">
     <img alt="PyPI - Version" src="https://img.shields.io/pypi/v/tasrif">
   </a>
@@ -28,7 +28,7 @@
   </a>
   <a href="https://GitHub.com/qcri/tasrif/stargazers/">
     <img src="https://img.shields.io/github/stars/qcri/tasrif?style=social&label=Star&maxAge=2592000" alt="GitHub Stars">
-  </a> 
+  </a>
 </p>
 
 
@@ -231,7 +231,7 @@ df = pd.DataFrame({"name": ['Alfred', 'Roy'],
                    "age": [43, 32],
                    "csv_files_column": ['participant1.csv', 'participant2.csv']})
 
-operator = ReadNestedCsvOperator(folder_path='examples/quick_start/csvs/', 
+operator = ReadNestedCsvOperator(folder_path='examples/quick_start/csvs/',
                                  field='csv_files_column')
 generator = operator.process(df)[0]
 
@@ -250,8 +250,8 @@ df = pd.DataFrame({"name": ['Alfred', 'Roy'],
                    "age": [43, 32],
                    "json_files_column": ['participant1.json', 'participant2.json']})
 
-operator = IterateJsonOperator(folder_path='examples/quick_start/jsons/', 
-                               field='json_files_column', 
+operator = IterateJsonOperator(folder_path='examples/quick_start/jsons/',
+                               field='json_files_column',
                                pipeline=None)
 generator = operator.process(df)[0]
 
@@ -280,7 +280,7 @@ filter_features = {
     'Steps': lambda x : x > 0
 }
 
-sop = StatisticsOperator(participant_identifier='PersonId', 
+sop = StatisticsOperator(participant_identifier='PersonId',
                          date_feature_name='Day',
                          filter_features=filter_features)
 sop.process(df)[0]
@@ -292,8 +292,8 @@ Or use `ParticipationOverviewOperator` to see statistics per participant. Pass t
 
 from tasrif.processing_pipeline.custom import ParticipationOverviewOperator
 
-sop = ParticipationOverviewOperator(participant_identifier='PersonId', 
-                                    date_feature_name='Day', 
+sop = ParticipationOverviewOperator(participant_identifier='PersonId',
+                                    date_feature_name='Day',
                                     overview_type='participant_vs_features')
 sop.process(df)[0]
 
@@ -324,10 +324,10 @@ Convert time columns into cyclical features, which are more efficiently grasped 
 from tasrif.processing_pipeline.custom import EncodeCyclicalFeaturesOperator
 from tasrif.processing_pipeline.pandas import ReadCsvOperator
 
-df = ReadCsvOperator('examples/quick_start/steps_per_day.csv', 
+df = ReadCsvOperator('examples/quick_start/steps_per_day.csv',
                      parse_dates=['Date']).process()[0]
 
-operator = EncodeCyclicalFeaturesOperator(date_feature_name="Date", 
+operator = EncodeCyclicalFeaturesOperator(date_feature_name="Date",
                                           category_definition="day")
 operator.process(df)[0]
 
@@ -342,7 +342,7 @@ Extract timeseries features using `CalculateTimeseriesPropertiesOperator` which 
 from tasrif.processing_pipeline.kats import CalculateTimeseriesPropertiesOperator
 from tasrif.processing_pipeline.pandas import ReadCsvOperator
 
-df = ReadCsvOperator('examples/quick_start/long_ts.csv', 
+df = ReadCsvOperator('examples/quick_start/long_ts.csv',
                      parse_dates=['Date']).process()[0]
 
 
@@ -359,7 +359,7 @@ from tasrif.processing_pipeline.custom import SlidingWindowOperator
 from tasrif.processing_pipeline.pandas import ReadCsvOperator
 from tasrif.processing_pipeline.tsfresh import TSFreshFeatureExtractorOperator
 
-df = ReadCsvOperator('examples/quick_start/cgm.csv', 
+df = ReadCsvOperator('examples/quick_start/cgm.csv',
                      parse_dates=['dateTime']).process()[0]
 
 
@@ -387,7 +387,7 @@ filter rows, days, or participants with a custom condition using `FilterOperator
 from tasrif.processing_pipeline.pandas import ReadCsvOperator
 from tasrif.processing_pipeline.custom import FilterOperator
 
-df = ReadCsvOperator('examples/quick_start/filter_example.csv', 
+df = ReadCsvOperator('examples/quick_start/filter_example.csv',
                      parse_dates=['Hours']).process()[0]
 
 operator = FilterOperator(participant_identifier="Id",
@@ -429,7 +429,7 @@ operator.process(df)[0]
 
 ```
 
-Upsample or downsample date features using `ResampleOperator`. The first argument `rule` can be minutes `min`, hours `H`, days `D`, and more. See details of resampling [here](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.resample.html) 
+Upsample or downsample date features using `ResampleOperator`. The first argument `rule` can be minutes `min`, hours `H`, days `D`, and more. See details of resampling [here](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.resample.html)
 
 ```python
 from tasrif.processing_pipeline.pandas import ReadCsvOperator
@@ -493,8 +493,8 @@ from tasrif.processing_pipeline.custom import NormalizeTransformOperator
 
 df = pd.DataFrame([
     [1, "2020-05-01 00:00:00", 10],
-    [1, "2020-05-01 01:00:00", 15], 
-    [1, "2020-05-01 03:00:00", 23], 
+    [1, "2020-05-01 01:00:00", 15],
+    [1, "2020-05-01 03:00:00", 23],
     [2, "2020-05-02 00:00:00", 17],
     [2, "2020-05-02 01:00:00", 11]],
     columns=['logId', 'timestamp', 'sleep_level'])
@@ -652,14 +652,14 @@ from tasrif.processing_pipeline import SequenceOperator, Observer
 
 df = pd.DataFrame([
     [1, "2020-05-01 00:00:00", 1],
-    [1, "2020-05-01 01:00:00", 1], 
-    [1, "2020-05-01 03:00:00", 2], 
+    [1, "2020-05-01 01:00:00", 1],
+    [1, "2020-05-01 03:00:00", 2],
     [2, "2020-05-02 00:00:00", 1],
     [2, "2020-05-02 01:00:00", 1]],
     columns=['logId', 'timestamp', 'sleep_level'])
 
-pipeline = SequenceOperator([RenameOperator(columns={"timestamp": "time"}), 
-                             RenameOperator(columns={"time": "time_difference"})], 
+pipeline = SequenceOperator([RenameOperator(columns={"timestamp": "time"}),
+                             RenameOperator(columns={"time": "time_difference"})],
                              observers=[Logger("head,tail")])
 result = pipeline.process(df[0])
 result
@@ -714,8 +714,8 @@ This project is much stronger with your collaboration. Be part of it!<br>
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
 
-<a href="https://github.com/uabbas"><img src="https://avatars.githubusercontent.com/u/7748104?v=4" class="avatar-user" width="50px;"/></a> 
-<a href="https://github.com/abalhomaid"><img src="https://avatars.githubusercontent.com/u/12021070?v=4" class="avatar-user" width="50px;"/></a> 
-<a href="https://github.com/hashimmoosavi"><img src="https://avatars.githubusercontent.com/u/3678012?v=4" class="avatar-user" width="50px;"/></a> 
-<a href="https://github.com/joaopalotti"><img src="https://avatars.githubusercontent.com/u/852343?s=400&v=4" class="avatar-user" width="50px;"/></a> 
-<a href="https://github.com/fabubaker"><img src="https://avatars.githubusercontent.com/u/9405286?v=4" class="avatar-user" width="50px;"/></a> 
+<a href="https://github.com/uabbas"><img src="https://avatars.githubusercontent.com/u/7748104?v=4" class="avatar-user" width="50px;"/></a>
+<a href="https://github.com/abalhomaid"><img src="https://avatars.githubusercontent.com/u/12021070?v=4" class="avatar-user" width="50px;"/></a>
+<a href="https://github.com/hashimmoosavi"><img src="https://avatars.githubusercontent.com/u/3678012?v=4" class="avatar-user" width="50px;"/></a>
+<a href="https://github.com/joaopalotti"><img src="https://avatars.githubusercontent.com/u/852343?s=400&v=4" class="avatar-user" width="50px;"/></a>
+<a href="https://github.com/fabubaker"><img src="https://avatars.githubusercontent.com/u/9405286?v=4" class="avatar-user" width="50px;"/></a>

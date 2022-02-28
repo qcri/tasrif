@@ -2,8 +2,10 @@
 """
 
 import ray
-from tasrif.processing_pipeline.processing_operator import ProcessingOperator
+
 from tasrif.processing_pipeline.parallel_operator import ParallelOperator
+from tasrif.processing_pipeline.processing_operator import ProcessingOperator
+
 
 class ComposeOperator(ParallelOperator):
     """Class representing a composiition of processing operators. The same data flows to all the
@@ -51,7 +53,9 @@ class ComposeOperator(ParallelOperator):
 
         for operator in processing_operators:
             if not isinstance(operator, ProcessingOperator):
-                raise ValueError("All operators in a pipeline must derive from ProcessingOperator!")
+                raise ValueError(
+                    "All operators in a pipeline must derive from ProcessingOperator!"
+                )
 
         self.processing_operators = processing_operators
         self.set_observers(observers)

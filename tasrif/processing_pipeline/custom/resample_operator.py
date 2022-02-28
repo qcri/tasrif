@@ -35,6 +35,7 @@ class ResampleOperator(ProcessingOperator):
     2020-05-02     1.000000]
 
     """
+
     def __init__(self, rule, aggregation_definition, **resample_args):
         """Creates a new instance of ResampleOperator
 

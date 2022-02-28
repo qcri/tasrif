@@ -3,9 +3,9 @@
 
 from tasrif.processing_pipeline.processing_operator import ProcessingOperator
 
+
 class NoopOperator(ProcessingOperator):
-    """Class representing a noop operator. This operator does nothing to the input and simply passes the input.
-    """
+    """Class representing a noop operator. This operator does nothing to the input and simply passes the input."""
 
     def __init__(self):
         """Constructs a noop operator
@@ -25,7 +25,7 @@ class NoopOperator(ProcessingOperator):
         """
         super().__init__()
 
-    def _process(self, *args): #pylint: disable=no-self-use
+    def _process(self, *args):  # pylint: disable=no-self-use
         """This function returned the received input without any changes (unmutated).
 
         Args:

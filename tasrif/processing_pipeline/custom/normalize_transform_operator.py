@@ -2,10 +2,13 @@
 Operator to normalize the integer/float values in a dataframe
 """
 import numpy as np
-from sklearn.preprocessing import StandardScaler
-from sklearn.preprocessing import MinMaxScaler
-from sklearn.preprocessing import MaxAbsScaler
-from sklearn.preprocessing import RobustScaler
+from sklearn.preprocessing import (
+    MaxAbsScaler,
+    MinMaxScaler,
+    RobustScaler,
+    StandardScaler,
+)
+
 from tasrif.processing_pipeline import ProcessingOperator
 
 
@@ -61,7 +64,7 @@ class NormalizeTransformOperator(ProcessingOperator):
 
     """
 
-    def __init__(self, feature_names='all', model=None):
+    def __init__(self, feature_names="all", model=None):
         """
         Creates a new instance of NormalizeTransformOperator
 
@@ -80,19 +83,21 @@ class NormalizeTransformOperator(ProcessingOperator):
 
         if not model:
             raise ValueError(
-                "Incorrect model specified for the NormalizeTransformOperator!")
+                "Incorrect model specified for the NormalizeTransformOperator!"
+            )
 
         if isinstance(model, StandardScaler):
-            self.method = 'zscore'
+            self.method = "zscore"
         elif isinstance(model, MinMaxScaler):
-            self.method = 'zscore'
+            self.method = "zscore"
         elif isinstance(model, MaxAbsScaler):
-            self.method = 'maxabs'
+            self.method = "maxabs"
         elif isinstance(model, RobustScaler):
-            self.method = 'robust'
+            self.method = "robust"
         else:
             raise ValueError(
-                "Incorrect model specified for the NormalizeTransformOperator!")
+                "Incorrect model specified for the NormalizeTransformOperator!"
+            )
 
         self.model = model
 
@@ -116,10 +121,10 @@ class NormalizeTransformOperator(ProcessingOperator):
             if isinstance(self.feature_names, list):
                 data_frame_feature_names = data_frame[self.feature_names]
             else:
-                data_frame_feature_names = data_frame[data_frame.select_dtypes(
-                    include=np.number).columns.tolist()]
+                data_frame_feature_names = data_frame[
+                    data_frame.select_dtypes(include=np.number).columns.tolist()
+                ]
 
-            processed.append(self.model.transform(
-                data_frame_feature_names))
+            processed.append(self.model.transform(data_frame_feature_names))
 
         return processed

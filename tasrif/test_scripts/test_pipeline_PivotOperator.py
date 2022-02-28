@@ -14,15 +14,20 @@
 
 # +
 import pandas as pd
-from tasrif.processing_pipeline.pandas import PivotOperator
-df = pd.DataFrame([
-    [1, "2020-05-01 00:00:00", 1],
-    [1, "2020-05-01 01:00:00", 1], 
-    [1, "2020-05-01 03:00:00", 2], 
-    [2, "2020-05-02 00:00:00", 1],
-    [2, "2020-05-02 01:00:00", 1]],
-    columns=['logId', 'timestamp', 'sleep_level'])
 
-df['timestamp'] = pd.to_datetime(df['timestamp'])
-op = PivotOperator(index='timestamp', columns='logId', values='sleep_level')
+from tasrif.processing_pipeline.pandas import PivotOperator
+
+df = pd.DataFrame(
+    [
+        [1, "2020-05-01 00:00:00", 1],
+        [1, "2020-05-01 01:00:00", 1],
+        [1, "2020-05-01 03:00:00", 2],
+        [2, "2020-05-02 00:00:00", 1],
+        [2, "2020-05-02 01:00:00", 1],
+    ],
+    columns=["logId", "timestamp", "sleep_level"],
+)
+
+df["timestamp"] = pd.to_datetime(df["timestamp"])
+op = PivotOperator(index="timestamp", columns="logId", values="sleep_level")
 op.process(df)[0]

@@ -2,9 +2,9 @@
 """
 from tasrif.processing_pipeline.observers.functional_observer import FunctionalObserver
 
+
 class Logger(FunctionalObserver):
-    """Logger class to log a dataframe in different ways
-    """
+    """Logger class to log a dataframe in different ways"""
 
     def __init__(self, method=""):
         """
@@ -19,7 +19,7 @@ class Logger(FunctionalObserver):
         """
         self._logging_methods = []
         if method:
-            self._logging_methods = method.split(',')
+            self._logging_methods = method.split(",")
 
     def _observe(self, operator, *data_frames):
         """

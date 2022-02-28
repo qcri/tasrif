@@ -1,16 +1,22 @@
 import pytest
-from tasrif.processing_pipeline import ProcessingOperator, SequenceOperator, sequence_operator
+
+from tasrif.processing_pipeline import (
+    ProcessingOperator,
+    SequenceOperator,
+    sequence_operator,
+)
+
 
 class NotProcessingOperator:
     pass
 
+
 def test_raises_an_error_if_inputs_are_not_ProcessingOperators(mocker):
     with pytest.raises(ValueError) as exc:
-        SequenceOperator([
-            NotProcessingOperator(),
-            NotProcessingOperator(),
-            NotProcessingOperator()
-        ])
+        SequenceOperator(
+            [NotProcessingOperator(), NotProcessingOperator(), NotProcessingOperator()]
+        )
+
 
 def test_operators_are_called_correctly(mocker):
     sub_operators = []
@@ -37,4 +43,4 @@ def test_operators_are_called_correctly(mocker):
 
     # Assert that the output is the return value of the last operator in the
     # pipeline.
-    assert(output == sub_operator_return_values[2])
+    assert output == sub_operator_return_values[2]

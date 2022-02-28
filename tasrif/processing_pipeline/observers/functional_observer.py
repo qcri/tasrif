@@ -2,6 +2,7 @@
 """
 from tasrif.processing_pipeline.observer import Observer
 
+
 class FunctionalObserver(Observer):
     """Interface specification of a observer
     The constructor of a concrete operator will provide options to configure the

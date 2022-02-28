@@ -1,6 +1,7 @@
 """Module that defines the Observer class
 """
 
+
 class Observer:
     """Interface specification of a observer
     The observation is invoked via the observe method and the data to be
@@ -30,4 +31,3 @@ class Observer:
                 Variable number of pandas dataframes to be observed
         """
         self._observe(operator, *data_frames)
-        
