@@ -83,9 +83,19 @@ def _parse_dict(obj, context):
             if isinstance(key, str) and key.startswith("$"):
                 parsed[key] = create_operator(key, parsed_value, context)
             else:
-                parsed[key] = parsed_value
+                parsed_key = _parse_const(key, context)
+                parsed[parsed_key] = parsed_value
 
     return parsed
+
+
+def _parse_const(obj, context):
+    """
+    Check if string is a supported const
+    """
+    if obj == "np.nan":
+        return context["nan"]
+    return obj
 
 
 def parse(obj, context):
@@ -118,7 +128,7 @@ def parse(obj, context):
         elif obj.strip().startswith("$"):
             parsed = create_operator(obj, None, context)
         else:
-            parsed = obj
+            parsed = _parse_const(obj, context)
     else:
         parsed = obj
 
@@ -207,6 +217,10 @@ def load_modules(modules):
         for key, value in module.items():
             imported_module = importlib.import_module(key)
             for class_ in value:
-                context[class_] = getattr(imported_module, _get_operator_name(class_))
-
+                if "tasrif" not in key:
+                    context[class_] = getattr(imported_module, class_)
+                else:
+                    context[class_] = getattr(
+                        imported_module, _get_operator_name(class_)
+                    )
     return context
