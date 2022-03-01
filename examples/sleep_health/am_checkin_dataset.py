@@ -81,3 +81,28 @@ pipeline = SequenceOperator(
 df = pipeline.process()
 
 print(df)
+
+import yaml
+
+import tasrif.yaml_parser as yaml_parser
+
+# This is done because this file is executed within a unit test from a different directory
+# The relative path would not work in that case.
+# __file__ is not defined in iPython interactive shell
+try:
+    yaml_config_path = os.path.join(
+        os.path.dirname(__file__), "yaml_config/am_checkin_dataset.yaml"
+    )
+except:
+    yaml_config_path = "yaml_config/am_checkin_dataset.yaml"
+
+with open(yaml_config_path, "r") as stream:
+    try:
+        #         print(json.dumps(yaml.safe_load(stream), indent=4, sort_keys=True))
+        p = yaml_parser.from_yaml(stream)
+    except yaml.YAMLError as exc:
+        print(exc)
+
+df = p.process()
+
+print(df)
