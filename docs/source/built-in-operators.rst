@@ -90,8 +90,8 @@ Examples include:
 
 **Observers** allows the user to see the output of intermediate operators in a `SequenceOperator`. A user may do the following with Observers:
 
-* See the "head", "tail" or "info" of the output of an operator using :code:`tasrif.processing_pipeline.observers.Logger`
-* See a dataframe after grouping using :code:`tasrif.processing_pipeline.observers.GroupbyLogger`
+* See the "head", "tail" or "info" of the output of an operator using :code:`tasrif.processing_pipeline.observers.LoggingObserver`
+* See a dataframe after grouping using :code:`tasrif.processing_pipeline.observers.GroupbyLoggingObserver`
 * See "distribution", "correlation", "diff" and "missing" using :code:`tasrif.processing_pipeline.observers.DataprepObserver`
 * Plot data per day per id in a dataframe using :code:`tasrif.processing_pipeline.observers.VisualizeDaysObserver`
 
