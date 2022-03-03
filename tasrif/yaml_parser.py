@@ -33,7 +33,10 @@ def _env_constructor(loader, node):
     """
     value = loader.construct_scalar(node)
     for group in env_pattern.findall(value):
-        value = value.replace(f"${{{group}}}", os.environ.get(group))
+        try:
+            value = value.replace(f"${{{group}}}", os.environ.get(group))
+        except TypeError:
+            print(f"Environment variable {group} not set")
     return value
 
 
