@@ -23,7 +23,7 @@ mhc_folder_path = os.environ['MYHEARTCOUNTS']
 # Read myHeartCounts
 mhc = MyHeartCountsDataset(path_name=mhc_folder_path,
                            table_name='healthkitdata',
-                           participants=10,
+                           participants=50,
                            sources=['phone'],
                            types=['HKQuantityTypeIdentifierDistanceWalkingRunning'],
                            split=True
@@ -80,6 +80,8 @@ swo = SlidingWindowOperator(winsize="1h15t",
 # the true labels (y) that are 15 minutes following the training window size (1 hour)
 df_timeseries, y, _, _ = swo.process(*processed_df)[0]
 
+
+
 # Define pipeline that uses TSFresh package for the feature extraction
 feature_extraction_pipeline = SequenceOperator([
     TSFreshFeatureExtractorOperator(date_feature_name='startTime', value_col='value', labels=y),
@@ -92,4 +94,4 @@ X = feature_extraction_pipeline.process(df_timeseries)[0]
 # Use your model to train on your preprocessed data
 pipe = Pipeline([('scaler', StandardScaler()), ('svc', SVR(kernel="linear"))])
 pipe.fit(X, y)
-pipe.score(X, y)
+print(pipe.score(X, y))

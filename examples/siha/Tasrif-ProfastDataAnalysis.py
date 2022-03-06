@@ -319,7 +319,7 @@ days_per_patient = SequenceOperator([
     ResetIndexOperator(),
     AggregateOperator(
         groupby_feature_names=['patientID'],
-        aggregation_definition= {'': ['size']})
+        aggregation_definition= {0: 'size'})
 
 ])
 
@@ -586,7 +586,7 @@ tsfresh_input[0][0][['dateTime', 'CGM', 'seq_id']]
 # %% slideshow={"slide_type": "subslide"}
 
 tsfresh_features = TSFreshFeatureExtractorOperator(seq_id_col="seq_id",
-                                                   time_col="dateTime",
+                                                   date_feature_name="dateTime",
                                                    value_col="Steps").process(tsfresh_input[0][0])
 
 # SeqID * Features
@@ -608,7 +608,7 @@ kats_input = kats_input[kats_input.seq_id.isin([0, 1, 2])]
 kats_input
 
 # %% slideshow={"slide_type": "subslide"}
-kats_features = CalculateTimeseriesPropertiesOperator(timeseries_column="dateTime", 
-                                                  value_column='Steps').process(kats_input)
+kats_features = CalculateTimeseriesPropertiesOperator(date_feature_name='dateTime',
+                                                      value_column='Steps').process(kats_input)
 
 kats_features

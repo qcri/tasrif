@@ -1,10 +1,11 @@
 """
 Operator to resample a timeseries based dataframe
 """
+import pandas as pd
 from tasrif.processing_pipeline import ProcessingOperator
+from tasrif.processing_pipeline.validators import GroupbyCompatibleValidatorMixin
 
-
-class ResampleOperator(ProcessingOperator):
+class ResampleOperator(GroupbyCompatibleValidatorMixin, ProcessingOperator):
     """
 
     Group and aggregate rows in 2D data frame based on a column feature.
@@ -73,6 +74,10 @@ class ResampleOperator(ProcessingOperator):
                 data_frame = resampler.agg(self.aggregation_definition)
             else:
                 data_frame = getattr(resampler, self.aggregation_definition)()
+
+            if isinstance(data_frame, pd.Series):
+                data_frame = pd.DataFrame(data_frame)
+
             processed.append(data_frame)
 
         return processed
