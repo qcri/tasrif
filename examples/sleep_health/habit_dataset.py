@@ -33,54 +33,59 @@ The default pipeline:
 """
 
 import os
+
 import numpy as np
-from tasrif.processing_pipeline import SequenceOperator
+
 from tasrif.data_readers.sleep_health import SleepHealthDataset
-from tasrif.processing_pipeline.pandas import DropNAOperator, ReplaceOperator, ConvertToDatetimeOperator
+from tasrif.processing_pipeline import SequenceOperator
 from tasrif.processing_pipeline.custom import OneHotEncoderOperator
+from tasrif.processing_pipeline.pandas import (
+    ConvertToDatetimeOperator,
+    DropNAOperator,
+    ReplaceOperator,
+)
 
-sleephealth_path = os.environ['SLEEPHEALTH']
+sleephealth_path = os.environ["SLEEPHEALTH"]
 
-pipeline = SequenceOperator([
-    SleepHealthDataset(sleephealth_path, "sleephabits"),
-    ConvertToDatetimeOperator(feature_names=["timestamp"],
-                              format="%Y-%m-%dT%H:%M:%S",
-                              utc=True),
-    ReplaceOperator(
-        to_replace={
-            "driving_sleepy": {
-                6: np.nan
-            },
-            "morning_person": {
-                3: np.nan
-            },
-            "nap_duration": {
-                6: np.nan
-            },
-            "what_wakes_you": {
-                13: np.nan
-            },
-        }),
-    DropNAOperator(subset=[
-        "alarm_dependency",
-        "driving_sleepy",
-        "falling_asleep",
-        "sleep_needed",
-        "sleep_partner",
-        "sleep_time_workday",
-        "wake_up_choices",
-        "wake_ups",
-        "what_wakes_you",
-    ]),
-    OneHotEncoderOperator(feature_names=[
-        "alarm_dependency",
-        "driving_sleepy",
-        "falling_asleep",
-        "morning_person",
-        "nap_duration",
-        "sleep_partner",
-        "wake_up_choices",
-        "weekly_naps",
-        "what_wakes_you",
-    ]),
-])
+pipeline = SequenceOperator(
+    [
+        SleepHealthDataset(sleephealth_path, "sleephabits"),
+        ConvertToDatetimeOperator(
+            feature_names=["timestamp"], format="%Y-%m-%dT%H:%M:%S", utc=True
+        ),
+        ReplaceOperator(
+            to_replace={
+                "driving_sleepy": {6: np.nan},
+                "morning_person": {3: np.nan},
+                "nap_duration": {6: np.nan},
+                "what_wakes_you": {13: np.nan},
+            }
+        ),
+        DropNAOperator(
+            subset=[
+                "alarm_dependency",
+                "driving_sleepy",
+                "falling_asleep",
+                "sleep_needed",
+                "sleep_partner",
+                "sleep_time_workday",
+                "wake_up_choices",
+                "wake_ups",
+                "what_wakes_you",
+            ]
+        ),
+        OneHotEncoderOperator(
+            feature_names=[
+                "alarm_dependency",
+                "driving_sleepy",
+                "falling_asleep",
+                "morning_person",
+                "nap_duration",
+                "sleep_partner",
+                "wake_up_choices",
+                "weekly_naps",
+                "what_wakes_you",
+            ]
+        ),
+    ]
+)

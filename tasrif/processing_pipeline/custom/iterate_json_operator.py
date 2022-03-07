@@ -1,11 +1,11 @@
 """
 Operator that returns an iterator of json data.
 """
-import pathlib
 import json
+import pathlib
 
-from tasrif.processing_pipeline import ProcessingOperator
-from tasrif.processing_pipeline import SequenceOperator
+from tasrif.processing_pipeline import ProcessingOperator, SequenceOperator
+
 
 class IterateJsonOperator(ProcessingOperator):
     """
@@ -50,6 +50,7 @@ class IterateJsonOperator(ProcessingOperator):
     \\============================
 
     """
+
     def __init__(self, folder_path, field, pipeline: SequenceOperator):
         """Creates a new instance of IterateJsonOperator
 

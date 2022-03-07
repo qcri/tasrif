@@ -43,8 +43,10 @@ class ProcessingOperator:
             RuntimeError: Occurs when super().__init__() is not called in the __init__() method of
                 the ProcessingOperator
         """
-        if not hasattr(self, '_observers'):
-            raise RuntimeError(f"Missing super().__init__() in the __init__() method of {self.__class__.__name__}!")
+        if not hasattr(self, "_observers"):
+            raise RuntimeError(
+                f"Missing super().__init__() in the __init__() method of {self.__class__.__name__}!"
+            )
 
         for observer in self._observers:
             observer.observe(self, *data_frames)
@@ -62,7 +64,7 @@ class ProcessingOperator:
             ValidationError: If any validation fails. # noqa: DAR402
         """
 
-    #pylint: disable=no-self-use
+    # pylint: disable=no-self-use
     def _process(self, *data_frames):
         """Process the passed data using the processing configuration specified
         in the constructor

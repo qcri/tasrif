@@ -1,17 +1,20 @@
-import pytest
 import random
+
+import pytest
+
 from tasrif.processing_pipeline import ComposeOperator, ProcessingOperator
+
 
 class NotProcessingOperator:
     pass
 
+
 def test_raises_an_error_if_inputs_are_not_ProcessingOperators(mocker):
     with pytest.raises(ValueError) as exc:
-        ComposeOperator([
-            NotProcessingOperator(),
-            NotProcessingOperator(),
-            NotProcessingOperator()
-        ])
+        ComposeOperator(
+            [NotProcessingOperator(), NotProcessingOperator(), NotProcessingOperator()]
+        )
+
 
 def test_operators_are_called_correctly(mocker):
     sub_operators = []
@@ -32,4 +35,4 @@ def test_operators_are_called_correctly(mocker):
         sub_operator.process.assert_called_once_with(*args)
 
         # Assert that their return values were captured
-        assert(output[i] == sub_operator.process.return_value)
+        assert output[i] == sub_operator.process.return_value

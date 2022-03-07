@@ -1,0 +1,56 @@
+modules:
+  - tasrif.processing_pipeline: [sequence]
+  - tasrif.data_readers.fitbit_intraday_dataset: [fitbit_intraday_dataset]
+  - tasrif.processing_pipeline.pandas: [convert_to_datetime, set_index, json_normalize, as_type]
+  - tasrif.processing_pipeline.custom: [drop_index_duplicates, resample, set_features_value]
+
+
+pipeline:
+  $sequence:
+    - $fitbit_intraday_dataset:
+        folder_path: ${FITBIT_INTRADAY_PATH}
+        table_name: Sleep
+        num_files: 5
+    - $json_normalize:
+        record_path: [levels, data]
+        meta: [
+            logId,
+            dateOfSleep,
+            startTime,
+            endTime,
+            duration,
+            minutesToFallAsleep,
+            minutesAsleep,
+            minutesAwake,
+            minutesAfterWakeup,
+            timeInBed,
+            efficiency,
+            type,
+            infoCode,
+            [levels, summary, deep, count],
+            [levels, summary, deep, minutes],
+            [levels, summary, deep, thirtyDayAvgMinutes],
+            [levels, summary, wake, count],
+            [levels, summary, wake, minutes],
+            [levels, summary, wake, thirtyDayAvgMinutes],
+            [levels, summary, light, count],
+            [levels, summary, light, minutes],
+            [levels, summary, light, thirtyDayAvgMinutes],
+            [levels, summary, rem, count],
+            [levels, summary, rem, minutes],
+            [levels, summary, rem, thirtyDayAvgMinutes],
+        ]
+        errors: ignore
+    - $convert_to_datetime:
+        feature_names: [dateTime]
+        infer_datetime_format: true
+    - $set_index:
+        keys: dateTime
+    - $drop_index_duplicates:
+        keep: first
+    - $resample:
+        rule: 30s
+        aggregation_definition: ffill
+    - $set_features_value:
+        feature_names: [seconds]
+        value: 30

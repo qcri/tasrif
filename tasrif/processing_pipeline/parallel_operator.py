@@ -1,11 +1,12 @@
 """Module that defines the RayOperator class
 """
 import ray
+
 from tasrif.processing_pipeline.processing_operator import ProcessingOperator
 
+
 class ParallelOperator(ProcessingOperator):
-    """Interface specification of an operator that uses ray
-    """
+    """Interface specification of an operator that uses ray"""
 
     def __init__(self, num_processes=1):
         """Constructs a ray operator. Replaces `_process` with `_process_ray`
@@ -54,7 +55,7 @@ class ParallelOperator(ProcessingOperator):
         """
         if ray.is_initialized():
             cluster_resources = ray.cluster_resources()
-            if cluster_resources['CPU'] != num_cpus:
+            if cluster_resources["CPU"] != num_cpus:
                 ray.shutdown()
 
         ray.init(num_cpus=num_cpus, ignore_reinit_error=True)

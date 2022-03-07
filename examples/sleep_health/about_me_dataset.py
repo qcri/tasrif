@@ -31,34 +31,39 @@ The default final dataset size is 3019.
 
 """
 import os
-from tasrif.processing_pipeline import SequenceOperator
+
 from tasrif.data_readers.sleep_health import SleepHealthDataset
-from tasrif.processing_pipeline.pandas import DropNAOperator, DropDuplicatesOperator
+from tasrif.processing_pipeline import SequenceOperator
+from tasrif.processing_pipeline.pandas import DropDuplicatesOperator, DropNAOperator
 
-sleephealth_path = os.environ['SLEEPHEALTH']
+sleephealth_path = os.environ["SLEEPHEALTH"]
 
-pipeline = SequenceOperator([
-    SleepHealthDataset(sleephealth_path, "aboutme"),
-    DropNAOperator(subset=[
-        "alcohol",
-        "basic_expenses",
-        "caffeine",
-        "daily_activities",
-        "daily_smoking",
-        "education",
-        "flexible_work_hours",
-        "gender",
-        "good_life",
-        "hispanic",
-        "income",
-        "race",
-        "work_schedule",
-        "weight",
-        "smoking_status",
-        "marital",
-    ]),
-    DropDuplicatesOperator(subset="participantId", keep="last"),
-])
+pipeline = SequenceOperator(
+    [
+        SleepHealthDataset(sleephealth_path, "aboutme"),
+        DropNAOperator(
+            subset=[
+                "alcohol",
+                "basic_expenses",
+                "caffeine",
+                "daily_activities",
+                "daily_smoking",
+                "education",
+                "flexible_work_hours",
+                "gender",
+                "good_life",
+                "hispanic",
+                "income",
+                "race",
+                "work_schedule",
+                "weight",
+                "smoking_status",
+                "marital",
+            ]
+        ),
+        DropDuplicatesOperator(subset="participantId", keep="last"),
+    ]
+)
 
 df = pipeline.process()
 

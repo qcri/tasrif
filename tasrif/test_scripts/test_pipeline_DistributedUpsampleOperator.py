@@ -14,16 +14,17 @@
 
 # %%
 import pandas as pd
-from tasrif.processing_pipeline.custom import DistributedUpsampleOperator
-df = pd.DataFrame([
-    ["2020-05-01", 16.5],
-    ["2020-05-02", 19.1],
-    ['2020-05-03', 0]],
-    columns=['timestamp', 'sedentary_hours'])
 
-df['timestamp'] = pd.to_datetime(df['timestamp'])
-df = df.set_index('timestamp')
-op = DistributedUpsampleOperator('6h')
+from tasrif.processing_pipeline.custom import DistributedUpsampleOperator
+
+df = pd.DataFrame(
+    [["2020-05-01", 16.5], ["2020-05-02", 19.1], ["2020-05-03", 0]],
+    columns=["timestamp", "sedentary_hours"],
+)
+
+df["timestamp"] = pd.to_datetime(df["timestamp"])
+df = df.set_index("timestamp")
+op = DistributedUpsampleOperator("6h")
 df = op.process(df)
 
 # %%

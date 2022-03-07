@@ -1,6 +1,8 @@
 # pylint: disable=missing-module-docstring
 import pandas as pd
+
 from tasrif.processing_pipeline import PandasOperator
+
 
 class ReadCsvOperator(PandasOperator):
     """

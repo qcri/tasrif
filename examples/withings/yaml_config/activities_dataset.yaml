@@ -1,0 +1,19 @@
+modules:
+  - tasrif.processing_pipeline: [sequence]
+  - tasrif.data_readers.withings_dataset: [withings_dataset]
+  - tasrif.processing_pipeline.pandas: [convert_to_datetime, set_index]
+  - tasrif.processing_pipeline.custom: [json_pivot]
+
+pipeline:
+  $sequence:
+    - $withings_dataset:
+        file_name: ${WITHINGS_PATH}activities.csv
+        table_name: Activities
+    - $json_pivot:
+        feature_names: [Data, GPS]
+    - $convert_to_datetime:
+        feature_names: [from, to]
+        infer_datetime_format: true
+        utc: true
+    - $set_index:
+        keys: from

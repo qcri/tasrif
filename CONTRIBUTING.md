@@ -55,36 +55,51 @@ source tasrif-env/bin/activate
 (tasrif-env) pip install -e .
 ```
 
-Make sure you have `qa-requirements.txt` and `requirements.txt` installed, so you can use `pylint` and `darglint` modules
+Make sure you have `qa-requirements.txt` and `requirements.txt` installed, so you can set up our pre-commit hooks for code styling.
 
 ```python
 (tasrif-env) pip install -r requirements.txt
 (tasrif-env) pip install -r qa-requirements.txt
 ```
 
+At this point, you should set up git pre-commit hooks.
+```python
+(tasrif-env) pre-commit install
+```
+The above will run the following to ensure code consistency every time you commit:
+  * [isort](https://github.com/PyCQA/isort)
+  * [black](https://github.com/psf/black)
+  * [pylint](https://github.com/PyCQA/pylint)
+  * [darglint](https://github.com/terrencepreilly/darglint)
+
+
+The hooks can also be directly run without making a commit.
+```python
+# Run all hooks on staged changes
+(tasrif-env) pre-commit run
+
+# Run individual hook on staged changed
+(tasrif-env) pre-commit run <hook_id>
+
+# Run hooks on specifiv file
+(tasrif-env) pre-commit run --files <path_to_file>
+
+# Run hooks on all files
+(tasrif-env) pre-commit run --all-files
+```
+
+The pre-commmit hooks are configured in `.pre-commit-config.yaml`.
+
+If you want to bypass hooks for a commit, this can be done by passing the flag `--no-verify` with the commit. This however, is not recommended.
 ### Step 2. Make code changes
 
 Make sure that your environment is set from the previous section. You can create your own custom operator by following the [Custom Operators](https://tasrif.qcri.org/custom-operators.html) section in the tutorial.
 
-After making the changes, check if you have pylint or darglint errors. The [CI pipeline](https://github.com/qcrisw/tasrif/actions) checks those errors by default. However, it is preferable to check the errors locally by running
-
+After making the changes, check if you have pylint or darglint errors. The [CI pipeline](https://github.com/qcrisw/tasrif/actions) checks those errors by default. If you set up the pre-commit hooks correctly, these checks should already be happening. Pylint and Darglint can also be run separately.
 ```python
-(tasrif-env) pylint --rcfile=.pylintrc path/to/changed/file
+(tasrif-env) pre-commit run pylint
+(tasrif-env) pre-commit run darglint
 ```
-
-or in docker
-
-```python
-docker build . -t tasrif
-docker run -it tasrif:latest pylint tasrif
-```
-
-And darglint by
-
-```python
-(tasrif-env) darglint -s google path/to/changed/file
-```
-
 
 ### Step 3. Create a pull request
 

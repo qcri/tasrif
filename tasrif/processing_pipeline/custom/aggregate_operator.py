@@ -9,36 +9,37 @@ from tasrif.processing_pipeline import ProcessingOperator
 class AggregateOperator(ProcessingOperator):
     """
 
-      Group and aggregate rows in 2D data frame based on a column feature.
-      This operator works on a 2D data frames where the
-      columns represent the features. The returned data frame contains aggregated values
-      as the column features together
-      with the base feature used for grouping.
+    Group and aggregate rows in 2D data frame based on a column feature.
+    This operator works on a 2D data frames where the
+    columns represent the features. The returned data frame contains aggregated values
+    as the column features together
+    with the base feature used for grouping.
 
-      Examples
-      --------
+    Examples
+    --------
 
-      >>> import pandas as pd
-      >>>
-      >>> from tasrif.processing_pipeline.custom import AggregateOperator
-      >>> from tasrif.processing_pipeline.custom import LinearFitOperator
-      >>>
-      >>> df = pd.DataFrame([['001', 25, 30], ['001', 17, 50], ['002', 20, 40], ['002', 21, 42]],
-      ...                     columns=['pid', 'min_activity', 'max_activity'])
-      >>>
-      >>> operator = AggregateOperator(
-      ...    groupby_feature_names ="pid",
-      ...    aggregation_definition= {"min_temp": ["mean", "std"],
-      ...                             "r2,_,intercept": LinearFitOperator(feature_names='min_activity',
-      ...                                                                 target='max_activity')})
-      >>> df0 = operator.process(df0)
-      >>>
-      >>> print(df0)
-      [   pid  min_activity_mean  min_activity_std   r2     intercept
-       0  001               21.0          5.656854  1.0  9.250000e+01
-       1  002               20.5          0.707107  1.0  7.105427e-15]
+    >>> import pandas as pd
+    >>>
+    >>> from tasrif.processing_pipeline.custom import AggregateOperator
+    >>> from tasrif.processing_pipeline.custom import LinearFitOperator
+    >>>
+    >>> df = pd.DataFrame([['001', 25, 30], ['001', 17, 50], ['002', 20, 40], ['002', 21, 42]],
+    ...                     columns=['pid', 'min_activity', 'max_activity'])
+    >>>
+    >>> operator = AggregateOperator(
+    ...    groupby_feature_names ="pid",
+    ...    aggregation_definition= {"min_temp": ["mean", "std"],
+    ...                             "r2,_,intercept": LinearFitOperator(feature_names='min_activity',
+    ...                                                                 target='max_activity')})
+    >>> df0 = operator.process(df0)
+    >>>
+    >>> print(df0)
+    [   pid  min_activity_mean  min_activity_std   r2     intercept
+     0  001               21.0          5.656854  1.0  9.250000e+01
+     1  002               20.5          0.707107  1.0  7.105427e-15]
 
     """
+
     def __init__(self, groupby_feature_names, aggregation_definition, observers=None):
         """Creates a new instance of AggregateOperator
 
@@ -82,14 +83,15 @@ class AggregateOperator(ProcessingOperator):
         result = []
         for key, operator in self.processing_op_dict.items():
             data_frame = self._apply_operator(groups, operator)
-            column_names = key.split(',')
+            column_names = key.split(",")
             if len(data_frame.columns) != len(column_names):
-                raise ValueError(f"Length of aggregation key does not match length of aggregated output \
-                    {len(data_frame.columns)} != {len(key.split(','))}")
+                raise ValueError(
+                    f"Length of aggregation key does not match length of aggregated output \
+                    {len(data_frame.columns)} != {len(key.split(','))}"
+                )
 
             data_frame.columns = column_names
-            columns_filter = data_frame.columns[~data_frame.columns.isin(['_']
-                                                                         )]
+            columns_filter = data_frame.columns[~data_frame.columns.isin(["_"])]
             data_frame = data_frame[columns_filter]
             result.append(data_frame)
 
@@ -98,7 +100,7 @@ class AggregateOperator(ProcessingOperator):
 
     @staticmethod
     def _apply_operator(groups, operator):
-        """ Applies ProcessingOperator on Pandas DataFrameGroupBy
+        """Applies ProcessingOperator on Pandas DataFrameGroupBy
 
         Args:
             groups (DataFrameGroupBy):
@@ -143,14 +145,15 @@ class AggregateOperator(ProcessingOperator):
         for key, value in self.pandas_dict.items():
             if isinstance(value, list):
                 for i in value:
-                    columns.append(f'{key}_{i}')
+                    columns.append(f"{key}_{i}")
             else:
-                columns.append(f'{key}_{value}')
+                columns.append(f"{key}_{value}")
 
         processed = []
         for data_frame in data_frames:
-            data_frame_group = data_frame.groupby(self.groupby_feature_names,
-                                                  as_index=True)
+            data_frame_group = data_frame.groupby(
+                self.groupby_feature_names, as_index=True
+            )
 
             data_frame = data_frame_group.agg(self.pandas_dict)
             data_frame.columns = columns

@@ -42,98 +42,91 @@ Final dataset shape after default preprocessing pipeline: (2123, 83)
 """
 
 import os
+
 import numpy as np
-from tasrif.processing_pipeline import SequenceOperator
+
 from tasrif.data_readers.sleep_health import SleepHealthDataset
+from tasrif.processing_pipeline import SequenceOperator
+from tasrif.processing_pipeline.custom import OneHotEncoderOperator
 from tasrif.processing_pipeline.pandas import (
     ConvertToDatetimeOperator,
-    DropNAOperator,
     DropDuplicatesOperator,
+    DropNAOperator,
     ReplaceOperator,
-    SortOperator
+    SortOperator,
 )
-from tasrif.processing_pipeline.custom import OneHotEncoderOperator
 
-sleephealth_path = os.environ['SLEEPHEALTH']
+sleephealth_path = os.environ["SLEEPHEALTH"]
 
-pipeline = SequenceOperator([
-    SleepHealthDataset(sleephealth_path, "sleepassessment"),
-    ConvertToDatetimeOperator(feature_names="timestamp",
-                              format="%Y-%m-%dT%H:%M:%S%z",
-                              utc=True),
-    SortOperator(by=["participantId", "timestamp"]),
-    DropDuplicatesOperator(subset="participantId", keep="last"),
-    ReplaceOperator(
-        to_replace={
-            "alcohol": {
-                7: np.nan
-            },
-            "medication_by_doctor": {
-                7: np.nan
-            },
-            "sleep_aids": {
-                7: np.nan
-            },
-            "told_by_doctor": {
-                3: np.nan
-            },
-            "told_to_doctor": {
-                3: np.nan
-            },
-            "told_by_doctor_specify": {
-                np.nan: "8"
-            },
-            "other_selected": {
-                np.nan: ""
-            },
-        }),
-    DropNAOperator(subset=[
-        "alcohol",
-        "concentrating_problem_one",
-        "concentrating_problem_two",
-        "discomfort_in_sleep",
-        "exercise",
-        "fatigue_limit",
-        "feel_tired_frequency",
-        "felt_alert",
-        "had_problem",
-        "hard_times",
-        "medication_by_doctor",
-        "poor_sleep_problems",
-        "sleep_aids",
-        "sleep_problem",
-        "think_clearly",
-        "tired_easily",
-        "told_by_doctor",
-        "told_to_doctor",
-        "trouble_staying_awake",
-    ]),
-    OneHotEncoderOperator(
-        feature_names=[
-            "alcohol",
-            "concentrating_problem_one",
-            "concentrating_problem_two",
-            "discomfort_in_sleep",
-            "exercise",
-            "fatigue_limit",
-            "feel_tired_frequency",
-            "felt_alert",
-            "had_problem",
-            "hard_times",
-            "medication_by_doctor",
-            "poor_sleep_problems",
-            "sleep_aids",
-            "sleep_problem",
-            "think_clearly",
-            "tired_easily",
-            "told_by_doctor",
-            "told_to_doctor",
-            "trouble_staying_awake",
-            "told_by_doctor_specify",
-        ],
-        drop_first=True,
-    ),
-])
+pipeline = SequenceOperator(
+    [
+        SleepHealthDataset(sleephealth_path, "sleepassessment"),
+        ConvertToDatetimeOperator(
+            feature_names="timestamp", format="%Y-%m-%dT%H:%M:%S%z", utc=True
+        ),
+        SortOperator(by=["participantId", "timestamp"]),
+        DropDuplicatesOperator(subset="participantId", keep="last"),
+        ReplaceOperator(
+            to_replace={
+                "alcohol": {7: np.nan},
+                "medication_by_doctor": {7: np.nan},
+                "sleep_aids": {7: np.nan},
+                "told_by_doctor": {3: np.nan},
+                "told_to_doctor": {3: np.nan},
+                "told_by_doctor_specify": {np.nan: "8"},
+                "other_selected": {np.nan: ""},
+            }
+        ),
+        DropNAOperator(
+            subset=[
+                "alcohol",
+                "concentrating_problem_one",
+                "concentrating_problem_two",
+                "discomfort_in_sleep",
+                "exercise",
+                "fatigue_limit",
+                "feel_tired_frequency",
+                "felt_alert",
+                "had_problem",
+                "hard_times",
+                "medication_by_doctor",
+                "poor_sleep_problems",
+                "sleep_aids",
+                "sleep_problem",
+                "think_clearly",
+                "tired_easily",
+                "told_by_doctor",
+                "told_to_doctor",
+                "trouble_staying_awake",
+            ]
+        ),
+        OneHotEncoderOperator(
+            feature_names=[
+                "alcohol",
+                "concentrating_problem_one",
+                "concentrating_problem_two",
+                "discomfort_in_sleep",
+                "exercise",
+                "fatigue_limit",
+                "feel_tired_frequency",
+                "felt_alert",
+                "had_problem",
+                "hard_times",
+                "medication_by_doctor",
+                "poor_sleep_problems",
+                "sleep_aids",
+                "sleep_problem",
+                "think_clearly",
+                "tired_easily",
+                "told_by_doctor",
+                "told_to_doctor",
+                "trouble_staying_awake",
+                "told_by_doctor_specify",
+            ],
+            drop_first=True,
+        ),
+    ]
+)
 
 
 df = pipeline.process()

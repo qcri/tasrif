@@ -3,6 +3,7 @@ Module that defines that FlattenOperator class.
 """
 from tasrif.processing_pipeline import ReduceProcessingOperator
 
+
 class FlattenOperator(ReduceProcessingOperator):
     """
     The FlattenOperator takes as input multiple lists, and flattens all of them
@@ -16,5 +17,6 @@ class FlattenOperator(ReduceProcessingOperator):
     [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
     """
+
     def _processing_function(self, list_to_flatten, flattened):
         return flattened + list_to_flatten

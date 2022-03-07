@@ -2,8 +2,9 @@
 """
 from tasrif.processing_pipeline.processing_operator import ProcessingOperator
 
+
 class ScopedProcessingOperator(ProcessingOperator):
-    """ Class represented a scoped operation where the operation is strictly defined as a lambda function
+    """Class represented a scoped operation where the operation is strictly defined as a lambda function
     taking any arguments and returning a ProcessingOperator
     """
 
@@ -60,8 +61,10 @@ class ScopedProcessingOperator(ProcessingOperator):
         super().__init__()
 
         if not (callable(operation) and operation.__name__ == "<lambda>"):
-            raise ValueError(f"Argument operation of {__class__.__name__} " +
-                       "must be a lambda function returning a ProcessingOperator")
+            raise ValueError(
+                f"Argument operation of {__class__.__name__} "
+                + "must be a lambda function returning a ProcessingOperator"
+            )
 
         self.operation = operation
         self._observers = []

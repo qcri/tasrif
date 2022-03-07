@@ -2,9 +2,12 @@
 Concatenate multiple dataframes into a single one.
 """
 import types
+
 import pandas as pd
+
 from tasrif.processing_pipeline import PandasOperator
 from tasrif.processing_pipeline.validators import GeneratorCompatibleValidatorMixin
+
 
 class ConcatOperator(GeneratorCompatibleValidatorMixin, PandasOperator):
     """Concatenate different datasets based on Pandas concat method.

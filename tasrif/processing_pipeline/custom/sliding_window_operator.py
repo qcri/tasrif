@@ -2,8 +2,8 @@
 Operator to slide a fixed length window across a timeseries dataframe
 """
 import pandas as pd
-
 from tqdm import tqdm
+
 from tasrif.processing_pipeline import ProcessingOperator
 
 
@@ -80,12 +80,15 @@ class SlidingWindowOperator(ProcessingOperator):
         148 rows × 3 columns
 
     """
-    def __init__(self,  # pylint: disable=too-many-arguments
-                 winsize="1h15t",
-                 period=15,
-                 time_col="time",
-                 label_col="CGM",
-                 participant_identifier="patientID"):
+
+    def __init__(  # pylint: disable=too-many-arguments
+        self,
+        winsize="1h15t",
+        period=15,
+        time_col="time",
+        label_col="CGM",
+        participant_identifier="patientID",
+    ):
         """Creates a new instance of SlidingWindowsOperator
 
         Args:
@@ -140,11 +143,17 @@ class SlidingWindowOperator(ProcessingOperator):
 
             for pid in tqdm(data_frame[self.participant_identifier].unique()):
 
-                last_seq_id, df_ts_tmp, df_label_tmp, df_label_time_tmp, df_pid = self._generate_slide_wins(
+                (
+                    last_seq_id,
+                    df_ts_tmp,
+                    df_label_tmp,
+                    df_label_time_tmp,
+                    df_pid,
+                ) = self._generate_slide_wins(
                     data_frame[data_frame[self.participant_identifier] == pid],
                     start_seq=last_seq_id,
-                    max_size=window_size_in_rows
-                    )
+                    max_size=window_size_in_rows,
+                )
 
                 df_timeseries.append(df_ts_tmp)
                 df_labels.append(df_label_tmp)
@@ -204,16 +213,14 @@ class SlidingWindowOperator(ProcessingOperator):
 
         pid = df_in[self.participant_identifier].unique()
         if len(pid) > 1:
-            raise ValueError(
-                "_generate_slide_wins must be called with one pid")
+            raise ValueError("_generate_slide_wins must be called with one pid")
 
         pid = pid[0]
         dataframe = df_in.reset_index(drop=True).copy()
 
-
-        dataframe.reset_index() \
-            .rolling(self.winsize, on=self.time_col, center=False)["index"] \
-            .apply((lambda x: list_of_indices.append(x.tolist()) or 0))
+        dataframe.reset_index().rolling(self.winsize, on=self.time_col, center=False)[
+            "index"
+        ].apply((lambda x: list_of_indices.append(x.tolist()) or 0))
 
         # Append label index to labels list
         for idx in list_of_indices:

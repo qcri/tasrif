@@ -14,52 +14,35 @@
 
 # %%
 import pandas as pd
-from tasrif.processing_pipeline.custom import JqOperator
-df = [
-  {
-    "date": "2020-01-01",
-    "sleep": [
-      {
-        "sleep_data": [
-          {
-            "level": "rem",
-            "minutes": 180
-          },
-          {
-            "level": "deep",
-            "minutes": 80
-          },
-          {
-            "level": "light",
-            "minutes": 300
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "date": "2020-01-02",
-    "sleep": [
-      {
-        "sleep_data": [
-          {
-            "level": "rem",
-            "minutes": 280
-          },
-          {
-            "level": "deep",
-            "minutes": 60
-          },
-          {
-            "level": "light",
-            "minutes": 200
-          }
-        ]
-      }
-    ]
-  }
-]
 
+from tasrif.processing_pipeline.custom import JqOperator
+
+df = [
+    {
+        "date": "2020-01-01",
+        "sleep": [
+            {
+                "sleep_data": [
+                    {"level": "rem", "minutes": 180},
+                    {"level": "deep", "minutes": 80},
+                    {"level": "light", "minutes": 300},
+                ]
+            }
+        ],
+    },
+    {
+        "date": "2020-01-02",
+        "sleep": [
+            {
+                "sleep_data": [
+                    {"level": "rem", "minutes": 280},
+                    {"level": "deep", "minutes": 60},
+                    {"level": "light", "minutes": 200},
+                ]
+            }
+        ],
+    },
+]
 
 
 op = JqOperator("map({date, sleep: .sleep[].sleep_data})")

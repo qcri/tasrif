@@ -36,43 +36,42 @@ Some important stats:
 """
 
 import os
+
 import numpy as np
-from tasrif.processing_pipeline import SequenceOperator
+
 from tasrif.data_readers.sleep_health import SleepHealthDataset
+from tasrif.processing_pipeline import SequenceOperator
+from tasrif.processing_pipeline.custom import OneHotEncoderOperator
 from tasrif.processing_pipeline.pandas import (
     ConvertToDatetimeOperator,
     DropFeaturesOperator,
     ReplaceOperator,
     SortOperator,
 )
-from tasrif.processing_pipeline.custom import OneHotEncoderOperator
 
-sleephealth_path = os.environ['SLEEPHEALTH']
+sleephealth_path = os.environ["SLEEPHEALTH"]
 
-pipeline = SequenceOperator([
-    SleepHealthDataset(sleephealth_path, "pmcheckin"),
-    ConvertToDatetimeOperator(feature_names=["timestamp"],
-                              format="%Y-%m-%dT%H:%M:%S%z",
-                              utc=True),
-    SortOperator(by=["participantId", "timestamp"]),
-    ReplaceOperator(to_replace={
-        "PMCH2A": {
-            np.nan: 0
-        },
-        "PMCH3": {
-            np.nan: 0
-        },
-        "PMCH1": {
-            np.nan: 3
-        },
-        "NapCount": {
-            np.nan: 0
-        },
-    }),
-    DropFeaturesOperator(['participantId', 'timestamp']),
-    OneHotEncoderOperator(feature_names=['NapCount', 'PMCH1', 'PMCH3'],
-                          drop_first=False)
-])
+pipeline = SequenceOperator(
+    [
+        SleepHealthDataset(sleephealth_path, "pmcheckin"),
+        ConvertToDatetimeOperator(
+            feature_names=["timestamp"], format="%Y-%m-%dT%H:%M:%S%z", utc=True
+        ),
+        SortOperator(by=["participantId", "timestamp"]),
+        ReplaceOperator(
+            to_replace={
+                "PMCH2A": {np.nan: 0},
+                "PMCH3": {np.nan: 0},
+                "PMCH1": {np.nan: 3},
+                "NapCount": {np.nan: 0},
+            }
+        ),
+        DropFeaturesOperator(["participantId", "timestamp"]),
+        OneHotEncoderOperator(
+            feature_names=["NapCount", "PMCH1", "PMCH3"], drop_first=False
+        ),
+    ]
+)
 
 
 df = pipeline.process()

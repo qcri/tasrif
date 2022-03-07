@@ -1,5 +1,7 @@
 import pandas as pd
+
 from tasrif.processing_pipeline import NoopOperator
+
 
 def test_input_is_not_changed():
     input_dfs = [
@@ -12,6 +14,6 @@ def test_input_is_not_changed():
     output_dfs = operator.process(*input_dfs)
 
     # Check that the output returned is the same as the input
-    assert(len(output_dfs) == len(input_dfs))
+    assert len(output_dfs) == len(input_dfs)
     for i in range(len(output_dfs)):
-        assert(output_dfs[i].equals(input_dfs[i]))
+        assert output_dfs[i].equals(input_dfs[i])

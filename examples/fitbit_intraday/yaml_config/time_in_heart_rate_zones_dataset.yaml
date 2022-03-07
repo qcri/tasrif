@@ -1,0 +1,23 @@
+modules:
+  - tasrif.processing_pipeline: [sequence]
+  - tasrif.data_readers.fitbit_intraday_dataset: [fitbit_intraday_dataset]
+  - tasrif.processing_pipeline.pandas: [convert_to_datetime, set_index, json_normalize, as_type]
+
+pipeline:
+  $sequence:
+    - $fitbit_intraday_dataset:
+        folder_path: ${FITBIT_INTRADAY_PATH}
+        table_name: Time_in_Heart_Rate_Zones
+        num_files: 5
+    - $json_normalize
+    - $convert_to_datetime:
+        feature_names: [dateTime]
+        infer_datetime_format: true
+    - $set_index:
+        keys: dateTime
+    - $as_type:
+        dtype:
+          value.valuesInZones.IN_DEFAULT_ZONE_3: float32
+          value.valuesInZones.IN_DEFAULT_ZONE_1: float32
+          value.valuesInZones.IN_DEFAULT_ZONE_2: float32
+          value.valuesInZones.BELOW_DEFAULT_ZONE_1: float32

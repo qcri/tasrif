@@ -19,6 +19,7 @@ class MergeFragmentedActivityOperator(ProcessingOperator):
     Gaps found before the end of the activity will be merged with the activity.
     A gap is identified by comparing the end time of an activity and comparing it
     with the start time of the following activity.
+
     The end date of the activity will be set to the merged `end_date_feature_name`
     The input of this operator needs to have two datetime columns that represent the starting time of the
     activity and end time of the activity, respectively.

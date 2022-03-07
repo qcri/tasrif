@@ -7,30 +7,30 @@ from tasrif.processing_pipeline import ProcessingOperator
 class CreateFeatureOperator(ProcessingOperator):
     """
 
-      Creates a new column based feature from existing features in the data frame.
-      This operator works on a 2D data frames where the columns represent the features.
-      The defintiion of the new feature is passed as a lambda argument.
+    Creates a new column based feature from existing features in the data frame.
+    This operator works on a 2D data frames where the columns represent the features.
+    The defintiion of the new feature is passed as a lambda argument.
 
-      Examples
-      --------
+    Examples
+    --------
 
-      >>> import pandas as pd
-      >>>
-      >>> from tasrif.processing_pipeline.custom import CreateFeatureOperator
-      >>>
-      >>> df0 = pd.DataFrame([['tom', 10, 2], ['nick', 15, 2], ['juli', 14, 12]],
-      >>>                     columns=['name', 'work_hours', 'off_hours'])
-      >>>
-      >>> operator = CreateFeatureOperator(
-      >>>    feature_name="total_hours",
-      >>>    feature_creator=lambda df: df['work_hours'] + df['off_hours'])
-      >>> df0 = operator.process(df0)
-      >>>
-      >>> print(df0)
-      [   name  work_hours  off_hours  total_hours
-      0   tom          10          2           12
-      1  nick          15          2           17
-      2  juli          14         12           26]
+    >>> import pandas as pd
+    >>>
+    >>> from tasrif.processing_pipeline.custom import CreateFeatureOperator
+    >>>
+    >>> df0 = pd.DataFrame([['tom', 10, 2], ['nick', 15, 2], ['juli', 14, 12]],
+    >>>                     columns=['name', 'work_hours', 'off_hours'])
+    >>>
+    >>> operator = CreateFeatureOperator(
+    >>>    feature_name="total_hours",
+    >>>    feature_creator=lambda df: df['work_hours'] + df['off_hours'])
+    >>> df0 = operator.process(df0)
+    >>>
+    >>> print(df0)
+    [   name  work_hours  off_hours  total_hours
+    0   tom          10          2           12
+    1  nick          15          2           17
+    2  juli          14         12           26]
 
     """
 
@@ -48,7 +48,6 @@ class CreateFeatureOperator(ProcessingOperator):
         self.feature_name = feature_name
         self.feature_creator = feature_creator
 
-
     def _process(self, *data_frames):
         """Processes the passed data frame as per the configuration define in the constructor.
 
@@ -63,7 +62,9 @@ class CreateFeatureOperator(ProcessingOperator):
         processed = []
         for data_frame in data_frames:
             # result_type is set to 'reduce' so that a Series is always returned.
-            data_frame[self.feature_name] = data_frame.apply(self.feature_creator, axis=1, result_type='reduce')
+            data_frame[self.feature_name] = data_frame.apply(
+                self.feature_creator, axis=1, result_type="reduce"
+            )
             processed.append(data_frame)
 
         return processed

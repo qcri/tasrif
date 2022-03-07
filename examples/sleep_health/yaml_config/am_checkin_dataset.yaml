@@ -1,0 +1,33 @@
+modules:
+  - numpy: [nan]
+  - tasrif.processing_pipeline: [sequence]
+  - tasrif.data_readers.sleep_health: [sleep_health_dataset]
+  - tasrif.processing_pipeline.pandas: [convert_to_datetime, drop_NA, drop_features, replace, sort]
+  - tasrif.processing_pipeline.custom: [encode_cyclical_features]
+
+pipeline:
+  $sequence:
+    - $sleep_health_dataset:
+        file_name: ${SLEEPHEALTH}
+        table_name: amcheckin
+    - $convert_to_datetime:
+        feature_names: [AMCH1, AMCH4]
+        format: '%Y-%m-%dT%H:%M:%S%z'
+        utc: true
+    - $sort:
+        by: [participantId]
+    - $replace:
+        to_replace:
+          AMCH2A:
+            np.nan: 0
+          AMCH3A:
+            np.nan: 0
+          AMCH5:
+            np.nan: 0
+    - $drop_NA:
+        subset: [participantId, AMCH1, AMCH2, AMCH3, AMCH4]
+    - $drop_features:
+        feature_names: [participantId, timestamp]
+    - $encode_cyclical_features:
+        date_feature_name: AMCH4
+        category_definition: [month, day_in_month, day, hour, minute]
