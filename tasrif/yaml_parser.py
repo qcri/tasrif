@@ -33,7 +33,13 @@ def _env_constructor(loader, node):
     """
     value = loader.construct_scalar(node)
     for group in env_pattern.findall(value):
-        value = value.replace(f"${{{group}}}", os.environ.get(group))
+        try:
+            value = value.replace(f"${{{group}}}", os.environ.get(group))
+        except TypeError as error:
+            print(
+                f"An error occured while parsing YAML file:\n\n\tENV variable {group} not set\n"
+            )
+            raise Exception(f"ENV variable {group} not set") from error
     return value
 
 
