@@ -1,6 +1,7 @@
 """
 Normalize semi-structured JSON data into a flat table.
 """
+import warnings
 import pandas as pd
 
 from tasrif.processing_pipeline import PandasOperator
@@ -127,3 +128,12 @@ class JsonNormalizeOperator(PandasOperator):
             processed.append(dataframe)
 
         return processed
+
+    def _validate(self, *data_frames):
+        """
+        Validation hook that is run before any processing happens. Checks if
+        any input is not a dict or list.
+        """
+        for data_frame in data_frames:
+            if not isinstance(data_frame, (dict, list)):
+                warnings.warn('One or more inputs are not dict in JsonNormalizeOperator.')
