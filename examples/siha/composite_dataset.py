@@ -42,6 +42,8 @@ class _FlattenOperator(MapProcessingOperator):
     def _processing_function(self, arr):
         if arr:
             return arr[0]
+        print(arr)
+        return arr
 
 
 # Rename column names
