@@ -38,15 +38,13 @@ from tasrif.processing_pipeline.tsfresh import TSFreshFeatureExtractorOperator
 mhc_folder_path = os.environ["MYHEARTCOUNTS"]
 
 # Read myHeartCounts
-mhc = MyHeartCountsDataset(
-    path_name=mhc_folder_path,
-    table_name="healthkitdata",
-    participants=10,
-    sources=["phone"],
-    types=["HKQuantityTypeIdentifierDistanceWalkingRunning"],
-    split=True,
-)
-
+mhc = MyHeartCountsDataset(path_name=mhc_folder_path,
+                           table_name='healthkitdata',
+                           participants=50,
+                           sources=['phone'],
+                           types=['HKQuantityTypeIdentifierDistanceWalkingRunning'],
+                           split=True
+                          )
 df = mhc.process()
 
 # Summary statistics are easy to calculate
@@ -110,6 +108,8 @@ swo = SlidingWindowOperator(
 # the true labels (y) that are 15 minutes following the training window size (1 hour)
 df_timeseries, y, _, _ = swo.process(*processed_df)[0]
 
+
+
 # Define pipeline that uses TSFresh package for the feature extraction
 feature_extraction_pipeline = SequenceOperator(
     [
@@ -126,4 +126,4 @@ X = feature_extraction_pipeline.process(df_timeseries)[0]
 # Use your model to train on your preprocessed data
 pipe = Pipeline([("scaler", StandardScaler()), ("svc", SVR(kernel="linear"))])
 pipe.fit(X, y)
-pipe.score(X, y)
+print(pipe.score(X, y))
