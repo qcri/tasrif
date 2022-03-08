@@ -7,7 +7,8 @@ import pytest
 files_patterns = [
     "examples/fitbit_interday/*.py",
     "examples/fitbit_intraday/*.py",
-    "examples/my_heart_counts/[!test_]*.py" "examples/siha/*.py",
+    "examples/my_heart_counts/[!test_]*.py",
+    "examples/siha/*.py",
     "examples/sleep_health/*.py",
     "examples/withings/*.py",
     "examples/zenodo_fitbit/*.py",
