@@ -40,7 +40,8 @@ siha_folder_path = os.environ.get("SIHA_PATH")
 
 class _FlattenOperator(MapProcessingOperator):
     def _processing_function(self, arr):
-        return arr[0]
+        if arr:
+            return arr[0]
 
 
 # Rename column names
