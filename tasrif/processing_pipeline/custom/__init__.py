@@ -61,3 +61,4 @@ from tasrif.processing_pipeline.custom.sliding_window_operator import (
     SlidingWindowOperator,
 )
 from tasrif.processing_pipeline.custom.statistics_operator import StatisticsOperator
+from tasrif.processing_pipeline.custom.simulate_day_operator import SimulateDayOperator
