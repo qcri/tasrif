@@ -82,12 +82,7 @@ base_datasets = SequenceOperator(
         ),
         _FlattenOperator(),
         JsonNormalizeOperator(),
-        _RenameOperator(columns={"time": "dateTime"}, errors="ignore"),
-        ConvertToDatetimeOperator(
-            feature_names=["dateTime"], infer_datetime_format=True
-        ),
-        SetIndexOperator("dateTime"),
-        AsTypeOperator({"value": "float32"}, errors="ignore"),
+        _RenameOperator(columns={"time": "dateTime"}, errors="ignore")
     ]
 )
 
