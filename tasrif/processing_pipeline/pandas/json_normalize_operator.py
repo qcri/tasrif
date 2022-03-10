@@ -119,8 +119,8 @@ class JsonNormalizeOperator(PandasOperator):
         for dataframe in data_frames:
             if (
                 isinstance(dataframe, list)
-                and isinstance(dataframe[0], list)
                 and len(dataframe) == 1
+                and isinstance(dataframe[0], list)
             ):
                 dataframe = dataframe[0]
             dataframe = pd.json_normalize(dataframe, **self.kwargs)

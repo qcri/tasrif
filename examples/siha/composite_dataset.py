@@ -40,7 +40,10 @@ siha_folder_path = os.environ.get("SIHA_PATH")
 
 class _FlattenOperator(MapProcessingOperator):
     def _processing_function(self, arr):
-        return arr[0]
+        if arr:
+            return arr[0]
+        print(arr)
+        return arr
 
 
 # Rename column names
@@ -79,12 +82,7 @@ base_datasets = SequenceOperator(
         ),
         _FlattenOperator(),
         JsonNormalizeOperator(),
-        _RenameOperator(columns={"time": "dateTime"}, errors="ignore"),
-        ConvertToDatetimeOperator(
-            feature_names=["dateTime"], infer_datetime_format=True
-        ),
-        SetIndexOperator("dateTime"),
-        AsTypeOperator({"value": "float32"}, errors="ignore"),
+        _RenameOperator(columns={"time": "dateTime"}, errors="ignore")
     ]
 )
 
@@ -122,17 +120,7 @@ intraday_datasets = SequenceOperator(
             ]
         ),
         _FlattenOperator(),
-        JsonNormalizeOperator(),
-        CreateFeatureOperator(
-            feature_name="dateTime",
-            feature_creator=lambda df: df["date"] + "T" + df["time"],
-        ),
-        DropFeaturesOperator(["date", "time"]),
-        ConvertToDatetimeOperator(
-            feature_names=["dateTime"], infer_datetime_format=True
-        ),
-        SetIndexOperator("dateTime"),
-        AsTypeOperator({"value": "float32"}, errors="ignore"),
+        JsonNormalizeOperator()
     ]
 )
 
