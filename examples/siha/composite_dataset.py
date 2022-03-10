@@ -120,17 +120,7 @@ intraday_datasets = SequenceOperator(
             ]
         ),
         _FlattenOperator(),
-        JsonNormalizeOperator(),
-        CreateFeatureOperator(
-            feature_name="dateTime",
-            feature_creator=lambda df: df["date"] + "T" + df["time"],
-        ),
-        DropFeaturesOperator(["date", "time"]),
-        ConvertToDatetimeOperator(
-            feature_names=["dateTime"], infer_datetime_format=True
-        ),
-        SetIndexOperator("dateTime"),
-        AsTypeOperator({"value": "float32"}, errors="ignore"),
+        JsonNormalizeOperator()
     ]
 )
 
