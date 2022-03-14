@@ -1,6 +1,5 @@
 """Example that represents the sleep related CSV files of the fitbit dataset published on Zenodo"""
 import os
-
 import pandas as pd
 
 from tasrif.data_readers.zenodo_fitbit_dataset import ZenodoFitbitDataset
@@ -9,6 +8,7 @@ from tasrif.processing_pipeline.custom import (
     AddDurationOperator,
     AggregateOperator,
     CreateFeatureOperator,
+    FillNAOperator
 )
 
 zenodo_folder_path = os.environ.get("ZENODOFITBIT_PATH")
@@ -32,6 +32,7 @@ pipeline = SequenceOperator(
             feature_name="date",
             feature_creator=lambda df: pd.to_datetime(df["date"]),
         ),
+        FillNAOperator(value={'index': df['date'].min()}),
         AddDurationOperator(groupby_feature_names="logId", date_feature_name="date"),
         AggregateOperator(
             groupby_feature_names=["logId", "Id"],
@@ -44,7 +45,7 @@ pipeline = SequenceOperator(
                     [
                         CreateFeatureOperator(
                             feature_name="total_sleep_seconds",
-                            feature_creator=lambda df: df.duration_sum.dt.total_seconds,
+                            feature_creator=lambda df: df.duration_sum.dt.total_seconds(),
                         ),
                         AggregateOperator(
                             groupby_feature_names="Id",

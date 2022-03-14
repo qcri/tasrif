@@ -104,7 +104,7 @@ threshold = 10800
 pipeline = SequenceOperator([
     CreateFeatureOperator(
         feature_name='main sleep',
-        feature_creator=lambda df: (df['end'] - df['start']).dt.total_seconds > threshold
+        feature_creator=lambda df: (df['end'] - df['start']).dt.total_seconds() > threshold
     ),
     CutOperator( # Categorize continious variabale
         cut_column_name='Sleep Efficiency', 

@@ -6,6 +6,7 @@ from tasrif.processing_pipeline.custom import AggregateOperator, CreateFeatureOp
 from tasrif.processing_pipeline.pandas import (
     ConvertToDatetimeOperator,
     SetIndexOperator,
+    FillNAOperator
 )
 
 withings_data_filename = os.environ["WITHINGS_PATH"] + "sleep.csv"
@@ -16,6 +17,7 @@ pipeline = SequenceOperator(
         ConvertToDatetimeOperator(
             feature_names=["from", "to"], infer_datetime_format=True
         ),
+        FillNAOperator(values={'to': df['from']}),
         CreateFeatureOperator(
             feature_name="Date", feature_creator=lambda df: df["to"].dt.date
         ),

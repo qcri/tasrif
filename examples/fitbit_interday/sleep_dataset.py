@@ -6,6 +6,7 @@ from tasrif.processing_pipeline.custom import AggregateOperator, CreateFeatureOp
 from tasrif.processing_pipeline.pandas import (
     ConvertToDatetimeOperator,
     SetIndexOperator,
+    FillNAOperator
 )
 
 interday_folder_path = os.environ.get("FITBIT_INTERDAY_PATH", "/mnt/data/fitbit-data/")
@@ -18,6 +19,7 @@ pipeline = SequenceOperator(
         ConvertToDatetimeOperator(
             feature_names=["Start Time", "End Time"], infer_datetime_format=True
         ),
+        FillNAOperator(values={'End Time': df['Start Time']}),
         CreateFeatureOperator(
             feature_name="Date", feature_creator=lambda df: df["End Time"].dt.date
         ),
