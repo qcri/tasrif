@@ -10,6 +10,8 @@ from tasrif.processing_pipeline.pandas import (
 
 interday_folder_path = os.environ.get("FITBIT_INTERDAY_PATH", "/mnt/data/fitbit-data/")
 
+
+
 pipeline = SequenceOperator(
     [
         FitbitInterdayDataset(interday_folder_path, table_name="Sleep"),
@@ -17,7 +19,7 @@ pipeline = SequenceOperator(
             feature_names=["Start Time", "End Time"], infer_datetime_format=True
         ),
         CreateFeatureOperator(
-            feature_name="Date", feature_creator=lambda df: df["End Time"].date()
+            feature_name="Date", feature_creator=lambda df: df["End Time"].dt.date
         ),
         AggregateOperator(
             groupby_feature_names="Date",

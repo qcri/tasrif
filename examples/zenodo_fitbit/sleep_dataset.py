@@ -44,7 +44,7 @@ pipeline = SequenceOperator(
                     [
                         CreateFeatureOperator(
                             feature_name="total_sleep_seconds",
-                            feature_creator=lambda df: df.duration_sum.total_seconds(),
+                            feature_creator=lambda df: df.duration_sum.dt.total_seconds,
                         ),
                         AggregateOperator(
                             groupby_feature_names="Id",

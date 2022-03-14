@@ -17,7 +17,7 @@ pipeline = SequenceOperator(
             feature_names=["from", "to"], infer_datetime_format=True
         ),
         CreateFeatureOperator(
-            feature_name="Date", feature_creator=lambda df: df["to"].date()
+            feature_name="Date", feature_creator=lambda df: df["to"].dt.date
         ),
         AggregateOperator(
             groupby_feature_names="Date",
