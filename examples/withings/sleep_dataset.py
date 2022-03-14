@@ -9,11 +9,15 @@ from tasrif.processing_pipeline.pandas import (
     FillNAOperator
 )
 
+os.environ['WITHINGS_PATH'] = '/mnt/data/withings-data/'
+
 withings_data_filename = os.environ["WITHINGS_PATH"] + "sleep.csv"
+
+# +
+df = WithingsDataset(withings_data_filename, table_name="Sleep").process()[0]
 
 pipeline = SequenceOperator(
     [
-        WithingsDataset(withings_data_filename, table_name="Sleep"),
         ConvertToDatetimeOperator(
             feature_names=["from", "to"], infer_datetime_format=True
         ),
@@ -40,10 +44,9 @@ pipeline = SequenceOperator(
         SetIndexOperator("Date"),
     ]
 )
+# -
 
 df = pipeline.process()
-
-print(df)
 
 import yaml
 
@@ -69,3 +72,5 @@ with open(yaml_config_path, "r") as stream:
 df = p.process()
 
 print(df)
+
+

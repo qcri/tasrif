@@ -8,8 +8,8 @@ from tasrif.processing_pipeline.custom import (
     AddDurationOperator,
     AggregateOperator,
     CreateFeatureOperator,
-    FillNAOperator
 )
+from tasrif.processing_pipeline.pandas import FillNAOperator
 
 zenodo_folder_path = os.environ.get("ZENODOFITBIT_PATH")
 

@@ -12,10 +12,9 @@ from tasrif.processing_pipeline.pandas import (
 interday_folder_path = os.environ.get("FITBIT_INTERDAY_PATH", "/mnt/data/fitbit-data/")
 
 
-
+df = FitbitInterdayDataset(interday_folder_path, table_name="Sleep").process()[0]
 pipeline = SequenceOperator(
     [
-        FitbitInterdayDataset(interday_folder_path, table_name="Sleep"),
         ConvertToDatetimeOperator(
             feature_names=["Start Time", "End Time"], infer_datetime_format=True
         ),
