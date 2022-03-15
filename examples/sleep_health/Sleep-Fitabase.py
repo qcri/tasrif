@@ -34,8 +34,6 @@ def calculate_total_duration(df):
 
 def calculate_sleep_quality(df):
     total_duration = df['Asleep'] + df['Restless'] + df['Awake']
-    if total_duration == 0:
-        return 0
     return df['Asleep'] / total_duration
 
 pipeline = SequenceOperator([AggregateActivityDatesOperator(date_feature_name="date",
@@ -106,7 +104,7 @@ threshold = 10800
 pipeline = SequenceOperator([
     CreateFeatureOperator(
         feature_name='main sleep',
-        feature_creator=lambda df: (df['end'] - df['start']).total_seconds() > threshold
+        feature_creator=lambda df: (df['end'] - df['start']).dt.total_seconds() > threshold
     ),
     CutOperator( # Categorize continious variabale
         cut_column_name='Sleep Efficiency', 

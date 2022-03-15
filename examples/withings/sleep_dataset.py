@@ -6,18 +6,22 @@ from tasrif.processing_pipeline.custom import AggregateOperator, CreateFeatureOp
 from tasrif.processing_pipeline.pandas import (
     ConvertToDatetimeOperator,
     SetIndexOperator,
+    FillNAOperator
 )
 
 withings_data_filename = os.environ["WITHINGS_PATH"] + "sleep.csv"
 
+# +
+df = WithingsDataset(withings_data_filename, table_name="Sleep").process()[0]
+
 pipeline = SequenceOperator(
     [
-        WithingsDataset(withings_data_filename, table_name="Sleep"),
         ConvertToDatetimeOperator(
             feature_names=["from", "to"], infer_datetime_format=True
         ),
+        FillNAOperator(values={'to': df['from']}),
         CreateFeatureOperator(
-            feature_name="Date", feature_creator=lambda df: df["to"].date()
+            feature_name="Date", feature_creator=lambda df: df["to"].dt.date
         ),
         AggregateOperator(
             groupby_feature_names="Date",
@@ -38,10 +42,9 @@ pipeline = SequenceOperator(
         SetIndexOperator("Date"),
     ]
 )
+# -
 
 df = pipeline.process()
-
-print(df)
 
 import yaml
 
@@ -67,3 +70,5 @@ with open(yaml_config_path, "r") as stream:
 df = p.process()
 
 print(df)
+
+
