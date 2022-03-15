@@ -23,7 +23,7 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/qcri/tasrif",
-    version="0.0.7",
+    version="0.1.0",
     packages=find_packages(),
     license=" BSD-3-Clause",
     classifiers=[
