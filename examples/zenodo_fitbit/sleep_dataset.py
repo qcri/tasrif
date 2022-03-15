@@ -25,9 +25,10 @@ TOTAL_AGGREGATION_DEFINITION = {
     "value_mean": ["mean", "std"],
 }
 
+df = ZenodoFitbitDataset(zenodo_folder_path, table_name="Sleep").process()[0]
+
 pipeline = SequenceOperator(
     [
-        ZenodoFitbitDataset(zenodo_folder_path, table_name="Sleep"),
         CreateFeatureOperator(
             feature_name="date",
             feature_creator=lambda df: pd.to_datetime(df["date"]),

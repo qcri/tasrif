@@ -14,7 +14,7 @@ pipeline:
         infer_datetime_format: true
     - $create_feature:
         feature_name: Date
-        feature_creator: lambda df: df['End Time'].dt.date
+        feature_creator: lambda df:df['End Time'].dt.date
     - $aggregate:
         groupby_feature_names: Date
         aggregation_definition:
