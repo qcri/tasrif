@@ -9,8 +9,6 @@ from tasrif.processing_pipeline.pandas import (
     FillNAOperator
 )
 
-os.environ['WITHINGS_PATH'] = '/mnt/data/withings-data/'
-
 withings_data_filename = os.environ["WITHINGS_PATH"] + "sleep.csv"
 
 # +
