@@ -15,7 +15,7 @@ siha_folder_path = os.environ.get("SIHA_PATH")
 
 pipeline = SequenceOperator(
     [
-        SihaDataset(siha_folder_path, table_name="Sleep"),
+        SihaDataset(siha_folder_path, table_name="Daata"),
         JqOperator("map({patientID} + .data.sleep[].data)"),
         JsonNormalizeOperator(
             record_path=["sleep"],
