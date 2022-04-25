@@ -21,6 +21,7 @@ class SihaDataset(ProcessingOperator):
     """Base class to work with the all SIHA based datasets."""
 
     valid_table_names = [
+        "Data",
         "EMR",
         "CGM",
         "Sleep",
@@ -64,7 +65,12 @@ class SihaDataset(ProcessingOperator):
     def process(self, *data_frames):
 
         jsons = []
-        for file_path in pathlib.Path(self.folder_path).glob("data*.json"):
+        if self.table_name == 'Data':
+            path = 'data*.json'
+        else:
+            path = self.table_name + '*.json'
+
+        for file_path in pathlib.Path(self.folder_path).glob(path):
             with open(str(file_path)) as json_file:
                 jsons.append(json.load(json_file))
 
