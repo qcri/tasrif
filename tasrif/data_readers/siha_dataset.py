@@ -28,6 +28,7 @@ class SihaDataset(ProcessingOperator):
         "Steps",
         "Distance",
         "Calories",
+        "HeartRate",
         "SleepIntraday",
         "StepsIntraday",
         "DistanceIntraday",
