@@ -64,7 +64,7 @@ class _RenameOperator(ProcessingOperator):
 # base_datasets = ["EMR", "CGM", "Steps", "Distance", "Calories"]
 base_datasets = SequenceOperator(
     [
-        SihaDataset(folder_path=siha_folder_path, table_name="EMR"),
+        SihaDataset(folder_path=siha_folder_path, table_name="Data"),
         ComposeOperator(
             [
                 JqOperator("map({patientID} + .data.emr[])"),  # EMR
@@ -94,7 +94,7 @@ df
 # intraday_datasets = ["HeartRateIntraday", "CaloriesIntraday", "StepsIntraday", "DistanceIntraday"]
 intraday_datasets = SequenceOperator(
     [
-        SihaDataset(folder_path=siha_folder_path, table_name="HeartRateIntraday"),
+        SihaDataset(folder_path=siha_folder_path, table_name="Data"),
         ComposeOperator(
             [
                 JqOperator(

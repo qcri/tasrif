@@ -15,7 +15,7 @@ siha_folder_path = os.environ.get("SIHA_PATH")
 
 pipeline = SequenceOperator(
     [
-        SihaDataset(siha_folder_path, table_name="SleepIntraday"),
+        SihaDataset(siha_folder_path, table_name="Data"),
         JqOperator(
             "map({patientID} + (.data.sleep[].data as $data | "
             + "($data.sleep | map(.) | .[]) | . * {levels:  {overview : ($data.summary//{})}})) |  "

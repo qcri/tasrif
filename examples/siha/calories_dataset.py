@@ -16,7 +16,7 @@ siha_folder_path = os.environ.get("SIHA_PATH")
 
 pipeline = SequenceOperator(
     [
-        SihaDataset(folder_path=siha_folder_path, table_name="Calories"),
+        SihaDataset(folder_path=siha_folder_path, table_name="Data"),
         JqOperator(
             'map({patientID} + .data.activities_tracker_calories[].data."activities-tracker-calories"[0])'
         ),

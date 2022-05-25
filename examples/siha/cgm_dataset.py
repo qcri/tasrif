@@ -15,7 +15,7 @@ siha_folder_path = os.environ.get("SIHA_PATH")
 
 pipeline = SequenceOperator(
     [
-        SihaDataset(siha_folder_path, table_name="CGM"),
+        SihaDataset(siha_folder_path, table_name="Data"),
         JqOperator("map({patientID} + .data.cgm[])"),
         JsonNormalizeOperator(),
         ConvertToDatetimeOperator(feature_names=["time"], infer_datetime_format=True),

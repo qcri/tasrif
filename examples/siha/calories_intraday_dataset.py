@@ -17,7 +17,7 @@ siha_folder_path = os.environ.get("SIHA_PATH")
 
 pipeline = SequenceOperator(
     [
-        SihaDataset(siha_folder_path, table_name="CaloriesIntraday"),
+        SihaDataset(siha_folder_path, table_name="Data"),
         JqOperator(
             "map({patientID} + .data.activities_calories_intraday[].data as $item  |"
             + ' $item."activities-calories-intraday".dataset | '
