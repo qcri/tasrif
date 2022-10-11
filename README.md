@@ -76,6 +76,29 @@ or install from source
 
 If no installation errors occur, see [Quick start by usecase](#quick-start-by-usecase) section to use Tasrif.
 
+
+## Running Tasrif with docker
+
+To avoid the hassle of Tasrif installation, you can use Tasrif in a docker container that launches a local jupyter notebook.
+Make sure you have docker installed in your operating system before running the following commands.
+
+```python
+cd tasrif
+docker build -t tasrif .
+docker run -i -p 8888:8888 tasrif
+
+```
+
+You can mount a local directory to the container with the following command
+
+```python
+docker run -i -v <some/local/directory>:/home/mnt -p 8888:8888 tasrif
+
+```
+
+After running the container, visit `http://127.0.0.1:8888/` in your preferred browser to work with the jupyter notebook.
+
+
 ### Note on feature extraction using Tasrif
 
 Due to some outdated internal Tasrif dependancies on Pypi, we have decided to place those dependancies in `requirements.txt`. Once those packages are updated in Pypi, we will move them back to `setup.py`. The current `requirements.txt` specifies the dependancies links directly from Github. If you plan to use the following two operators: `TSFreshFeatureExtractorOperator` or `CalculateTimeseriesPropertiesOperator`, you will need [TSFresh](https://github.com/blue-yonder/tsfresh) and [Kats](https://github.com/facebookresearch/Kats) packages installed, which can be done by running the following command

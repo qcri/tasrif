@@ -25,3 +25,18 @@ COPY run-darglint.sh /home
 COPY examples/quick_start /home/examples/quick_start
 
 COPY / /home
+
+# EXPOSE 8888
+# ENTRYPOINT ["jupyter", "notebook", "--allow-root"]
+
+# Add Tini. Tini operates as a process subreaper for jupyter. This prevents
+# kernel crashes.
+ENV TINI_VERSION v0.6.0
+ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /usr/bin/tini
+RUN chmod +x /usr/bin/tini
+ENTRYPOINT ["/usr/bin/tini", "--"]
+
+EXPOSE 8888
+CMD ["mkdir", "mnt"]
+CMD ["jupyter", "notebook", "--port=8888", "--allow-root", "--no-browser", "--ip=0.0.0.0"]
+
