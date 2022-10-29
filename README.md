@@ -74,6 +74,8 @@ or install from source
 
 ```
 
+> **Important installation note**: one of Tasrif's dependancies is [pyjq](https://pypi.org/project/pyjq/) which requires gcc commands to be installed in your local machine. Specifically `pyjq` requires autoconf, automake, libtool, python3-devel.x86_64, python3-tkinter, python-pip, jq and awscli. See more about this [issue here](https://github.com/duo-labs/cloudmapper/issues/301). To avoid the hassle of installing these libraries, we recommend running Tasrif with Docker.
+
 If no installation errors occur, see [Quick start by usecase](#quick-start-by-usecase) section to use Tasrif.
 
 ### Note on feature extraction using Tasrif
